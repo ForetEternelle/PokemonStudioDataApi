@@ -1,0 +1,12 @@
+type: object
+description: An object containing the damage against a type
+properties:
+    defensiveType:
+        type: string
+        description: The type
+        example: "electric"
+    factor:
+        type: number
+        description: The damage
+        nullable: true
+        example: 0.5

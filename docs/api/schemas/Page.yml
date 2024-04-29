@@ -1,0 +1,17 @@
+type: object
+description: A page of content
+properties:
+  content:
+    type: array
+    description: Contains the items of the page
+  number:
+    type: integer
+    description: The number of the page
+    required:
+      - number
+  size:
+    type: integer
+    description: The size of the page
+  total:
+    description: The total number of elements
+    type: integer

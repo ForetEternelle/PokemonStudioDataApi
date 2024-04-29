@@ -1,0 +1,10 @@
+services:
+  api:
+    image: swaggerapi/swagger-ui
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./build/psapi-openapi.yml:/api/psapi-openapi.yml
+    environment:
+      SWAGGER_JSON: /api/psapi-openapi.yml
+

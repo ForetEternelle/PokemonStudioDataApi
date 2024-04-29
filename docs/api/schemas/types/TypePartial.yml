@@ -1,0 +1,16 @@
+type: object
+description: An object containing partial data of a pokemon type
+nullable: true
+properties:
+  name:
+    type: string
+    description: The translated name of the pokemon type
+    example: "Electric"
+  symbol:
+    type: string
+    description: The symbol of the pokemon type
+    example: "electric"
+  color:
+    type: string
+    description: The color of the pokemon type
+    example: "#F8D030"

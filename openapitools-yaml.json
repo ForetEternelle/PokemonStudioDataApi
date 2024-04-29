@@ -1,0 +1,7 @@
+{
+  "inputSpec": "./docs/api/openapi.yml",
+  "generatorName": "openapi-yaml",
+  "additionalProperties": {
+    "outputFile": "build/psapi-openapi.yml"
+  }
+}

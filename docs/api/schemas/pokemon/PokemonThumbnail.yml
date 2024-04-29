@@ -1,0 +1,19 @@
+type: object
+description: An object containing base information to display a pokemon
+properties:
+  symbol:
+    type: string
+    description: The symbol of the pokemon
+    example: "pikachu"
+  name:
+    type: string
+    description: The translated name of the first pokemon's form
+    exemple: "Pikachu"
+  number:
+    type: integer
+    description: The number of the pokemon
+    example: 25
+  image:
+    type: string
+    description: The image symbol of the pokemon
+    example: "025"

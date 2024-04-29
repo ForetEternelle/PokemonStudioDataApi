@@ -1,0 +1,5 @@
+description: unprocessable entity error
+content:
+  application/json:
+    schema:
+      type: string

@@ -1,0 +1,164 @@
+type: object
+description: An object containing the data of a pokemon form (ev, iv, ...)
+properties:
+  name:
+    type: string
+    description: The translated name of the pokemon
+    example: "Pikachu"
+
+  description:
+    type: string
+    description: The translated description of the pokemon
+    example: "Pika Pika"
+
+  form:
+    type: integer
+    description: The form number
+    nullable: true
+    example: 0
+
+  height:
+    type: number
+    description: The height
+    example: 0.4
+  weight:
+    type: number
+    description: The weight
+    example: 0.8
+
+  type1:
+    description: The first type
+    $ref: "../types/TypePartial.yml"
+    nullable: false
+  type2:
+    $ref: "../types/TypePartial.yml"
+    description: The second type
+    nullable: true
+  baseHp:
+    type: integer
+    description: The base HP stat
+    example: 35
+  baseAtk:
+    type: integer
+    description: The base attack stat
+    example: 55
+  baseDfe:
+    type: integer
+    description: The base defense stat
+    example: 40
+  baseSpd:
+    type: integer
+    description: The base speed stat
+    example: 90
+  baseAts:
+    type: integer
+    description: The base special attack stat
+    example: 50
+  baseDfs:
+    type: integer
+    description: The base special defense stat
+    example: 50
+
+  evHp:
+    type: integer
+    description: The HP EV given
+    nullable: true
+    example: 0
+  evAtk:
+    type: integer
+    description: The attack EV given
+    nullable: true
+    example: 0
+  evDfe:
+    type: integer
+    description: The defense EV given
+    nullable: true
+    example: 0
+  evSpd:
+    type: integer
+    description: The speed EV given
+    nullable: true
+    example: 2
+  evAts:
+    type: integer
+    description: The special attack EV given
+    nullable: true
+    example: 0
+  evDfs:
+    type: integer
+    description: The special defense EV given
+    nullable: true
+    example: 0
+
+  experienceType:
+    type: string
+    description: The experience type
+    example: "erratic"
+    enum:
+      - "erratic"
+      - "fast"
+      - "medium_fast"
+      - "medium_slow"
+      - "slow"
+      - "fluctuating"
+  baseExperience:
+    type: integer
+    description: The base experience
+    example: 64
+  baseLoyalty:
+    type: integer
+    description: The base loyalty
+    example: 50
+  catchRate:
+    type: integer
+    description: The catch rate
+    example: 45
+  femaleRate:
+    type: number
+    description: The female rate
+    example: 12.5
+  breedGroups:
+    type: array
+    description: The breed groups
+    example: ["field", "fairy"]
+    items:
+      type: string
+      enum:
+        - "monster"
+        - "water1"
+        - "bug"
+        - "flying"
+        - "field"
+        - "fairy"
+        - "grass"
+        - "human-like"
+        - "water3"
+        - "mineral"
+        - "amorphous"
+        - "water2"
+        - "ditto"
+        - "dragon"
+        - "undiscovered"
+
+  hatchSteps:
+    type: integer
+    description: The number of steps before hatching
+    example: 3840
+  babyDbSymbol:
+    type: string
+    description: The symbol of the baby form
+    example: "pikachu"
+  babyForm:
+    type: integer
+    description: The form number of the baby form
+    nullable: true
+    example: 0
+  itemHeld:
+    type: array
+    description: The list of items held
+    items:
+      type: string
+  image:
+    description: The image symbol of the form
+    type: string
+    example: "025"

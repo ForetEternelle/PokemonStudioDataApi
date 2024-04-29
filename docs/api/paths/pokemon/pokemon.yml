@@ -1,0 +1,27 @@
+get:
+  tags:
+    - Pokemon
+  summary: Get a page of pokemon
+  description: This endpoint returns a page of pokemon, the pagination is based on the page and page size parameters.
+  operationId: getPokemon
+  parameters:
+    - $ref: "../../parameters/page.yml"
+    - $ref: "../../parameters/pageSize.yml"
+    - $ref: "../../parameters/lang.yml"
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            title: "PokemonPage"
+            allOf:
+              - $ref: "../../schemas/Page.yml"
+              - type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: "../../schemas/pokemon/PokemonThumbnail.yml"
+    "400":
+      $ref: "../../responses/InvalidParameterError.yml"

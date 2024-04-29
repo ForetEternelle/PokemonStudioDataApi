@@ -1,0 +1,21 @@
+type: object
+description: An object containing detailed data of a pokemon with its main form
+properties:
+  symbol:
+    type: string
+    description: The symbol of the pokemon
+    example: "pikachu"
+  name:
+    type: string
+    description: The translated name of the first pokemon's form
+    exemple: "Pikachu"
+  description:
+    type: string
+    description: The translated description of the first pokemon's form
+    example: "Pika Pika"
+  number:
+    type: integer
+    description: The number of the pokemon
+    example: 25
+  main_form:
+    $ref: "./FormDetails.yml"

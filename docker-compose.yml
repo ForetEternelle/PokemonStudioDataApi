@@ -1,0 +1,8 @@
+services:
+  psapi:
+    image: psapi:latest
+    volumes:
+      - .local/psapi-data/Data:/app/data/
+    ports:
+      - "8000:8000"
+      

@@ -1,0 +1,31 @@
+get:
+  tags:
+    - Pokemon
+  summary: Get a pokemon form details
+  description: This endpoint returns a pokemon form details based on the symbol and the form number. The symbol is the unique identifier of the pokemon and the form number is the number of the form
+  operationId: getPokemonForm
+  parameters:
+    - $ref: "../../parameters/lang.yml"
+    - name: symbol
+      in: path
+      description: The symbol of the pokemon
+      required: true
+      schema:
+        type: string
+    - name: form
+      in: path
+      description: The form number
+      schema:
+        type: integer
+        default: 0
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/pokemon/FormDetails.yml"
+    "400":
+      $ref: "../../responses/InvalidParameterError.yml"
+    "404":
+      $ref: "../../responses/NotFoundError.yml"

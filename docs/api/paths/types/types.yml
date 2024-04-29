@@ -1,0 +1,20 @@
+get:
+  tags:
+    - Types
+  summary: Get all types
+  description: This endpoint returns a list of all types
+  operationId: getTypes
+  parameters:
+    - $ref: "../../parameters/lang.yml"
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            title: "Types"
+            type: array
+            items:
+              $ref: "../../schemas/types/TypePartial.yml"
+    "400":
+      $ref: "../../responses/InvalidParameterError.yml"

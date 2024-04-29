@@ -1,0 +1,7 @@
+in: header
+name: "Accept-Language"
+required: false
+schema:
+  type: string
+  default: "en"
+description: The language of the response

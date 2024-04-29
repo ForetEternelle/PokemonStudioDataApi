@@ -1,0 +1,23 @@
+get:
+  tags:
+    - Types
+  summary: Get a type details
+  description: This endpoint returns a type details based on the symbol. The symbol is the unique identifier of the type
+  operationId: getTypeDetails
+  parameters:
+    - $ref: "../../parameters/lang.yml"
+    - name: symbol
+      in: path
+      description: The symbol of the type
+      required: true
+      schema:
+        type: string
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/types/TypeDetails.yml"
+    "400":
+      $ref: "../../responses/InvalidParameterError.yml"

@@ -1,0 +1,20 @@
+type: object
+description: An object containing detailed data of a pokemon type
+properties:
+    name:
+        type: string
+        description: The translated name of the pokemon type
+        example: "Electric"
+    symbol:
+        type: string
+        description: The symbol of the pokemon type
+        example: "electric"
+    color:
+        type: string
+        description: The color of the pokemon type
+        example: "#F8D030"
+    typeDamage:
+        type: array
+        description: The damage inflicted by this type
+        items:
+            $ref: "./TypeDamage.yml"

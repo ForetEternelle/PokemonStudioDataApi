@@ -1,0 +1,23 @@
+get:
+  tags:
+    - Pokemon
+  summary: Get a pokemon details
+  description: This endpoint returns a pokemon details based on the symbol. The symbol is the unique identifier of the pokemon
+  operationId: getPokemonDetails
+  parameters:
+    - $ref: "../../parameters/lang.yml"
+    - name: symbol
+      in: path
+      description: The symbol of the pokemon
+      required: true
+      schema:
+        type: string
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/pokemon/PokemonDetails.yml"
+    "400":
+      $ref: "../../responses/InvalidParameterError.yml"

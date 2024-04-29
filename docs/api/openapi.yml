@@ -1,0 +1,20 @@
+openapi: "3.0.0"
+
+info:
+  version: 0.0.1
+  title: Pokemon Studio API
+  description: API for the Pokemon Studio
+servers:
+  - url: "http://localhost:8000/api"
+paths:
+  /pokemon:
+    $ref: "paths/pokemon/pokemon.yml"
+  /pokemon/{symbol}:
+    $ref: "paths/pokemon/pokemonDetails.yml"
+  /pokemon/{symbol}/{form}:
+    $ref: "paths/pokemon/pokemonForm.yml"
+
+  /types:
+    $ref: "paths/types/types.yml"
+  /types/{symbol}:
+    $ref: "paths/types/typeDetails.yml"

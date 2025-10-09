@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"path"
 
-	"github.com/rcharre/psapi/pkg/utils/file"
+	"github.com/ForetEternelle/ForetEternelleDataApi/pkg/utils/file"
 )
 
 const (

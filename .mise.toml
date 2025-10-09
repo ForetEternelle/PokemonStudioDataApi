@@ -1,0 +1,28 @@
+[tools]
+go = "1.24"
+
+[vars]
+PORT = "8080"
+CORS = "*"
+DATA_FOLDER = "./test/test_resources/valid-data"
+LOG_LEVEL = "DEBUG"
+
+[tasks]
+install = { run = "./scripts/install.sh", run_windows = "./scripts/install.bat", sources = ["go.mod", "package.json"] }
+clean = { run = "./scripts/clean.sh", run_windows = "./scripts/clean.bat" }
+build = { run = "./scripts/build.sh", run_windows = "./scripts/build.bat", sources = ["**/*.go"], outputs = ["build/ForeEternelleDataApi"], hide = true }
+test = { run = "./scripts/test.sh", run_windows = "./scripts/test.bat"}
+
+[tasks.dev]
+depends = ["install", "build -f"]
+run = "air"
+tools = {"go:github.com/air-verse/air" = "1.63.0"}
+
+[tasks.generate]
+tools = {"npm:@openapitools/openapi-generator-cli" = "2.13.2", "java" = "17"}
+run = "./scripts/generate.sh"
+run_windows = "./scripts/generate.bat"
+sources = ["docs/api/**/*.yml", "openapitools-*.json"]
+
+[tasks.start]
+run = "go run main.go -port={{vars.PORT}} -data={{vars.DATA_FOLDER}} -cors={{vars.CORS}} -log-level={{vars.LOG_LEVEL}}"

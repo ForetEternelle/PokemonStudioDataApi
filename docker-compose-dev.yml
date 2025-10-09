@@ -1,10 +1,10 @@
 services:
-  api:
+  foreteternelledataapi-docs:
     image: swaggerapi/swagger-ui
     ports:
       - "8080:8080"
     volumes:
-      - ./build/psapi-openapi.yml:/api/psapi-openapi.yml
+      - ./docs/api/openapi.yml:/api/openapi.yml
     environment:
-      SWAGGER_JSON: /api/psapi-openapi.yml
+      SWAGGER_JSON: /api/openapi.yml
 

@@ -1,0 +1,6 @@
+@echo off
+echo Cleaning build directory...
+rmdir /s /q ../build
+echo Cleaning tmp directory...
+rmdir /s /q ../tmp
+echo Done.

@@ -1,6 +1,6 @@
 services:
-  psapi:
-    image: psapi:latest
+  foreteternelledataapi:
+    image: foreteternelledataapi:latest
     volumes:
       - .local/psapi-data/Data:/app/data/
     ports:

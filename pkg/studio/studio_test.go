@@ -3,7 +3,7 @@ package studio
 import (
 	"testing"
 
-	"github.com/rcharre/psapi/pkg/utils/pagination"
+	"github.com/ForetEternelle/ForetEternelleDataApi/pkg/utils/pagination"
 )
 
 const (

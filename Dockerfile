@@ -1,18 +1,32 @@
-FROM golang:1.23.2 AS builder
+# Builder stage
+FROM debian:stable-slim AS builder
+ENV PATH="/root/.local/bin:${PATH}"
 
-RUN go install github.com/go-task/task/v3/cmd/task@latest
+WORKDIR /app
 
-COPY . /src/
-WORKDIR /src/
-RUN task build
+RUN apt-get update && apt-get install -y curl git
+RUN curl https://mise.run | sh
 
-FROM debian:bookworm
+COPY .mise.toml .
+
+RUN mise settings experimental=true && \
+  mise trust && \
+  mise i
+
+COPY . .
+
+RUN mise r install && \
+  mise r test && \
+  mise r build
+
+
+FROM debian:stable-slim
 ENV DATA="/app/data/"
 ENV CORS="*"
 ENV LOG_LEVEL="INFO"
 
-COPY --from=builder /src/build/psapi /app/
+COPY --from=builder /app/build/ForetEternelleDataApi /app/
 WORKDIR /app
 
-CMD ["sh", "-c", "/app/psapi -log-level=${LOG_LEVEL} -data=${DATA} -cors=${CORS}"]
+CMD ["sh", "-c", "/app/ForetEternelleDataApi -log-level=${LOG_LEVEL} -data=${DATA} -cors=${CORS}"]
 

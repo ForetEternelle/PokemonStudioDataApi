@@ -3,12 +3,13 @@ package psapi
 import (
 	"context"
 
-	"github.com/rcharre/psapi/pkg/studio"
-	"github.com/rcharre/psapi/pkg/utils/pagination"
+	"github.com/ForetEternelle/ForetEternelleDataApi/pkg/studio"
+	"github.com/ForetEternelle/ForetEternelleDataApi/pkg/utils/pagination"
 )
 
 type pokemonService struct {
 	store         *studio.Store
+
 	pokemonMapper *PokemonMapper
 }
 

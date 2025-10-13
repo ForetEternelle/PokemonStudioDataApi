@@ -3,8 +3,8 @@ package psapi_test
 import (
 	"testing"
 
-	"github.com/rcharre/psapi/pkg/psapi"
-	"github.com/rcharre/psapi/pkg/studio"
+	"github.com/ForetEternelle/ForetEternelleDataApi/pkg/psapi"
+	"github.com/ForetEternelle/ForetEternelleDataApi/pkg/studio"
 )
 
 func TestPokemonToThumbnail(t *testing.T) {

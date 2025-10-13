@@ -4,8 +4,8 @@ import (
 	"slices"
 	"sort"
 
-	"github.com/rcharre/psapi/pkg/utils/iter2"
-	"github.com/rcharre/psapi/pkg/utils/pagination"
+	"github.com/ForetEternelle/ForetEternelleDataApi/pkg/utils/iter2"
+	"github.com/ForetEternelle/ForetEternelleDataApi/pkg/utils/pagination"
 )
 
 type PokemonStore struct {

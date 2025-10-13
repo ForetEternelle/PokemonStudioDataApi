@@ -3,7 +3,7 @@ package psapi
 import (
 	"log/slog"
 
-	"github.com/rcharre/psapi/pkg/studio"
+	"github.com/ForetEternelle/ForetEternelleDataApi/pkg/studio"
 )
 
 type TypeMapper struct {

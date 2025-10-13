@@ -1,9 +1,8 @@
 package psapi
 
 import (
+	"github.com/ForetEternelle/ForetEternelleDataApi/pkg/studio"
 	"github.com/go-chi/chi/v5"
-
-	"github.com/rcharre/psapi/pkg/studio"
 )
 
 func MakeDefaultRouter(store *studio.Store) chi.Router {

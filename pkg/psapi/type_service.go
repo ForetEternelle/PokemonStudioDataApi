@@ -3,7 +3,7 @@ package psapi
 import (
 	"context"
 
-	"github.com/rcharre/psapi/pkg/studio"
+	"github.com/ForetEternelle/ForetEternelleDataApi/pkg/studio"
 )
 
 type TypeService struct {

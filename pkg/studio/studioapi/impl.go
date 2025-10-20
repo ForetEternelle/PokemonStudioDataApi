@@ -8,7 +8,7 @@
  * API version: 0.0.1
  */
 
-package psapi
+package studioapi
 
 // ImplResponse defines an implementation response with error code and the associated body
 type ImplResponse struct {

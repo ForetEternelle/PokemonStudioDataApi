@@ -8,8 +8,8 @@
   "additionalProperties": {
     "onlyInterfaces": true,
     "outputAsLibrary": true,
-    "packageName": "psapi",
+    "packageName": "studioapi",
     "router": "chi",
-    "sourceFolder": "pkg/psapi"
+    "sourceFolder": "pkg/studio/studioapi"
   }
 }

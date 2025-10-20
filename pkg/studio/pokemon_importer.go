@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"path"
 
-	"github.com/ForetEternelle/ForetEternelleDataApi/pkg/utils/file"
+	"github.com/ForetEternelle/ForetEternelleDataApi/pkg/file"
 )
 
 const (
@@ -18,38 +18,40 @@ const (
 // studioFolder the pokemon studio folder
 // translationFolder the translation folder
 // store the store the import is sending data to
-func ImportPokemon(studioFolder, translationFolder string, store *Store) error {
+func ImportPokemon(studioFolder, translationFolder string) ([]Pokemon, error) {
 	slog.Info("Importing pokemon name translation")
 	pokemonNameFilePath := path.Join(translationFolder, PokemonTranslationFileName)
 	pokemonNameTranslations, err := ImportTranslations(pokemonNameFilePath)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	slog.Info("Importing pokemon description translation")
 	pokemonDescriptionFilePath := path.Join(translationFolder, PokemonDescriptionTranslationFileName)
 	pokemonDescriptionTranslations, err := ImportTranslations(pokemonDescriptionFilePath)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	pokemonFolderPath := path.Join(studioFolder, PokemonFolder)
 	slog.Info("Importing pokemon folder", "path", pokemonFolderPath)
 	pokemonFileIterator, err := file.ImportFolder(pokemonFolderPath)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
+	pokemonList := make([]Pokemon, 0)
 	for pokemonFile := range pokemonFileIterator {
-		pokemon, err := UnmarshalPokemon(pokemonFile.Content)
+		p, err := UnmarshalPokemon(pokemonFile.Content)
 		if err != nil {
 			slog.Warn("Failed to unmarshal pokemon content", "file", pokemonFile.Path)
 			continue
 		}
-		TranslatePokemon(pokemon, pokemonNameTranslations, pokemonDescriptionTranslations)
-		store.PokemonStore.Add(*pokemon)
+		TranslatePokemon(p, pokemonNameTranslations, pokemonDescriptionTranslations)
+		pokemonList = append(pokemonList, *p)
 	}
-	return nil
+	
+	return pokemonList, nil
 }
 
 // UnmarshalPokemon unmarshal a json encoded pokemon to an object

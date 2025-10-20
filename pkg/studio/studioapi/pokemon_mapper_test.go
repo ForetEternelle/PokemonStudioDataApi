@@ -1,10 +1,10 @@
-package psapi_test
+package studioapi_test
 
 import (
 	"testing"
 
-	"github.com/ForetEternelle/ForetEternelleDataApi/pkg/psapi"
 	"github.com/ForetEternelle/ForetEternelleDataApi/pkg/studio"
+	"github.com/ForetEternelle/ForetEternelleDataApi/pkg/studio/studioapi"
 )
 
 func TestPokemonToThumbnail(t *testing.T) {
@@ -24,9 +24,9 @@ func TestPokemonToThumbnail(t *testing.T) {
 		},
 	}
 
-	typeMapper := psapi.NewTypeMapper()
-	store := studio.NewStore()
-	pokemonMapper := psapi.NewPokemonMapper(typeMapper, store)
+	typeMapper := studioapi.NewTypeMapper()
+	store , _:= studio.NewStore([]studio.Pokemon{}, []studio.PokemonType{})
+	pokemonMapper := studioapi.NewPokemonMapper(typeMapper, store)
 
 	thumbnail := pokemonMapper.PokemonToThumbnail(pokemon, lang)
 

@@ -1,4 +1,4 @@
-package psapi
+package studioapi
 
 import (
 	"context"
@@ -19,7 +19,7 @@ func NewTypeService(store *studio.Store, typeMapper *TypeMapper) TypesAPIService
 }
 
 func (s TypeService) GetTypes(requestCtx context.Context, lang string) (ImplResponse, error) {
-	types := s.store.TypeStore.FindAll()
+	types := s.store.FindAllTypes()
 	res := make([]TypePartial, len(types))
 
 	for i, t := range types {
@@ -29,7 +29,7 @@ func (s TypeService) GetTypes(requestCtx context.Context, lang string) (ImplResp
 }
 
 func (s TypeService) GetTypeDetails(requestCtx context.Context, symbol string, lang string) (ImplResponse, error) {
-	t := s.store.TypeStore.FindBySymbol(symbol)
+	t := s.store.FindTypeBySymbol(symbol)
 	if t == nil {
 		return ImplResponse{Code: 200, Body: nil}, nil
 	}

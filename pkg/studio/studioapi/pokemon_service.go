@@ -1,10 +1,10 @@
-package psapi
+package studioapi
 
 import (
 	"context"
 
 	"github.com/ForetEternelle/ForetEternelleDataApi/pkg/studio"
-	"github.com/ForetEternelle/ForetEternelleDataApi/pkg/utils/pagination"
+	"github.com/ForetEternelle/ForetEternelleDataApi/pkg/pagination"
 )
 
 type pokemonService struct {
@@ -21,7 +21,7 @@ func NewPokemonService(store *studio.Store, pokemonMapper *PokemonMapper) Pokemo
 }
 
 func (s pokemonService) GetPokemonDetails(requestCtx context.Context, symbol string, lang string) (ImplResponse, error) {
-	pkmn := s.store.PokemonStore.FindBySymbol(symbol)
+	pkmn := s.store.FindPokemonBySymbol(symbol)
 
 	if pkmn == nil {
 		return ImplResponse{Code: 200, Body: nil}, nil
@@ -34,8 +34,9 @@ func (s pokemonService) GetPokemon(requestCtx context.Context, page int32, pageS
 	size := int(pageSize)
 	pr := pagination.NewPageRequest(p, size)
 
-	pkmnPage := s.store.PokemonStore.FindAll(pr)
-	thumbnails := make([]PokemonThumbnail, len(pkmnPage.Content))
+	pkmnIter := s.store.FindAllPokemon()
+	pkmnPage  := pagination.Collect(pkmnIter, pr)
+	thumbnails := make([]*PokemonThumbnail, len(pkmnPage.Content))
 
 	for i, pkmn := range pkmnPage.Content {
 		thumbnails[i] = s.pokemonMapper.PokemonToThumbnail(pkmn, lang)
@@ -46,7 +47,7 @@ func (s pokemonService) GetPokemon(requestCtx context.Context, page int32, pageS
 
 func (s pokemonService) GetPokemonForm(requestCtx context.Context, symbol string, form int32, lang string) (ImplResponse, error) {
 	f := int(form)
-	pkmn := s.store.PokemonStore.FindBySymbol(symbol)
+	pkmn := s.store.FindPokemonBySymbol(symbol)
 
 	if pkmn == nil {
 		return ImplResponse{Code: 404, Body: nil}, nil

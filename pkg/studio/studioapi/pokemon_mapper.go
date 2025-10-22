@@ -3,7 +3,7 @@ package studioapi
 import (
 	"log/slog"
 
-	"github.com/ForetEternelle/ForetEternelleDataApi/pkg/studio"
+	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio"
 )
 
 type PokemonMapper struct {

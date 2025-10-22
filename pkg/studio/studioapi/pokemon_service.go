@@ -3,8 +3,8 @@ package studioapi
 import (
 	"context"
 
-	"github.com/ForetEternelle/ForetEternelleDataApi/pkg/studio"
-	"github.com/ForetEternelle/ForetEternelleDataApi/pkg/pagination"
+	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio"
+	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/pagination"
 )
 
 type pokemonService struct {

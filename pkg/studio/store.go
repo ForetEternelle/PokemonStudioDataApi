@@ -7,7 +7,7 @@ import (
 	"slices"
 	"sort"
 
-	"github.com/ForetEternelle/ForetEternelleDataApi/pkg/iter2"
+	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/iter2"
 )
 
 type Store struct {

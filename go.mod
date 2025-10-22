@@ -1,4 +1,4 @@
-module github.com/ForetEternelle/ForetEternelleDataApi
+module github.com/ForetEternelle/PokemonStudioDataApi
 
 go 1.24
 

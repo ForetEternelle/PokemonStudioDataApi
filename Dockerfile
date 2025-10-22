@@ -25,8 +25,8 @@ ENV DATA="/app/data/"
 ENV CORS="*"
 ENV LOG_LEVEL="INFO"
 
-COPY --from=builder /app/build/ForetEternelleDataApi /app/
+COPY --from=builder /app/build/PokemonStudioDataApi /app/
 WORKDIR /app
 
-CMD ["sh", "-c", "/app/ForetEternelleDataApi -log-level=${LOG_LEVEL} -data=${DATA} -cors=${CORS}"]
+CMD ["sh", "-c", "/app/PokemonStudioDataApi -log-level=${LOG_LEVEL} -data=${DATA} -cors=${CORS}"]
 

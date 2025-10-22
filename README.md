@@ -1,6 +1,6 @@
-# ForetEternelleDataApi - Pokémon Studio Data API
+# Pokémon Studio Data API
 
-`ForetEternelleDataApi` is a Go-based API designed for accessing data related to a Pokémon studio project. This tool provides a standalone API server, allowing users to efficiently query and interact with various datasets. With `ForetEternelleDataApi`, you can seamlessly integrate data access into your applications or scripts.
+`PokemonStudioDataApi` is a Go-based API designed for accessing data related to a Pokémon studio project. This tool provides a standalone API server, allowing users to efficiently query and interact with various datasets. With `PokemonStudioDataApi`, you can seamlessly integrate data access into your applications or scripts.
 
 ## Features
 - **Fast and lightweight:** Efficient data querying with minimal setup.
@@ -13,7 +13,7 @@
 
 ### From source
   ```bash
-  go install github.com/ForetEternelle/ForetEternelleDataApi
+  go install github.com/ForetEternelle/PokemonStudioDataApi
   ```
 
 ### Docker
@@ -21,7 +21,7 @@
 
 ## Usage
   ```bash
-  ForetEternelleDataApi [flags]
+  PokemonStudioDataApi [flags]
   ```
 
 | Flag | Description | Default |
@@ -36,7 +36,7 @@
 Start the API server on port 8080 with DEBUG log level:
 
 ```bash
-./build/ForetEternelleDataApi -port=8080 -log-level=DEBUG
+./build/PokemonStudioDataApi -port=8080 -log-level=DEBUG
 ```
 
 ## Development
@@ -89,7 +89,7 @@ To run the server, build the binary and execute it:
 ```bash
 ./scripts/build.sh
 
-./build/ForetEternelleDataApi [flags]
+./build/PokemonStudioDataApi [flags]
 ```
 
 

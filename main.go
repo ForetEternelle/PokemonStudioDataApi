@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ForetEternelle/ForetEternelleDataApi/pkg/studio"
-	"github.com/ForetEternelle/ForetEternelleDataApi/pkg/studio/studioapi"
+	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio"
+	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio/studioapi"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )

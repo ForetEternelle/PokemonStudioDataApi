@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"path"
 
-	"github.com/ForetEternelle/ForetEternelleDataApi/pkg/file"
+	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/file"
 )
 
 const (

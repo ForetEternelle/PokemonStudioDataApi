@@ -1,4 +1,4 @@
-package psapi
+package studioapi
 
 import (
 	"github.com/ForetEternelle/ForetEternelleDataApi/pkg/studio"

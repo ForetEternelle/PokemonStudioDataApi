@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ForetEternelle/ForetEternelleDataApi/pkg/psapi"
 	"github.com/ForetEternelle/ForetEternelleDataApi/pkg/studio"
+	"github.com/ForetEternelle/ForetEternelleDataApi/pkg/studio/studioapi"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
@@ -72,19 +72,20 @@ func ParseLogLevel(levelStr string) slog.Level {
 
 func main() {
 	config := ParseApiConfig()
-	store := studio.NewStore()
+	store ,err := studio.Load(config.DataFolder)
 
-	if err := studio.Import(config.DataFolder, store); err != nil {
+	if err != nil {
 		panic("Failed to importe data folder")
 	}
-	psapiRouter := psapi.MakeDefaultRouter(store)
+
+	studioApiRouter := studioapi.MakeDefaultRouter(store)
 
 	r := chi.NewRouter()
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Throttle(100))
 	r.Use(middleware.Timeout(5 * time.Second))
 	r.Use(middleware.SetHeader("Access-Control-Allow-Origin", config.Cors))
-	r.Mount("/", psapiRouter)
+	r.Mount("/", studioApiRouter)
 
 	addr := fmt.Sprintf(":%d", config.Port)
 	slog.Info("Server listening", "addr", addr)

@@ -5,7 +5,7 @@ on:
       - 'develop'
 
 jobs:
-  release:
+  update-dev:
     runs-on: ubuntu-latest
     
     steps:

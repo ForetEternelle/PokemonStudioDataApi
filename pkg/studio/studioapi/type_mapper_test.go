@@ -1,10 +1,10 @@
-package psapi_test
+package studioapi_test
 
 import (
 	"testing"
 
-	"github.com/ForetEternelle/ForetEternelleDataApi/pkg/psapi"
 	"github.com/ForetEternelle/ForetEternelleDataApi/pkg/studio"
+	"github.com/ForetEternelle/ForetEternelleDataApi/pkg/studio/studioapi"
 )
 
 func TestToTypeDetail(t *testing.T) {
@@ -21,7 +21,7 @@ func TestToTypeDetail(t *testing.T) {
 		}},
 	}
 
-	typeMapper := psapi.NewTypeMapper()
+	typeMapper := studioapi.NewTypeMapper()
 	typeDetail := typeMapper.ToTypeDetail(pokemonType, lang)
 
 	if typeDetail.Name != pokemonType.Name[lang] {
@@ -59,7 +59,7 @@ func TestToTypePartial(t *testing.T) {
 		},
 	}
 
-	typeMapper := psapi.NewTypeMapper()
+	typeMapper := studioapi.NewTypeMapper()
 	typePartial := typeMapper.ToTypePartial(pokemonType, lang)
 
 	if typePartial.Name != pokemonType.Name[lang] {

@@ -1,4 +1,4 @@
-package psapi
+package studioapi
 
 import (
 	"log/slog"

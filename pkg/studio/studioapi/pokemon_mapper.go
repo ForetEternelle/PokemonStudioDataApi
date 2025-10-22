@@ -1,4 +1,4 @@
-package psapi
+package studioapi
 
 import (
 	"log/slog"
@@ -24,9 +24,9 @@ func NewPokemonMapper(typeMapper *TypeMapper, store *studio.Store) *PokemonMappe
 // PokemonToThumbnail map a pokemon to a thumbnail transfer object
 // p the pokemon to map
 // lang the language expected
-func (m PokemonMapper) PokemonToThumbnail(p studio.Pokemon, lang string) PokemonThumbnail {
+func (m PokemonMapper) PokemonToThumbnail(p studio.Pokemon, lang string) *PokemonThumbnail {
 	slog.Debug("Mapping pokemon to thumbnail")
-	return PokemonThumbnail{
+	return &PokemonThumbnail{
 		Symbol: p.DbSymbol,
 		Number: p.Id,
 		Image:  p.Forms[0].Resources.Front,
@@ -37,9 +37,9 @@ func (m PokemonMapper) PokemonToThumbnail(p studio.Pokemon, lang string) Pokemon
 // PokemonToDetail map a pokemon to a details transfer object
 // p the pokemon to map
 // lang the language expected
-func (m PokemonMapper) PokemonToDetail(p studio.Pokemon, lang string) PokemonDetails {
+func (m PokemonMapper) PokemonToDetail(p studio.Pokemon, lang string) *PokemonDetails {
 	slog.Debug("Mapping pokemon to details")
-	return PokemonDetails{
+	return &PokemonDetails{
 		Symbol:   p.DbSymbol,
 		Number:   p.Id,
 		MainForm: m.FormToPokemonFormDetails(p.Forms[0], lang),
@@ -56,16 +56,15 @@ func (m PokemonMapper) FormToPokemonFormDetails(f studio.PokemonForm, lang strin
 		breedGroups = append(breedGroups, studio.BreedMap[breedGroup])
 	}
 
-	var partialType2Ptr *TypePartial
+	var partialType2 TypePartial
 
-	type1 := m.store.TypeStore.FindBySymbol(f.Type1)
+	type1 := m.store.FindTypeBySymbol(f.Type1)
 	partialType1 := m.typeMapper.ToTypePartial(*type1, lang)
 
 	if f.Type2 != nil {
-		type2 := m.store.TypeStore.FindBySymbol(*f.Type2)
+		type2 := m.store.FindTypeBySymbol(*f.Type2)
 		if type2 != nil {
-			partialType2 := m.typeMapper.ToTypePartial(*type2, lang)
-			partialType2Ptr = &partialType2
+			partialType2 = m.typeMapper.ToTypePartial(*type2, lang)
 		}
 	}
 
@@ -78,7 +77,7 @@ func (m PokemonMapper) FormToPokemonFormDetails(f studio.PokemonForm, lang strin
 		Weight: f.Weight,
 
 		Type1: &partialType1,
-		Type2: partialType2Ptr,
+		Type2: &partialType2,
 
 		BaseHp:  f.BaseHp,
 		BaseAtk: f.BaseAtk,

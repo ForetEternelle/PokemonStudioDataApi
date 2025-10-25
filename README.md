@@ -40,11 +40,11 @@ Start the API server on port 8080 with DEBUG log level:
 ```
 
 ## Development
-This project uses [Mise](https://mise.run/) to ensure a consistent development environment by managing tool versions automatically. We strongly recommend using it for local development.
+This project uses [Mise](https://mise.jdx.dev/) to ensure a consistent development environment by managing tool versions automatically. We strongly recommend using it for local development.
 
 ### Recommended Setup (with mise)
 
-1.  **Install `mise`**: Follow the instructions on the [official `mise` website](https://mise.run/).
+1.  **Install `mise`**: Follow the instructions on the [official `mise` website](https://mise.jdx.dev/).
 
 2.  **Activate the environment**: Simply `cd` into the project directory. `mise` will automatically install the correct versions of Go, Java, and other tools defined in the `.mise.toml` file the first time you run a task.
 

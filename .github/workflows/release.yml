@@ -20,5 +20,5 @@ jobs:
 
       - name: 'Build Inventory Image'
         run: |
-          docker build . --tag ghcr.io/foreteternelle/foreteternelledataapi:latest
-          docker push ghcr.io/foreteternelle/foreteternelledataapi:latest
+          docker build . --tag ghcr.io/foreteternelle/pokemonstudiodataapi:latest
+          docker push ghcr.io/foreteternelle/pokemonstudiodataapi:latest

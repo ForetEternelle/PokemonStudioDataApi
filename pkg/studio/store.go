@@ -15,6 +15,7 @@ type Store struct {
 	pokemonList          []Pokemon
 	pokemonTypesBySymbol map[string]*PokemonType
 	types                []PokemonType
+	Abilities            []Ability
 }
 
 type Translation map[string]string
@@ -111,4 +112,20 @@ func (s *Store) FindTypeBySymbol(symbol string) *PokemonType {
 // FindAllTypes Find all types in the store
 func (s *Store) FindAllTypes() []PokemonType {
 	return s.types
+}
+
+// FindAbilityBySymbol Find an ability by its symbol
+// symbol The symbol to find
+func (s *Store) FindAbilityBySymbol(symbol string) *Ability {
+	for i := range s.Abilities {
+		if s.Abilities[i].Symbol == symbol {
+			return &s.Abilities[i]
+		}
+	}
+	return nil
+}
+
+// FindAllAbilities Find all abilities in the store
+func (s *Store) FindAllAbilities() []Ability {
+	return s.Abilities
 }

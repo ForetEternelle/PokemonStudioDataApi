@@ -7,16 +7,18 @@ import (
 )
 
 type PokemonMapper struct {
-	typeMapper *TypeMapper
-	store      *studio.Store
+	typeMapper    *TypeMapper
+	abilityMapper *AbilityMapper
+	store         *studio.Store
 }
 
 // NewPokemonMapper Create a new pokemon mapper
 // typeMapper the mapper for pokemon types
 // typeStore the store for pokemon types
-func NewPokemonMapper(typeMapper *TypeMapper, store *studio.Store) *PokemonMapper {
+func NewPokemonMapper(typeMapper *TypeMapper, abilityMapper *AbilityMapper, store *studio.Store) *PokemonMapper {
 	return &PokemonMapper{
 		typeMapper,
+		abilityMapper,
 		store,
 	}
 }
@@ -68,6 +70,14 @@ func (m PokemonMapper) FormToPokemonFormDetails(f studio.PokemonForm, lang strin
 		}
 	}
 
+	var abilityPartials []AbilityPartial
+	for _, abilitySymbol := range f.Abilities {
+		ability := m.store.FindAbilityBySymbol(abilitySymbol)
+		if ability != nil && !contains(abilityPartials, ability.DbSymbol) {
+			abilityPartials = append(abilityPartials, m.abilityMapper.ToAbilityPartial(*ability, lang))
+		}
+	}
+
 	return FormDetails{
 		Form:        &f.Form,
 		Name:        f.Name[lang],
@@ -102,5 +112,15 @@ func (m PokemonMapper) FormToPokemonFormDetails(f studio.PokemonForm, lang strin
 		HatchSteps:     f.HatchSteps,
 		BabyDbSymbol:   f.BabyDbSymbol,
 		BabyForm:       &f.BabyForm,
+		Abilities:      abilityPartials,
 	}
+}
+
+func contains(partials []AbilityPartial, symbol string) bool {
+	for _, p := range partials {
+		if p.Symbol == symbol {
+			return true
+		}
+	}
+	return false
 }

@@ -14,7 +14,7 @@ func MakeDefaultRouter(store *studio.Store) chi.Router {
 	typeService := NewTypeService(store, typeMapper)
 	typeController := NewTypesAPIController(typeService)
 
-	pokemonMapper := NewPokemonMapper(typeMapper, store)
+	pokemonMapper := NewPokemonMapper(typeMapper, abilityMapper, store)
 	pokemonService := NewPokemonService(store, pokemonMapper)
 	pokemonController := NewPokemonAPIController(pokemonService)
 

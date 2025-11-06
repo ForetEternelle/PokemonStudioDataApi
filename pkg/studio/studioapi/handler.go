@@ -6,6 +6,10 @@ import (
 )
 
 func MakeDefaultRouter(store *studio.Store) chi.Router {
+	abilityMapper := NewAbilityMapper()
+	abilityService := NewAbilityService(store, abilityMapper)
+	abilityController := NewAbilitiesAPIController(abilityService)
+
 	typeMapper := NewTypeMapper()
 	typeService := NewTypeService(store, typeMapper)
 	typeController := NewTypesAPIController(typeService)
@@ -14,5 +18,5 @@ func MakeDefaultRouter(store *studio.Store) chi.Router {
 	pokemonService := NewPokemonService(store, pokemonMapper)
 	pokemonController := NewPokemonAPIController(pokemonService)
 
-	return NewRouter(pokemonController, typeController)
+	return NewRouter(pokemonController, typeController, abilityController)
 }

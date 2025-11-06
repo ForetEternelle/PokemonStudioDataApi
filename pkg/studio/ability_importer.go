@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	AbilityFolder                         = "ability/"
+	AbilityFolder                         = "abilities/"
 	AbilityTranslationFileName            = "100004.csv"
 	AbilityDescriptionTranslationFileName = "100005.csv"
 )

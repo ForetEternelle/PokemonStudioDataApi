@@ -1,7 +1,10 @@
 package studio
 
 type Ability struct {
-	Symbol string
-	ID     int
-	TextID int
+	DbSymbol string
+	Id       int
+	TextID   int
+
+	Name        Translation
+	Description Translation
 }

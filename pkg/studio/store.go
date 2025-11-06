@@ -15,7 +15,8 @@ type Store struct {
 	pokemonList          []Pokemon
 	pokemonTypesBySymbol map[string]*PokemonType
 	types                []PokemonType
-	Abilities            []Ability
+	abilities            []Ability
+	abilitiesBySymbol    map[string]*Ability
 }
 
 type Translation map[string]string
@@ -27,9 +28,10 @@ const (
 	UndefType = "__undef__"
 )
 
-func NewStore(pokemonList []Pokemon, types []PokemonType) (*Store, error) {
+func NewStore(pokemonList []Pokemon, types []PokemonType, abilities []Ability) (*Store, error) {
 	pokemonBySymbol := make(map[string]*Pokemon)
 	pokemonTypesBySymbol := make(map[string]*PokemonType)
+	abilitiesBySymbol := make(map[string]*Ability)
 
 	sort.Slice(pokemonList, func(i, j int) bool {
 		return pokemonList[i].Id < pokemonList[j].Id
@@ -47,11 +49,19 @@ func NewStore(pokemonList []Pokemon, types []PokemonType) (*Store, error) {
 		pokemonTypesBySymbol[t.DbSymbol] = &t
 	}
 
+	sort.Slice(abilities, func(i, j int) bool { return abilities[i].Id < abilities[j].Id })
+
+	for _, t := range abilities {
+		abilitiesBySymbol[t.DbSymbol] = &t
+	}
+
 	return &Store{
 		pokemonBySymbol:      pokemonBySymbol,
 		pokemonList:          pokemonList,
 		pokemonTypesBySymbol: pokemonTypesBySymbol,
 		types:                types,
+		abilities:            abilities,
+		abilitiesBySymbol:    abilitiesBySymbol,
 	}, nil
 }
 
@@ -74,7 +84,13 @@ func Load(folder string) (*Store, error) {
 		return nil, err
 	}
 
-	return NewStore(pokemonList, types)
+	abilities, err := ImportAbility(studioFolder, translationFolder)
+	if err != nil {
+		slog.Error("Failed to create store")
+		return nil, err
+	}
+
+	return NewStore(pokemonList, types, abilities)
 }
 
 // FindAllPokemon Find a page of pokemon corresponding to the page request
@@ -117,15 +133,15 @@ func (s *Store) FindAllTypes() []PokemonType {
 // FindAbilityBySymbol Find an ability by its symbol
 // symbol The symbol to find
 func (s *Store) FindAbilityBySymbol(symbol string) *Ability {
-	for i := range s.Abilities {
-		if s.Abilities[i].Symbol == symbol {
-			return &s.Abilities[i]
-		}
+	ability, ok := s.abilitiesBySymbol[symbol]
+	if ok {
+		return ability
+	} else {
+		return nil
 	}
-	return nil
 }
 
 // FindAllAbilities Find all abilities in the store
 func (s *Store) FindAllAbilities() []Ability {
-	return s.Abilities
+	return s.abilities
 }

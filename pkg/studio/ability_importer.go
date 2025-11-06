@@ -2,45 +2,69 @@ package studio
 
 import (
 	"encoding/json"
-	"io/fs"
-	"os"
-	"path/filepath"
+	"log/slog"
+	"path"
+
+	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/file"
 )
 
-type rawAbility struct {
-	Klass    string `json:"klass"`
-	DbSymbol string `json:"dbSymbol"`
-	ID       int    `json:"id"`
-	TextID   int    `json:"textId"`
+const (
+	AbilityFolder                         = "ability/"
+	AbilityTranslationFileName            = "100004.csv"
+	AbilityDescriptionTranslationFileName = "100005.csv"
+)
+
+func ImportAbility(studioFolder, translationFolder string) ([]Ability, error) {
+	slog.Info("Importing ability name translation")
+	abilityNameFilePath := path.Join(translationFolder, AbilityTranslationFileName)
+	abilityNameTranslations, err := ImportTranslations(abilityNameFilePath)
+	if err != nil {
+		return nil, err
+	}
+
+	slog.Info("Importing ability description translation")
+	abilityDescriptionFilePath := path.Join(translationFolder, AbilityDescriptionTranslationFileName)
+	abilityDescriptionTranslations, err := ImportTranslations(abilityDescriptionFilePath)
+	if err != nil {
+		return nil, err
+	}
+
+	abilityFolderPath := path.Join(studioFolder, AbilityFolder)
+	slog.Info("Importing ability folder", "path", abilityFolderPath)
+	abilityFileIterator, err := file.ImportFolder(abilityFolderPath)
+	if err != nil {
+		return nil, err
+	}
+
+	abilities := make([]Ability, 0)
+	for abilityFile := range abilityFileIterator {
+		ability, err := UnmarshalAbility(abilityFile.Content)
+		if err != nil {
+			slog.Warn("Failed to unmarshal ability content", "file", abilityFile.Path)
+			continue
+		}
+		TranslateAbility(ability, abilityNameTranslations, abilityDescriptionTranslations)
+		abilities = append(abilities, *ability)
+	}
+	return abilities, nil
 }
 
-func LoadAbilitiesFromDir(dir string, store *Store) error {
-	return filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
-		if err != nil || d.IsDir() {
-			return err
-		}
-		if filepath.Ext(path) != ".json" {
-			return nil
-		}
-		f, err := os.Open(path)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-		var r rawAbility
-		if err := json.NewDecoder(f).Decode(&r); err != nil {
-			return err
-		}
-		// only accept abilities
-		if r.Klass != "Ability" {
-			return nil
-		}
-		a := Ability{
-			Symbol: r.DbSymbol,
-			ID:     r.ID,
-			TextID: r.TextID,
-		}
-		store.Abilities = append(store.Abilities, a)
-		return nil
-	})
+// UnmarshalAbility unmarshal a json encoded ability to an object
+// abilityContent the encoded ability
+func UnmarshalAbility(abilityContent []byte) (*Ability, error) {
+	ability := &Ability{}
+	if err := json.Unmarshal(abilityContent, ability); err != nil {
+		return nil, err
+	}
+
+	return ability, nil
+}
+
+// TranslateAbility add a translation to an ability name and description
+// ability the ability to add translation to
+// abilityNameTranslations the datastructure containing all ability names translations
+// abilityDescriptionTranslations the datastructure containing all ability descriptions translations
+func TranslateAbility(ability *Ability, abilityNameTranslations, abilityDescriptionTranslations []Translation) {
+	ability.Name = abilityNameTranslations[ability.TextID]
+	ability.Description = abilityDescriptionTranslations[ability.TextID]
 }

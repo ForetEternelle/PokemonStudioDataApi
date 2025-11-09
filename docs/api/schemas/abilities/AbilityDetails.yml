@@ -1,0 +1,15 @@
+type: object
+description: An object containing detailed data of a pokemon ability
+properties:
+  symbol:
+    type: string
+    description: The symbol of the pokemon ability
+    example: "overgrow"
+  name:
+    type: string
+    description: The translated name of the pokemon ability
+    example: "Overgrow"
+  description:
+    type: string
+    description: The translated description of the pokemon ability
+    example: "Powers up Grass-type moves when the Pokémon's HP is low."

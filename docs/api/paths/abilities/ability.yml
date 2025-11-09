@@ -1,0 +1,20 @@
+get:
+  tags:
+    - Abilities
+  summary: Get all abilities
+  description: This endpoint returns a list of all abilities
+  operationId: getAbilities
+  parameters:
+    - $ref: "../../parameters/lang.yml"
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            title: "Abilities"
+            type: array
+            items:
+              $ref: "../../schemas/abilities/AbilityPartial.yml"
+    "400":
+      $ref: "../../responses/InvalidParameterError.yml"

@@ -92,4 +92,15 @@ To run the server, build the binary and execute it:
 ./build/PokemonStudioDataApi [flags]
 ```
 
+### Workflow
+
+The general development workflow is as follows:
+
+1.  **Write/Update OpenAPI Specification:** Define or modify the API endpoints, models, and parameters in the `docs/api/` directory using OpenAPI (YAML) format.
+2.  **Generate Go Files:** After updating the OpenAPI spec, run the generation script to update the Go server stubs and models. This ensures your Go code reflects the latest API definition.
+    ```bash
+    mise run generate
+    # or manually
+    ./scripts/generate.sh
+    ```
 

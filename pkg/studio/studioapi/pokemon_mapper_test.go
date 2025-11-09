@@ -25,8 +25,9 @@ func TestPokemonToThumbnail(t *testing.T) {
 	}
 
 	typeMapper := studioapi.NewTypeMapper()
-	store , _:= studio.NewStore([]studio.Pokemon{}, []studio.PokemonType{})
-	pokemonMapper := studioapi.NewPokemonMapper(typeMapper, store)
+	abilityMapper := studioapi.NewAbilityMapper()
+	store, _ := studio.NewStore([]studio.Pokemon{}, []studio.PokemonType{}, []studio.Ability{})
+	pokemonMapper := studioapi.NewPokemonMapper(typeMapper, abilityMapper, store)
 
 	thumbnail := pokemonMapper.PokemonToThumbnail(pokemon, lang)
 

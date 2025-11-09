@@ -37,7 +37,8 @@ func TestFindTypeBySymbol(t *testing.T) {
 			DbSymbol: "test",
 		},
 	}
-	store, _ := NewStore([]Pokemon{}, types)
+	abilities := []Ability{}
+	store, _ := NewStore([]Pokemon{}, types, abilities)
 
 	find := store.FindTypeBySymbol(symbol)
 	if find == nil {
@@ -57,7 +58,8 @@ func TestFindAllTypes(t *testing.T) {
 			DbSymbol: "3",
 		},
 	}
-	store, _ := NewStore([]Pokemon{}, types)
+	abilities := []Ability{}
+	store, _ := NewStore([]Pokemon{}, types, abilities)
 	all := store.FindAllTypes()
 	allLen := len(all)
 	if allLen != 3 {
@@ -76,12 +78,12 @@ func TestFindAllPokemon(t *testing.T) {
 		DbSymbol: "4",
 	}}
 
-	store, _ := NewStore(pokemonList, []PokemonType{})
+	store, _ := NewStore(pokemonList, []PokemonType{}, []Ability{})
 
 	idLessThan3 := func(pkmn Pokemon) bool {
 		return pkmn.Id < 3
 	}
-	result := store.FindAllPokemon( idLessThan3)
+	result := store.FindAllPokemon(idLessThan3)
 
 	expectLen := 2
 	resultLen := len(slices.Collect(result))
@@ -103,7 +105,7 @@ func TestFindPokemonBySymbol(t *testing.T) {
 			DbSymbol: "4",
 		},
 	}
-	store, _ := NewStore(pokemonList, []PokemonType{})
+	store, _ := NewStore(pokemonList, []PokemonType{}, []Ability{})
 	notFound := store.FindPokemonBySymbol("3")
 	if notFound != nil {
 		t.Error("Expect result to be null")

@@ -65,6 +65,16 @@ func UnmarshalAbility(abilityContent []byte) (*Ability, error) {
 // abilityNameTranslations the datastructure containing all ability names translations
 // abilityDescriptionTranslations the datastructure containing all ability descriptions translations
 func TranslateAbility(ability *Ability, abilityNameTranslations, abilityDescriptionTranslations []Translation) {
-	ability.Name = abilityNameTranslations[ability.TextID]
-	ability.Description = abilityDescriptionTranslations[ability.TextID]
+	// prevent out of range access like other Translate* functions
+	if ability.TextID < len(abilityNameTranslations) {
+		ability.Name = abilityNameTranslations[ability.TextID]
+	} else {
+		slog.Warn("Could not find translation for ability", "symbol", ability.DbSymbol, "TextID", ability.TextID)
+	}
+
+	if ability.TextID < len(abilityDescriptionTranslations) {
+		ability.Description = abilityDescriptionTranslations[ability.TextID]
+	} else {
+		slog.Warn("Could not find description translation for ability", "symbol", ability.DbSymbol, "TextID", ability.TextID)
+	}
 }

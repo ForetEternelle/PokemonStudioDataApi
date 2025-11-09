@@ -72,6 +72,7 @@ func ParseLogLevel(levelStr string) slog.Level {
 
 func main() {
 	config := ParseApiConfig()
+	slog.SetLogLoggerLevel(config.LogLevel)
 	store ,err := studio.Load(config.DataFolder)
 
 	if err != nil {

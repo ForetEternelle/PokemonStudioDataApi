@@ -158,6 +158,11 @@ properties:
     description: The list of items held
     items:
       type: string
+  abilities:
+    type: array
+    description: The list of abilities
+    items:
+      $ref: "../abilities/AbilityPartial.yml"
   image:
     description: The image symbol of the form
     type: string

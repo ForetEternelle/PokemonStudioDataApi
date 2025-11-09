@@ -1,0 +1,23 @@
+get:
+  tags:
+    - Abilities
+  summary: Get an ability details
+  description: This endpoint returns an ability details based on the symbol. The symbol is the unique identifier of the ability
+  operationId: getAbilityDetails
+  parameters:
+    - $ref: "../../parameters/lang.yml"
+    - name: symbol
+      in: path
+      description: The symbol of the ability
+      required: true
+      schema:
+        type: string
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/abilities/AbilityDetails.yml"
+    "400":
+      $ref: "../../responses/InvalidParameterError.yml"

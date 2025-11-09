@@ -117,6 +117,11 @@ func AssertFormDetailsRequired(obj FormDetails) error {
 			return err
 		}
 	}
+	for _, el := range obj.Abilities {
+		if err := AssertAbilityPartialRequired(el); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -129,6 +134,11 @@ func AssertFormDetailsConstraints(obj FormDetails) error {
 	}
 	if obj.Type2 != nil {
 		if err := AssertTypePartialConstraints(*obj.Type2); err != nil {
+			return err
+		}
+	}
+	for _, el := range obj.Abilities {
+		if err := AssertAbilityPartialConstraints(el); err != nil {
 			return err
 		}
 	}

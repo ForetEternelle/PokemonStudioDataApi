@@ -8,7 +8,7 @@ properties:
   name:
     type: string
     description: The translated name of the first pokemon's form
-    exemple: "Pikachu"
+    example: "Pikachu"
   description:
     type: string
     description: The translated description of the first pokemon's form

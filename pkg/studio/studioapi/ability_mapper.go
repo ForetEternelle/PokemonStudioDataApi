@@ -1,8 +1,6 @@
 package studioapi
 
-import (
-	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio"
-)
+import "github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio"
 
 type AbilityMapper struct {
 	store *studio.Store

@@ -104,3 +104,22 @@ The general development workflow is as follows:
     ./scripts/generate.sh
     ```
 
+
+--------
+
+## Installation
+
+Retrieve the Texts via the [foret-eternelle-texts](https://gitlab.com/Aerun/foret-eternelle-texts) repository, and the pokemon (Data/Studio/pokemon) and the types (Data/Studio/types) folders via the [foret-eternelle](https://gitlab.com/Aerun/foret-eternelle) repository.
+Place them in the "data" folder located at the root of the project.
+
+## Running
+
+Launch the main.go file located at the root of the project.
+
+### Access a pokemon
+
+You can access a pokemon, once the server is running, via the following URL: `http://localhost:8000/api/pokemon/{symbol}` where `{symbol}` is the pokemon symbol. For instance: `http://localhost:8000/api/pokemon/pikachu`
+
+The url `/api/pokemon` will display the paginated list of all pokemons. Use query param `page` and `size` to navigate through the list. For instance: `http://localhost:8000/api/pokemon?page=2&size=5`
+
+The url `/api/pokemon/{symbol}/{formId}` will display a specific form of a pokemon. For instance: `http://localhost:8000/api/pokemon/charizard/2`

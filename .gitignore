@@ -1,3 +1,5 @@
 build/
 tmp/
 .openapi-generator/
+data/
+__debug_*

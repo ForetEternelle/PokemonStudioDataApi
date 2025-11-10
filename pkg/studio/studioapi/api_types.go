@@ -14,12 +14,13 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio"
 	"github.com/go-chi/chi/v5"
 )
 
 // TypesAPIController binds http requests to an api service and writes the service results to the http response
 type TypesAPIController struct {
-	service TypesAPIServicer
+	service      TypesAPIServicer
 	errorHandler ErrorHandler
 }
 
@@ -71,7 +72,8 @@ func (c *TypesAPIController) GetTypeDetails(w http.ResponseWriter, r *http.Reque
 		return
 	}
 	acceptLanguageParam := r.Header.Get("Accept-Language")
-	result, err := c.service.GetTypeDetails(r.Context(), symbolParam, acceptLanguageParam)
+	acceptLang := studio.ParseAcceptLanguageParam(acceptLanguageParam)
+	result, err := c.service.GetTypeDetails(r.Context(), symbolParam, acceptLang)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)
@@ -84,7 +86,8 @@ func (c *TypesAPIController) GetTypeDetails(w http.ResponseWriter, r *http.Reque
 // GetTypes - Get all types
 func (c *TypesAPIController) GetTypes(w http.ResponseWriter, r *http.Request) {
 	acceptLanguageParam := r.Header.Get("Accept-Language")
-	result, err := c.service.GetTypes(r.Context(), acceptLanguageParam)
+	acceptLang := studio.ParseAcceptLanguageParam(acceptLanguageParam)
+	result, err := c.service.GetTypes(r.Context(), acceptLang)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

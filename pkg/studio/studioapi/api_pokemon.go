@@ -14,12 +14,13 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio"
 	"github.com/go-chi/chi/v5"
 )
 
 // PokemonAPIController binds http requests to an api service and writes the service results to the http response
 type PokemonAPIController struct {
-	service PokemonAPIServicer
+	service      PokemonAPIServicer
 	errorHandler ErrorHandler
 }
 
@@ -111,7 +112,8 @@ func (c *PokemonAPIController) GetPokemon(w http.ResponseWriter, r *http.Request
 		sizeParam = param
 	}
 	acceptLanguageParam := r.Header.Get("Accept-Language")
-	result, err := c.service.GetPokemon(r.Context(), pageParam, sizeParam, acceptLanguageParam)
+	acceptLang := studio.ParseAcceptLanguageParam(acceptLanguageParam)
+	result, err := c.service.GetPokemon(r.Context(), pageParam, sizeParam, acceptLang)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)
@@ -129,7 +131,8 @@ func (c *PokemonAPIController) GetPokemonDetails(w http.ResponseWriter, r *http.
 		return
 	}
 	acceptLanguageParam := r.Header.Get("Accept-Language")
-	result, err := c.service.GetPokemonDetails(r.Context(), symbolParam, acceptLanguageParam)
+	acceptLang := studio.ParseAcceptLanguageParam(acceptLanguageParam)
+	result, err := c.service.GetPokemonDetails(r.Context(), symbolParam, acceptLang)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)
@@ -155,7 +158,8 @@ func (c *PokemonAPIController) GetPokemonForm(w http.ResponseWriter, r *http.Req
 		return
 	}
 	acceptLanguageParam := r.Header.Get("Accept-Language")
-	result, err := c.service.GetPokemonForm(r.Context(), symbolParam, formParam, acceptLanguageParam)
+	acceptLang := studio.ParseAcceptLanguageParam(acceptLanguageParam)
+	result, err := c.service.GetPokemonForm(r.Context(), symbolParam, formParam, acceptLang)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

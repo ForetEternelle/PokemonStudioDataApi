@@ -17,7 +17,7 @@ const (
 	AppConfigDefaultName = "psapi"
 
 	KeyAppLogLevel     = "log-level"
-	DefaultAppLogLevel = "INFO"
+	DefaultAppLogLevel = "DEBUG"
 
 	KeyApiCors     = "cors"
 	DefaultApiCors = "*"
@@ -73,10 +73,10 @@ func ParseLogLevel(levelStr string) slog.Level {
 func main() {
 	config := ParseApiConfig()
 	slog.SetLogLoggerLevel(config.LogLevel)
-	store ,err := studio.Load(config.DataFolder)
+	store, err := studio.Load(config.DataFolder)
 
 	if err != nil {
-		panic("Failed to importe data folder")
+		panic("Failed to import data folder. Error: " + err.Error())
 	}
 
 	studioApiRouter := studioapi.MakeDefaultRouter(store)

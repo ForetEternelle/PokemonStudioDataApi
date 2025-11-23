@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -66,7 +67,8 @@ func (c *AbilitiesAPIController) Routes() Routes {
 // GetAbilities - Get all abilities
 func (c *AbilitiesAPIController) GetAbilities(w http.ResponseWriter, r *http.Request) {
 	acceptLanguageParam := r.Header.Get("Accept-Language")
-	result, err := c.service.GetAbilities(r.Context(), acceptLanguageParam)
+	acceptLang := studio.ParseAcceptLanguageParam(acceptLanguageParam)
+	result, err := c.service.GetAbilities(r.Context(), acceptLang)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)
@@ -84,7 +86,8 @@ func (c *AbilitiesAPIController) GetAbilityDetails(w http.ResponseWriter, r *htt
 		return
 	}
 	acceptLanguageParam := r.Header.Get("Accept-Language")
-	result, err := c.service.GetAbilityDetails(r.Context(), symbolParam, acceptLanguageParam)
+	acceptLang := studio.ParseAcceptLanguageParam(acceptLanguageParam)
+	result, err := c.service.GetAbilityDetails(r.Context(), symbolParam, acceptLang)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

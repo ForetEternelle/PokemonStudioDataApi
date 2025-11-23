@@ -5,12 +5,14 @@ import (
 	"io"
 	"log/slog"
 	"os"
+	"strings"
 )
 
 // ImportTranslations import translations from file
 // path the path of the file to import
 func ImportTranslations(path string) ([]Translation, error) {
-	slog.Info("Import translation file", "path", path)
+	curPath, _ := os.Getwd()
+	slog.Info("Import translation file", "path", path, "currentPath", curPath)
 	file, err := os.OpenFile(path, os.O_RDONLY, 0)
 	if err != nil {
 		return nil, err
@@ -44,4 +46,18 @@ func ImportTranslations(path string) ([]Translation, error) {
 	}
 
 	return results, nil
+}
+
+func ParseAcceptLanguageParam(acceptLanguage string) string {
+	// To extract just the language:
+	lang := strings.Split(acceptLanguage, "-")[0] // Gets "en" from "en-US"
+	lang = strings.Split(lang, ";")[0]            // Removes quality factor
+	lang = strings.TrimSpace(lang)                // Clean whitespace
+
+	// Default to "en" if empty
+	if lang == "" {
+		return "en"
+	}
+
+	return lang
 }

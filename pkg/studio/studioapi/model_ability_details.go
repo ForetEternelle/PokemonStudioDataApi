@@ -10,6 +10,9 @@
 
 package studioapi
 
+
+
+
 // AbilityDetails - An object containing detailed data of a pokemon ability
 type AbilityDetails struct {
 

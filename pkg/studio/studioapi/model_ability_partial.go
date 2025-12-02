@@ -10,6 +10,9 @@
 
 package studioapi
 
+
+
+
 // AbilityPartial - An object containing partial data of a pokemon ability
 type AbilityPartial struct {
 

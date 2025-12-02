@@ -14,13 +14,12 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio"
 	"github.com/go-chi/chi/v5"
 )
 
 // AbilitiesAPIController binds http requests to an api service and writes the service results to the http response
 type AbilitiesAPIController struct {
-	service      AbilitiesAPIServicer
+	service AbilitiesAPIServicer
 	errorHandler ErrorHandler
 }
 
@@ -53,12 +52,12 @@ func (c *AbilitiesAPIController) Routes() Routes {
 	return Routes{
 		"GetAbilities": Route{
 			strings.ToUpper("Get"),
-			"/api/abilities",
+			"/abilities",
 			c.GetAbilities,
 		},
 		"GetAbilityDetails": Route{
 			strings.ToUpper("Get"),
-			"/api/abilities/{symbol}",
+			"/abilities/{symbol}",
 			c.GetAbilityDetails,
 		},
 	}
@@ -67,8 +66,7 @@ func (c *AbilitiesAPIController) Routes() Routes {
 // GetAbilities - Get all abilities
 func (c *AbilitiesAPIController) GetAbilities(w http.ResponseWriter, r *http.Request) {
 	acceptLanguageParam := r.Header.Get("Accept-Language")
-	acceptLang := studio.ParseAcceptLanguageParam(acceptLanguageParam)
-	result, err := c.service.GetAbilities(r.Context(), acceptLang)
+	result, err := c.service.GetAbilities(r.Context(), acceptLanguageParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)
@@ -86,8 +84,7 @@ func (c *AbilitiesAPIController) GetAbilityDetails(w http.ResponseWriter, r *htt
 		return
 	}
 	acceptLanguageParam := r.Header.Get("Accept-Language")
-	acceptLang := studio.ParseAcceptLanguageParam(acceptLanguageParam)
-	result, err := c.service.GetAbilityDetails(r.Context(), symbolParam, acceptLang)
+	result, err := c.service.GetAbilityDetails(r.Context(), symbolParam, acceptLanguageParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

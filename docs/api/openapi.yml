@@ -5,7 +5,7 @@ info:
   title: Pokemon Studio API
   description: API for the Pokemon Studio
 servers:
-  - url: "http://localhost:8000/api"
+  - url: "http://localhost:8000/"
 paths:
   /pokemon:
     $ref: "paths/pokemon/pokemon.yml"

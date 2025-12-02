@@ -86,7 +86,7 @@ func main() {
 	r.Use(middleware.Throttle(100))
 	r.Use(middleware.Timeout(5 * time.Second))
 	r.Use(middleware.SetHeader("Access-Control-Allow-Origin", config.Cors))
-	r.Mount("/", studioApiRouter)
+	r.Mount("/api", studioApiRouter)
 
 	addr := fmt.Sprintf(":%d", config.Port)
 	slog.Info("Server listening", "addr", addr)

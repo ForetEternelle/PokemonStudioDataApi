@@ -14,13 +14,12 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio"
 	"github.com/go-chi/chi/v5"
 )
 
 // PokemonAPIController binds http requests to an api service and writes the service results to the http response
 type PokemonAPIController struct {
-	service      PokemonAPIServicer
+	service PokemonAPIServicer
 	errorHandler ErrorHandler
 }
 
@@ -53,17 +52,17 @@ func (c *PokemonAPIController) Routes() Routes {
 	return Routes{
 		"GetPokemon": Route{
 			strings.ToUpper("Get"),
-			"/api/pokemon",
+			"/pokemon",
 			c.GetPokemon,
 		},
 		"GetPokemonDetails": Route{
 			strings.ToUpper("Get"),
-			"/api/pokemon/{symbol}",
+			"/pokemon/{symbol}",
 			c.GetPokemonDetails,
 		},
 		"GetPokemonForm": Route{
 			strings.ToUpper("Get"),
-			"/api/pokemon/{symbol}/{form}",
+			"/pokemon/{symbol}/{form}",
 			c.GetPokemonForm,
 		},
 	}
@@ -112,8 +111,7 @@ func (c *PokemonAPIController) GetPokemon(w http.ResponseWriter, r *http.Request
 		sizeParam = param
 	}
 	acceptLanguageParam := r.Header.Get("Accept-Language")
-	acceptLang := studio.ParseAcceptLanguageParam(acceptLanguageParam)
-	result, err := c.service.GetPokemon(r.Context(), pageParam, sizeParam, acceptLang)
+	result, err := c.service.GetPokemon(r.Context(), pageParam, sizeParam, acceptLanguageParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)
@@ -131,8 +129,7 @@ func (c *PokemonAPIController) GetPokemonDetails(w http.ResponseWriter, r *http.
 		return
 	}
 	acceptLanguageParam := r.Header.Get("Accept-Language")
-	acceptLang := studio.ParseAcceptLanguageParam(acceptLanguageParam)
-	result, err := c.service.GetPokemonDetails(r.Context(), symbolParam, acceptLang)
+	result, err := c.service.GetPokemonDetails(r.Context(), symbolParam, acceptLanguageParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)
@@ -158,8 +155,7 @@ func (c *PokemonAPIController) GetPokemonForm(w http.ResponseWriter, r *http.Req
 		return
 	}
 	acceptLanguageParam := r.Header.Get("Accept-Language")
-	acceptLang := studio.ParseAcceptLanguageParam(acceptLanguageParam)
-	result, err := c.service.GetPokemonForm(r.Context(), symbolParam, formParam, acceptLang)
+	result, err := c.service.GetPokemonForm(r.Context(), symbolParam, formParam, acceptLanguageParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

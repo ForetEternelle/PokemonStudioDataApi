@@ -3,11 +3,11 @@ package studio
 type ExperienceType int32
 
 const (
-	ExperienceErraticNum     ExperienceType = 0
-	ExperienceFastNum        ExperienceType = 1
-	ExperienceMediumFastNum  ExperienceType = 2
-	ExperienceMediumSlowNum  ExperienceType = 3
-	ExperienceSlowNum        ExperienceType = 4
+	ExperienceFastNum        ExperienceType = 0
+	ExperienceMediumFastNum  ExperienceType = 1
+	ExperienceMediumSlowNum  ExperienceType = 2
+	ExperienceSlowNum        ExperienceType = 3
+	ExperienceErraticNum     ExperienceType = 4
 	ExperienceFluctuatingNum ExperienceType = 5
 )
 

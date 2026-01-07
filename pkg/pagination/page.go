@@ -11,6 +11,19 @@ type Page[T any] struct {
 	Total   int `json:"total"`
 }
 
+func HasNext[T any](page Page[T]) bool {
+	start := page.Page * page.Size
+	return start+len(page.Content) < page.Total
+}
+
+func HasPrevious[T any](page Page[T]) bool {
+	return page.Page > 0
+}
+
+func IsEmpty[T any](page Page[T]) bool {
+	return page.Total == 0
+}
+
 func NewPage[T any](page int, size int, content []T, total int) Page[T] {
 
 	return Page[T]{
@@ -43,3 +56,5 @@ func Collect[T any](it iter.Seq[T], pageRequest PageRequest) Page[T] {
 	}
 	return NewPage(pageRequest.Page, pageRequest.Size, content, total)
 }
+
+

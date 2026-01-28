@@ -5,21 +5,19 @@ import (
 	"log/slog"
 	"path"
 	"slices"
-	"sort"
 
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/iter2"
 )
 
 type Store struct {
+	pokemonList []Pokemon
+	types       []PokemonType
+	abilities   []Ability
+
 	pokemonBySymbol      map[string]*Pokemon
-	pokemonList          []Pokemon
 	pokemonTypesBySymbol map[string]*PokemonType
-	types                []PokemonType
-	abilities            []Ability
 	abilitiesBySymbol    map[string]*Ability
 }
-
-type Translation map[string]string
 
 const (
 	StudioFolder   = "Studio"
@@ -28,69 +26,93 @@ const (
 	UndefType = "__undef__"
 )
 
-func NewStore(pokemonList []Pokemon, types []PokemonType, abilities []Ability) (*Store, error) {
+func NewStore() *Store {
 	pokemonBySymbol := make(map[string]*Pokemon)
 	pokemonTypesBySymbol := make(map[string]*PokemonType)
 	abilitiesBySymbol := make(map[string]*Ability)
 
-	sort.Slice(pokemonList, func(i, j int) bool {
-		return pokemonList[i].Id < pokemonList[j].Id
-	})
-
-	for _, p := range pokemonList {
-		pokemonBySymbol[p.DbSymbol] = &p
-	}
-
-	sort.Slice(types, func(i, j int) bool {
-		return types[i].TextId < types[j].TextId
-	})
-
-	for _, t := range types {
-		pokemonTypesBySymbol[t.DbSymbol] = &t
-	}
-
-	sort.Slice(abilities, func(i, j int) bool { return abilities[i].Id < abilities[j].Id })
-
-	for _, t := range abilities {
-		abilitiesBySymbol[t.DbSymbol] = &t
-	}
-
 	return &Store{
+		pokemonList:          []Pokemon{},
+		types:                []PokemonType{},
+		abilities:            []Ability{},
 		pokemonBySymbol:      pokemonBySymbol,
-		pokemonList:          pokemonList,
 		pokemonTypesBySymbol: pokemonTypesBySymbol,
-		types:                types,
-		abilities:            abilities,
 		abilitiesBySymbol:    abilitiesBySymbol,
-	}, nil
+	}
 }
 
-// Import import a pokemon studio folder into a store
+// Import a pokemon studio folder into a store
 // folder the studio project folder
 // store the store to import data to
 func Load(folder string) (*Store, error) {
+	store := NewStore()
 	translationFolder := path.Join(folder, LanguageFolder)
 	studioFolder := path.Join(folder, StudioFolder)
 
-	pokemonList, err := ImportPokemon(studioFolder, translationFolder)
+	typeMapper := NewTypeMapper(store)
+	abilityMapper := NewAbilityMapper(store)
+	pokemonMapper := NewPokemonMapper(store)
+
+	typeIterator, err := ImportTypes(studioFolder, translationFolder)
 	if err != nil {
-		slog.Error("Failed to create store")
+		slog.Error("Failed to load pokemon types")
 		return nil, err
 	}
-
-	types, err := ImportTypes(studioFolder, translationFolder)
-	if err != nil {
-		slog.Error("Failed to create store")
-		return nil, err
+	for descriptor := range typeIterator {
+		pokemonType := typeMapper.MapPokemonTypeDescriptorToPokemonType(*descriptor)
+		store.AddType(*pokemonType)
 	}
 
-	abilities, err := ImportAbility(studioFolder, translationFolder)
+	abilityIterator, err := ImportAbility(studioFolder, translationFolder)
 	if err != nil {
-		slog.Error("Failed to create store")
+		slog.Error("Failed to load abilities")
 		return nil, err
 	}
+	for descriptor := range abilityIterator {
+		ability := abilityMapper.MapAbilityDescriptorToAbility(*descriptor)
+		store.AddAbility(*ability)
+	}
 
-	return NewStore(pokemonList, types, abilities)
+	pokemonIterator, err := ImportPokemon(studioFolder, translationFolder)
+	if err != nil {
+		slog.Error("Failed to load pokemon")
+		return nil, err
+	}
+	for descriptor := range pokemonIterator {
+		pokemon := pokemonMapper.MapPokemonDescriptorToPokemon(*descriptor)
+		store.AddPokemon(*pokemon)
+	}
+
+	return store, nil
+}
+
+func (s *Store) AddPokemon(pokemon Pokemon) *Pokemon {
+	insertIndex := len(s.pokemonList)
+	for i, existingPokemon := range s.pokemonList {
+		if pokemon.Id < existingPokemon.Id {
+			insertIndex = i
+			break
+		}
+	}
+
+	s.pokemonList = slices.Insert(s.pokemonList, insertIndex, pokemon)
+	s.pokemonBySymbol[pokemon.DbSymbol] = &pokemon
+	slog.Info("Adding pokemon", "symbol", pokemon.DbSymbol)
+	return &pokemon
+}
+
+func (s *Store) AddType(pokemonType PokemonType) *PokemonType {
+	s.types = append(s.types, pokemonType)
+	s.pokemonTypesBySymbol[pokemonType.DbSymbol] = &pokemonType
+	slog.Info("Adding pokemon type", "symbol", pokemonType.DbSymbol)
+	return &pokemonType
+}
+
+func (s *Store) AddAbility(ability Ability) *Ability {
+	s.abilities = append(s.abilities, ability)
+	s.abilitiesBySymbol[ability.DbSymbol] = &ability
+	slog.Info("Adding ability", "symbol", ability.DbSymbol)
+	return &ability
 }
 
 // FindAllPokemon Find a page of pokemon corresponding to the page request

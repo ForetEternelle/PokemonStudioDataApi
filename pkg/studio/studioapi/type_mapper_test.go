@@ -12,12 +12,10 @@ func TestToTypeDetail(t *testing.T) {
 	pokemonType := studio.PokemonType{
 		DbSymbol: "testDbSymbol",
 		Color:    "testColor",
-		Name: studio.Translation{
-			lang: "testName",
-		},
+		Name:     studio.Translation{lang: "testName"},
 		DamageTo: []studio.TypeDamage{{
 			DefensiveType: "testDefType",
-			Factor:        .2,
+			Factor:        0.2,
 		}},
 	}
 
@@ -54,9 +52,7 @@ func TestToTypePartial(t *testing.T) {
 	pokemonType := studio.PokemonType{
 		DbSymbol: "testDbSymbol",
 		Color:    "testColor",
-		Name: studio.Translation{
-			lang: "testName",
-		},
+		Name:     studio.Translation{lang: "testName"},
 	}
 
 	typeMapper := studioapi.NewTypeMapper()
@@ -73,5 +69,4 @@ func TestToTypePartial(t *testing.T) {
 	if typePartial.Symbol != pokemonType.DbSymbol {
 		t.Error("Mapper should map db symbol, expected", pokemonType.DbSymbol, ", has", typePartial.Symbol)
 	}
-
 }

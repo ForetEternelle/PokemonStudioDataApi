@@ -17,3 +17,6 @@ properties:
     type: string
     description: The image symbol of the pokemon
     example: "025"
+  customProperties:
+    $ref: "../CustomProperties.yml"
+    description: Custom properties setted by the developer

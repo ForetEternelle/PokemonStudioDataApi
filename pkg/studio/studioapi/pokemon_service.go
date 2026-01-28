@@ -4,11 +4,10 @@ import (
 	"context"
 
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio"
-	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/pagination"
 )
 
 type pokemonService struct {
-	store         *studio.Store
+	store *studio.Store
 
 	pokemonMapper *PokemonMapper
 }
@@ -29,20 +28,15 @@ func (s pokemonService) GetPokemonDetails(requestCtx context.Context, symbol str
 	return ImplResponse{Code: 200, Body: s.pokemonMapper.PokemonToDetail(*pkmn, lang)}, nil
 }
 
-func (s pokemonService) GetPokemon(requestCtx context.Context, page int32, pageSize int32, lang string) (ImplResponse, error) {
-	p := int(page)
-	size := int(pageSize)
-	pr := pagination.NewPageRequest(p, size)
-
+func (s pokemonService) GetPokemon(requestCtx context.Context, lang string) (ImplResponse, error) {
 	pkmnIter := s.store.FindAllPokemon()
-	pkmnPage  := pagination.Collect(pkmnIter, pr)
-	thumbnails := make([]*PokemonThumbnail, len(pkmnPage.Content))
+	thumbnails := make([]*PokemonThumbnail, 0, 1000)
 
-	for i, pkmn := range pkmnPage.Content {
-		thumbnails[i] = s.pokemonMapper.PokemonToThumbnail(pkmn, lang)
+	for pkmn := range pkmnIter {
+		thumbnails = append(thumbnails, s.pokemonMapper.PokemonToThumbnail(pkmn, lang))
 	}
 
-	return ImplResponse{Code: 200, Body: pagination.NewPage(pr.Page, pr.Size, thumbnails, pkmnPage.Total)}, nil
+	return ImplResponse{Code: 200, Body: thumbnails}, nil
 }
 
 func (s pokemonService) GetPokemonForm(requestCtx context.Context, symbol string, form int32, lang string) (ImplResponse, error) {

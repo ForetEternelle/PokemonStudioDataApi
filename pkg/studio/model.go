@@ -1,5 +1,7 @@
 package studio
 
+import "github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio/move"
+
 const (
 	ExperienceErratic     = "erratic"
 	ExperienceFast        = "fast"
@@ -26,7 +28,6 @@ const (
 	BreedDragon       = "dragon"
 	BreedUndiscovered = "undiscovered"
 )
-
 
 type ExperienceType string
 type Translation map[string]string
@@ -122,4 +123,30 @@ type PokemonType struct {
 type TypeDamage struct {
 	DefensiveType string
 	Factor        float32
+}
+
+// MoveCategory represents the category of a move
+type MoveCategory string
+
+// Move represents a battle move
+type Move struct {
+	Id           int
+	DbSymbol     string
+	Type         *PokemonType
+	Category     MoveCategory
+	Power        int
+	Accuracy     int
+	PP           int
+	CriticalRate int
+	Priority     int
+	MapUse       int
+
+	Targeting        move.MoveTargeting
+	Execution        move.MoveExecution
+	MechanicalTags   []move.MechanicalTag
+	Interactions     []move.MoveInteraction
+	SecondaryEffects move.MoveSecondaryEffects
+
+	Name        Translation
+	Description Translation
 }

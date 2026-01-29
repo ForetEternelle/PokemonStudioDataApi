@@ -1,0 +1,18 @@
+MoveStatStageChange:
+  type: object
+  properties:
+    battleStage:
+      type: string
+      enum:
+        - ATK_STAGE
+        - DFE_STAGE
+        - ATS_STAGE
+        - DFS_STAGE
+        - SPD_STAGE
+        - EVA_STAGE
+        - ACC_STAGE
+      example: DFS_STAGE
+
+    modificator:
+      type: integer
+      example: -1

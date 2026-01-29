@@ -1,0 +1,68 @@
+type: object
+description: Full definition of a battle move
+properties:
+
+  name:
+    type: string
+    description: The translated name of the move
+    example: "Bug Buzz"
+
+  description:
+    type: string
+    description: The translated description of the move
+    example: "The user vibrates its wings to generate a damaging sound wave."
+
+  symbol:
+    type: string
+    description: The symbol of the move
+    example: "bug_buzz"
+
+  type:
+    $ref: "../types/TypePartial.yml"
+
+  category:
+    type: string
+    description: The category of the move
+    enum: [physical, special, status]
+
+  power:
+    type: integer
+    description: The power of the move
+    example: 90
+
+  accuracy:
+    type: integer
+    description: The accuracy of the move
+    example: 100
+
+  pp:
+    type: integer
+    description: The PP of the move
+    example: 10
+
+  criticalRate:
+    type: integer
+    description: The critical hit rate of the move
+    example: 1
+
+  priority:
+    type: integer
+    description: The priority of the move
+    example: 0
+
+  targeting:
+    $ref: "./MoveTargeting.yml"
+
+  execution:
+    $ref: "./MoveExecution.yml"
+
+  mechanicalTags:
+    type: array
+    items:
+      $ref: "./MoveMechanicalTag.yml"
+
+  interactions:
+    $ref: "./MoveInteractions.yml"
+
+  secondaryEffects:
+    $ref: "./MoveSecondaryEffects.yml"

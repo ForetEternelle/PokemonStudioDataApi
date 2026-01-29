@@ -1,0 +1,36 @@
+type: object
+description: An object containing partial data of a pokemon move
+properties:
+
+  symbol:
+    type: string
+    description: The symbol of the pokemon move
+    example: "thunderbolt"
+
+  name:
+    type: string
+    description: The translated name of the pokemon move
+    example: "Thunderbolt"
+
+  type:
+    $ref: "../types/TypePartial.yml"
+
+  category:
+    type: string
+    description: The category of the pokemon move
+    enum: [physical, special, status]
+
+  pp:
+    type: integer
+    description: The PP of the pokemon move
+    example: 15
+
+  power:
+    type: integer
+    description: The power of the pokemon move
+    example: 90
+
+  accuracy:
+    type: integer
+    description: The accuracy of the pokemon move
+    example: 100

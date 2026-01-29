@@ -1,0 +1,24 @@
+MoveExecution:
+  type: object
+  properties:
+    method:
+      type: string
+      enum:
+        - s_basic
+        - s_stat
+        - s_status
+        - s_multi_hit
+        - s_2hits
+        - s_ohko
+        - s_2turns
+        - s_self_stat
+        - s_self_status
+      example: s_basic
+
+    charge:
+      type: boolean
+      example: false
+
+    recharge:
+      type: boolean
+      example: false

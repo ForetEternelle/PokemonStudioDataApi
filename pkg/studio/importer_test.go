@@ -15,6 +15,9 @@ const (
 	AbilityInvalid = "../../test/test_resources/ability-invalid.json"
 	AbilityValid   = "../../test/test_resources/valid-data/Studio/abilities/adaptability.json"
 
+	MoveInvalid = "../../test/test_resources/move-invalid.json"
+	MoveValid   = "../../test/test_resources/valid-data/Studio/moves/blue_flare.json"
+
 	InvalidPath        = "invalid/path"
 	TranslationInvalid = "../../test/test_resources/100003-invalid.csv"
 	TranslationValid   = "../../test/test_resources/valid-data/Text/Dialogs/100003.csv"
@@ -113,6 +116,30 @@ func TestUnmarshalAbilityDescriptor_Error(t *testing.T) {
 	_, err = UnmarshalAbilityDescriptor(content)
 	if err == nil {
 		t.Error("Unmarshal invalid ability descriptor should return error")
+	}
+}
+
+func TestUnmarshalMoveDescriptor_Ok(t *testing.T) {
+	content, err := os.ReadFile(MoveValid)
+	if err != nil {
+		t.Fatal("Error reading test file", "file", MoveValid)
+	}
+
+	_, err = UnmarshalMoveDescriptor(content)
+	if err != nil {
+		t.Error("Unmarshal valid move descriptor should not return error")
+	}
+}
+
+func TestUnmarshalMoveDescriptor_Error(t *testing.T) {
+	content, err := os.ReadFile(MoveInvalid)
+	if err != nil {
+		t.Fatal("Error reading test file", "file", MoveInvalid)
+	}
+
+	_, err = UnmarshalMoveDescriptor(content)
+	if err == nil {
+		t.Error("Unmarshal invalid move descriptor should return error")
 	}
 }
 

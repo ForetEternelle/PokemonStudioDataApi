@@ -1,0 +1,17 @@
+MoveSecondaryEffects:
+  type: object
+  properties:
+    chance:
+      type: integer
+      description: Global chance to apply secondary effects
+      example: 30
+
+    statusEffects:
+      type: array
+      items:
+        $ref: "./MoveStatusEffect.yml"
+
+    statStageChanges:
+      type: array
+      items:
+        $ref: "./MoveStatStageChange.yml"

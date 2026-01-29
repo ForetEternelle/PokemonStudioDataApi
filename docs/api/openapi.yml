@@ -19,6 +19,11 @@ paths:
   /types/{symbol}:
     $ref: "paths/types/typeDetails.yml"
 
+  /moves/{symbol}:
+    $ref: "paths/moves/move.yml"
+  /moves/detail/{symbol}:
+    $ref: "paths/moves/moveDetails.yml"
+
   /abilities:
     $ref: "paths/abilities/ability.yml"
   /abilities/{symbol}:

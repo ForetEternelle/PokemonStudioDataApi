@@ -1,0 +1,20 @@
+MoveInteraction:
+  type: string
+  description: Interaction property of a move
+  enum:
+    - BLOCABLE
+    - MIRROR_MOVE
+    - SNATCHABLE
+    - MAGIC_COAT_AFFECTED
+    - KING_ROCK_UTILITY
+    - AFFECTED_BY_GRAVITY
+    - NON_SKY_BATTLE
+
+MoveInteractions:
+  type: array
+  description: List of interaction properties for a move
+  items:
+    $ref: "#/MoveInteraction"
+  example:
+    - BLOCABLE
+    - MIRROR_MOVE

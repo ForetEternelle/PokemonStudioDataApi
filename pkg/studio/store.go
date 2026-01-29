@@ -13,10 +13,12 @@ type Store struct {
 	pokemonList []Pokemon
 	types       []PokemonType
 	abilities   []Ability
+	moves       []Move
 
 	pokemonBySymbol      map[string]*Pokemon
 	pokemonTypesBySymbol map[string]*PokemonType
 	abilitiesBySymbol    map[string]*Ability
+	movesBySymbol        map[string]*Move
 }
 
 const (
@@ -30,14 +32,17 @@ func NewStore() *Store {
 	pokemonBySymbol := make(map[string]*Pokemon)
 	pokemonTypesBySymbol := make(map[string]*PokemonType)
 	abilitiesBySymbol := make(map[string]*Ability)
+	movesBySymbol := make(map[string]*Move)
 
 	return &Store{
 		pokemonList:          []Pokemon{},
 		types:                []PokemonType{},
 		abilities:            []Ability{},
+		moves:                []Move{},
 		pokemonBySymbol:      pokemonBySymbol,
 		pokemonTypesBySymbol: pokemonTypesBySymbol,
 		abilitiesBySymbol:    abilitiesBySymbol,
+		movesBySymbol:        movesBySymbol,
 	}
 }
 
@@ -52,6 +57,7 @@ func Load(folder string) (*Store, error) {
 	typeMapper := NewTypeMapper(store)
 	abilityMapper := NewAbilityMapper(store)
 	pokemonMapper := NewPokemonMapper(store)
+	moveMapper := NewMoveMapper(store)
 
 	typeIterator, err := ImportTypes(studioFolder, translationFolder)
 	if err != nil {
@@ -71,6 +77,16 @@ func Load(folder string) (*Store, error) {
 	for descriptor := range abilityIterator {
 		ability := abilityMapper.MapAbilityDescriptorToAbility(*descriptor)
 		store.AddAbility(*ability)
+	}
+
+	moveIterator, err := ImportMoves(studioFolder, translationFolder)
+	if err != nil {
+		slog.Error("Failed to load moves")
+		return nil, err
+	}
+	for descriptor := range moveIterator {
+		move := moveMapper.MapMoveDescriptorToMove(*descriptor)
+		store.AddMove(*move)
 	}
 
 	pokemonIterator, err := ImportPokemon(studioFolder, translationFolder)
@@ -113,6 +129,13 @@ func (s *Store) AddAbility(ability Ability) *Ability {
 	s.abilitiesBySymbol[ability.DbSymbol] = &ability
 	slog.Info("Adding ability", "symbol", ability.DbSymbol)
 	return &ability
+}
+
+func (s *Store) AddMove(move Move) *Move {
+	s.moves = append(s.moves, move)
+	s.movesBySymbol[move.DbSymbol] = &move
+	slog.Info("Adding move", "symbol", move.DbSymbol)
+	return &move
 }
 
 // FindAllPokemon Find a page of pokemon corresponding to the page request
@@ -166,4 +189,20 @@ func (s *Store) FindAbilityBySymbol(symbol string) *Ability {
 // FindAllAbilities Find all abilities in the store
 func (s *Store) FindAllAbilities() []Ability {
 	return s.abilities
+}
+
+// FindMoveBySymbol Find a move by its symbol
+// symbol The symbol to find
+func (s *Store) FindMoveBySymbol(symbol string) *Move {
+	move, ok := s.movesBySymbol[symbol]
+	if ok {
+		return move
+	} else {
+		return nil
+	}
+}
+
+// FindAllMoves Find all moves in the store
+func (s *Store) FindAllMoves() []Move {
+	return s.moves
 }

@@ -16,6 +16,8 @@ const (
 	typeNameTranslationFile               = "100003.csv"
 	abilityNameTranslationFile            = "100004.csv"
 	abilityDescriptionTranslationFile     = "100005.csv"
+	moveNameTranslationFile               = "100006.csv"
+	moveDescriptionTranslationFile        = "100007.csv"
 	pokemonFormNameTranslationFile        = "100067.csv"
 	pokemonFormDescriptionTranslationFile = "100068.csv"
 )
@@ -150,6 +152,52 @@ func ImportTypes(studioFolder, translationFolder string) (iter.Seq[*PokemonTypeD
 	}, nil
 }
 
+// ImportMoves import a moves folder to a store
+// studioFolder pokemon studio folder
+// translationFolder the translation folder
+func ImportMoves(studioFolder, translationFolder string) (iter.Seq[*MoveDescriptor], error) {
+	moveFolderPath := path.Join(studioFolder, "moves/")
+	slog.Info("Importing move folder", "path", moveFolderPath)
+	moveFileIterator, err := file.ImportFolder(moveFolderPath)
+	if err != nil {
+		return nil, err
+	}
+
+	// Import translations
+	moveNameTranslationsPath := path.Join(translationFolder, moveNameTranslationFile)
+	moveNameTranslations, err := ImportTranslations(moveNameTranslationsPath)
+	if err != nil {
+		slog.Warn("Failed to import move name translations", "path", moveNameTranslationsPath, "error", err)
+		moveNameTranslations = []Translation{}
+	}
+
+	moveDescTranslationsPath := path.Join(translationFolder, moveDescriptionTranslationFile)
+	moveDescTranslations, err := ImportTranslations(moveDescTranslationsPath)
+	if err != nil {
+		slog.Warn("Failed to import move description translations", "path", moveDescTranslationsPath, "error", err)
+		moveDescTranslations = []Translation{}
+	}
+
+	return func(yield func(*MoveDescriptor) bool) {
+		for moveFile := range moveFileIterator {
+			moveDesc, err := UnmarshalMoveDescriptor(moveFile.Content)
+			if err != nil {
+				slog.Warn("Failed to unmarshal move descriptor content", "file", moveFile.Path, "error", err)
+				continue
+			}
+
+			moveDesc.Name = MapTranslation(moveDesc.Id, moveNameTranslations)
+			moveDesc.Description = MapTranslation(moveDesc.Id, moveDescTranslations)
+
+			if moveDesc != nil {
+				if !yield(moveDesc) {
+					break
+				}
+			}
+		}
+	}, nil
+}
+
 // UnmarshalAbilityDescriptor unmarshal a json encoded ability to a descriptor
 // abilityContent the encoded ability
 func UnmarshalAbilityDescriptor(abilityContent []byte) (*AbilityDescriptor, error) {
@@ -188,6 +236,17 @@ func UnmarshalTypeDescriptor(typeContent []byte) (*PokemonTypeDescriptor, error)
 	}
 
 	return typeDescriptor, nil
+}
+
+// UnmarshalMoveDescriptor unmarshal a json encoded move to a descriptor
+// moveContent the encoded move
+func UnmarshalMoveDescriptor(moveContent []byte) (*MoveDescriptor, error) {
+	moveDescriptor := &MoveDescriptor{}
+	if err := json.Unmarshal(moveContent, moveDescriptor); err != nil {
+		return nil, err
+	}
+
+	return moveDescriptor, nil
 }
 
 // ImportTranslations import translations from file

@@ -1,0 +1,23 @@
+get:
+  tags:
+    - Moves
+  summary: Get a move with it most important details
+  description: This endpoint returns a move with its most important details based on the symbol. The symbol is the unique identifier of the move
+  operationId: getMove
+  parameters:
+    - $ref: "../../parameters/lang.yml"
+    - name: symbol
+      in: path
+      description: The symbol of the move
+      required: true
+      schema:
+        type: string
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/move/MovePartial.yml"
+    "400":
+      $ref: "../../responses/InvalidParameterError.yml"

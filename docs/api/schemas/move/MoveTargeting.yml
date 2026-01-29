@@ -1,0 +1,28 @@
+MoveTargeting:
+  type: object
+  properties:
+    aimedTarget:
+      type: string
+      enum:
+        - adjacent_pokemon
+        - adjacent_foe
+        - adjacent_all_foe
+        - all_foe
+        - adjacent_all_pokemon
+        - all_pokemon
+        - user
+        - user_or_adjacent_ally
+        - adjacent_ally
+        - all_ally
+        - all_ally_but_user
+        - any_other_pokemon
+        - random_foe
+      example: adjacent_pokemon
+
+    contactType:
+      type: string
+      enum:
+        - DIRECT
+        - DISTANT
+        - NONE
+      example: NONE

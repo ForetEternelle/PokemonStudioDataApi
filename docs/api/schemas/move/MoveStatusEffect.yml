@@ -1,0 +1,10 @@
+MoveStatusEffect:
+  type: object
+  properties:
+    status:
+      type: string
+      example: FLINCH
+
+    luckRate:
+      type: integer
+      example: 30

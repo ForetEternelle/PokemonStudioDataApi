@@ -1,5 +1,7 @@
 package studio
 
+import "github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio/move"
+
 var ExperienceTypeMap = map[ExperienceTypeDescriptor]string{
 	ExperienceErraticNum:     ExperienceErratic,
 	ExperienceFastNum:        ExperienceFast,
@@ -217,4 +219,174 @@ func MapTypeDamages(damages []TypeDamageDescriptor) []TypeDamage {
 		}
 	}
 	return mapped
+}
+
+// MoveMapper handles mapping of Move descriptors using a store
+type MoveMapper struct {
+	store *Store
+}
+
+// NewMoveMapper creates a new MoveMapper with the given store
+func NewMoveMapper(store *Store) *MoveMapper {
+	return &MoveMapper{store: store}
+}
+
+// MapMoveDescriptorToMove converts a MoveDescriptor to a Move domain struct
+func (m *MoveMapper) MapMoveDescriptorToMove(desc MoveDescriptor) *Move {
+	moveObj := &Move{
+		Id:           desc.Id,
+		DbSymbol:     desc.DbSymbol,
+		Category:     MoveCategory(desc.Category),
+		Power:        desc.Power,
+		Accuracy:     desc.Accuracy,
+		PP:           desc.PP,
+		CriticalRate: desc.MoveCriticalRate,
+		Priority:     desc.Priority,
+		MapUse:       desc.MapUse,
+		Name:         desc.Name,
+		Description:  desc.Description,
+	}
+
+	// Resolve type reference
+	moveObj.Type = m.store.FindTypeBySymbol(desc.Type)
+
+	// Map targeting
+	moveObj.Targeting = m.mapTargeting(desc)
+
+	// Map execution
+	moveObj.Execution = m.mapExecution(desc)
+
+	// Map mechanical tags
+	moveObj.MechanicalTags = m.mapMechanicalTags(desc)
+
+	// Map interactions
+	moveObj.Interactions = m.mapInteractions(desc)
+
+	// Map secondary effects
+	moveObj.SecondaryEffects = m.mapSecondaryEffects(desc)
+
+	return moveObj
+}
+
+func (m *MoveMapper) mapTargeting(desc MoveDescriptor) move.MoveTargeting {
+	targeting := move.MoveTargeting{
+		AimedTarget: move.AimedTarget(desc.BattleEngineAimedTarget),
+	}
+
+	// Determine contact type from isDirect and isDistance flags
+	if desc.IsDirect {
+		targeting.ContactType = move.ContactTypeDirect
+	} else if desc.IsDistance {
+		targeting.ContactType = move.ContactTypeDistant
+	} else {
+		targeting.ContactType = move.ContactTypeNone
+	}
+
+	return targeting
+}
+
+func (m *MoveMapper) mapExecution(desc MoveDescriptor) move.MoveExecution {
+	return move.MoveExecution{
+		Method:   move.ExecutionMethod(desc.BattleEngineMethod),
+		Charge:   desc.IsCharge,
+		Recharge: desc.IsRecharge,
+	}
+}
+
+func (m *MoveMapper) mapMechanicalTags(desc MoveDescriptor) []move.MechanicalTag {
+	tags := make([]move.MechanicalTag, 0)
+
+	if desc.IsAuthentic {
+		tags = append(tags, move.MechanicalTagAuthentic)
+	}
+	if desc.IsBallistics {
+		tags = append(tags, move.MechanicalTagBallistic)
+	}
+	if desc.IsBite {
+		tags = append(tags, move.MechanicalTagBite)
+	}
+	if desc.IsDance {
+		tags = append(tags, move.MechanicalTagDance)
+	}
+	if desc.IsPunch {
+		tags = append(tags, move.MechanicalTagPunch)
+	}
+	if desc.IsSlicingAttack {
+		tags = append(tags, move.MechanicalTagSlice)
+	}
+	if desc.IsSoundAttack {
+		tags = append(tags, move.MechanicalTagSound)
+	}
+	if desc.IsWind {
+		tags = append(tags, move.MechanicalTagWind)
+	}
+	if desc.IsPulse {
+		tags = append(tags, move.MechanicalTagPulse)
+	}
+	if desc.IsPowder {
+		tags = append(tags, move.MechanicalTagPowder)
+	}
+	if desc.IsMental {
+		tags = append(tags, move.MechanicalTagMental)
+	}
+
+	return tags
+}
+
+func (m *MoveMapper) mapInteractions(desc MoveDescriptor) []move.MoveInteraction {
+	interactions := make([]move.MoveInteraction, 0)
+
+	if desc.IsBlocable {
+		interactions = append(interactions, move.InteractionBlocable)
+	}
+	if desc.IsMirrorMove {
+		interactions = append(interactions, move.InteractionMirrorMove)
+	}
+	if desc.IsSnatchable {
+		interactions = append(interactions, move.InteractionSnatchable)
+	}
+	if desc.IsMagicCoatAffected {
+		interactions = append(interactions, move.InteractionMagicCoatAffected)
+	}
+	if desc.IsKingRockUtility {
+		interactions = append(interactions, move.InteractionKingRockUtility)
+	}
+	if desc.IsGravity {
+		interactions = append(interactions, move.InteractionAffectedByGravity)
+	}
+	if desc.IsNonSkyBattle {
+		interactions = append(interactions, move.InteractionNonSkyBattle)
+	}
+
+	return interactions
+}
+
+func (m *MoveMapper) mapSecondaryEffects(desc MoveDescriptor) move.MoveSecondaryEffects {
+	effects := move.MoveSecondaryEffects{
+		Chance: desc.EffectChance,
+	}
+
+	// Map status effects
+	if len(desc.MoveStatus) > 0 {
+		effects.StatusEffects = make([]move.MoveStatusEffect, len(desc.MoveStatus))
+		for i, status := range desc.MoveStatus {
+			effects.StatusEffects[i] = move.MoveStatusEffect{
+				Status:   status.Status,
+				LuckRate: status.LuckRate,
+			}
+		}
+	}
+
+	// Map stat stage changes
+	if len(desc.BattleStageMod) > 0 {
+		effects.StatStageChanges = make([]move.MoveStatStageChange, len(desc.BattleStageMod))
+		for i, stageMod := range desc.BattleStageMod {
+			effects.StatStageChanges[i] = move.MoveStatStageChange{
+				BattleStage: move.BattleStage(stageMod.BattleStage),
+				Modificator: stageMod.Modificator,
+			}
+		}
+	}
+
+	return effects
 }

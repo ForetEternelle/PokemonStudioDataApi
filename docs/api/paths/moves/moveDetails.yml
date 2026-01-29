@@ -1,0 +1,23 @@
+get:
+  tags:
+    - Moves
+  summary: Get a move details
+  description: This endpoint returns a move details based on the symbol. The symbol is the unique identifier of the move
+  operationId: getMoveDetails
+  parameters:
+    - $ref: "../../parameters/lang.yml"
+    - name: symbol
+      in: path
+      description: The symbol of the move
+      required: true
+      schema:
+        type: string
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/move/MoveDetails.yml"
+    "400":
+      $ref: "../../responses/InvalidParameterError.yml"

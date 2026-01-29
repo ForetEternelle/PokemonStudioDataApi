@@ -1,0 +1,15 @@
+MoveMechanicalTag:
+  type: string
+  description: Mechanical classification of the move
+  enum:
+    - AUTHENTIC
+    - BALLISTIC
+    - BITE
+    - DANCE
+    - PUNCH
+    - SLICE
+    - SOUND
+    - WIND
+    - PULSE
+    - POWDER
+    - MENTAL

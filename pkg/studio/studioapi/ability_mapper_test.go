@@ -10,13 +10,9 @@ import (
 func TestToAbilityDetail(t *testing.T) {
 	lang := "test"
 	ability := studio.Ability{
-		DbSymbol: "testDbSymbol",
-		Name: studio.Translation{
-			lang: "testName",
-		},
-		Description: studio.Translation{
-			lang: "testDescription",
-		},
+		DbSymbol:    "testDbSymbol",
+		Name:        studio.Translation{lang: "testName"},
+		Description: studio.Translation{lang: "testDescription"},
 	}
 
 	abilityMapper := studioapi.NewAbilityMapper()
@@ -38,13 +34,9 @@ func TestToAbilityDetail(t *testing.T) {
 func TestToAbilityPartial(t *testing.T) {
 	lang := "test"
 	ability := studio.Ability{
-		DbSymbol: "testDbSymbol",
-		Name: studio.Translation{
-			lang: "testName",
-		},
-		Description: studio.Translation{
-			lang: "testDescription",
-		},
+		DbSymbol:    "testDbSymbol",
+		Name:        studio.Translation{lang: "testName"},
+		Description: studio.Translation{lang: "testDescription"},
 	}
 
 	abilityMapper := studioapi.NewAbilityMapper()

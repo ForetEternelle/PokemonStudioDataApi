@@ -93,7 +93,7 @@ type FormDetails struct {
 	HatchSteps int32 `json:"hatchSteps,omitempty"`
 
 	// The symbol of the baby form
-	BabyDbSymbol string `json:"babyDbSymbol,omitempty"`
+	BabyDbSymbol *string `json:"babyDbSymbol,omitempty"`
 
 	// The form number of the baby form
 	BabyForm *int32 `json:"babyForm,omitempty"`

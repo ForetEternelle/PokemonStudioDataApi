@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio"
+	customMiddleware "github.com/ForetEternelle/PokemonStudioDataApi/pkg/middleware"
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio/studioapi"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -79,13 +80,17 @@ func main() {
 		panic("Failed to import data folder. Error: " + err.Error())
 	}
 
-	studioApiRouter := studioapi.MakeDefaultRouter(store)
-
 	r := chi.NewRouter()
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Throttle(100))
 	r.Use(middleware.Timeout(5 * time.Second))
 	r.Use(middleware.SetHeader("Access-Control-Allow-Origin", config.Cors))
+
+	startDate := time.Now().UTC()
+	r.Use(middleware.SetHeader("Last-Modified", startDate.Format(http.TimeFormat)))
+	r.Use(customMiddleware.Cache(startDate))
+
+	studioApiRouter := studioapi.MakeDefaultRouter(store)
 	r.Mount("/api", studioApiRouter)
 
 	addr := fmt.Sprintf(":%d", config.Port)

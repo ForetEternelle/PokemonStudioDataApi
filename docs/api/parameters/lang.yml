@@ -1,5 +1,5 @@
-in: header
-name: "Accept-Language"
+in: query
+name: "lang"
 required: false
 schema:
   type: string

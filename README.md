@@ -2,11 +2,29 @@
 
 `PokemonStudioDataApi` is a Go-based API designed for accessing data related to a Pokémon studio project. This tool provides a standalone API server, allowing users to efficiently query and interact with various datasets. With `PokemonStudioDataApi`, you can seamlessly integrate data access into your applications or scripts.
 
-## Features
 - **Fast and lightweight:** Efficient data querying with minimal setup.
 - **Flexible:** Customizable CORS settings, data directories, and log levels.
 - **Containerized:** Run with Docker for easy deployment.
 - **OpenAPI Documentation:** Comprehensive documentation for the API and its endpoints.
+
+## Features
+- List pokemon
+- Get pokemon details
+
+- List types
+
+- List abilities
+- Get ability details
+
+### Incoming
+- List moves
+- Get move details
+
+- List trainer
+- Get trainer details
+
+- Textual search (pokemon name, move, ...)
+- Parameterized search (types, ...)
 
 ---
 ## Installation
@@ -120,6 +138,8 @@ Launch the main.go file located at the root of the project.
 
 You can access a pokemon, once the server is running, via the following URL: `http://localhost:8000/api/pokemon/{symbol}` where `{symbol}` is the pokemon symbol. For instance: `http://localhost:8000/api/pokemon/pikachu`
 
-The url `/api/pokemon` will display the paginated list of all pokemons. Use query param `page` and `size` to navigate through the list. For instance: `http://localhost:8000/api/pokemon?page=2&size=5`
-
 The url `/api/pokemon/{symbol}/{formId}` will display a specific form of a pokemon. For instance: `http://localhost:8000/api/pokemon/charizard/2`
+
+### Language
+
+Default language will be English (en), you can specify any supported language (depending of the project's data) by adding a query parameter `lang` : `http://localhost:8000/api/pokemon?lang=fr`

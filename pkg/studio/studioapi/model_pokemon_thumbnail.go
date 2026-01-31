@@ -27,6 +27,9 @@ type PokemonThumbnail struct {
 
 	// The image symbol of the pokemon
 	Image string `json:"image,omitempty"`
+
+	// Custom properties setted by the developer
+	CustomProperties map[string]interface{} `json:"customProperties,omitempty"`
 }
 
 // AssertPokemonThumbnailRequired checks if the required fields are not zero-ed

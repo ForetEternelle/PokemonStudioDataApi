@@ -146,6 +146,7 @@ properties:
     example: 3840
   babyDbSymbol:
     type: string
+    nullable: true
     description: The symbol of the baby form
     example: "pikachu"
   babyForm:

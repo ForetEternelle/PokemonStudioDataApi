@@ -65,8 +65,21 @@ func (c *AbilitiesAPIController) Routes() Routes {
 
 // GetAbilities - Get all abilities
 func (c *AbilitiesAPIController) GetAbilities(w http.ResponseWriter, r *http.Request) {
-	acceptLanguageParam := r.Header.Get("Accept-Language")
-	result, err := c.service.GetAbilities(r.Context(), acceptLanguageParam)
+	query, err := parseQuery(r.URL.RawQuery)
+	if err != nil {
+		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
+		return
+	}
+	var langParam string
+	if query.Has("lang") {
+		param := query.Get("lang")
+
+		langParam = param
+	} else {
+		param := "en"
+		langParam = param
+	}
+	result, err := c.service.GetAbilities(r.Context(), langParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)
@@ -78,13 +91,26 @@ func (c *AbilitiesAPIController) GetAbilities(w http.ResponseWriter, r *http.Req
 
 // GetAbilityDetails - Get an ability details
 func (c *AbilitiesAPIController) GetAbilityDetails(w http.ResponseWriter, r *http.Request) {
+	query, err := parseQuery(r.URL.RawQuery)
+	if err != nil {
+		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
+		return
+	}
 	symbolParam := chi.URLParam(r, "symbol")
 	if symbolParam == "" {
 		c.errorHandler(w, r, &RequiredError{"symbol"}, nil)
 		return
 	}
-	acceptLanguageParam := r.Header.Get("Accept-Language")
-	result, err := c.service.GetAbilityDetails(r.Context(), symbolParam, acceptLanguageParam)
+	var langParam string
+	if query.Has("lang") {
+		param := query.Get("lang")
+
+		langParam = param
+	} else {
+		param := "en"
+		langParam = param
+	}
+	result, err := c.service.GetAbilityDetails(r.Context(), symbolParam, langParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

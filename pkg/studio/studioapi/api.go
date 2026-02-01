@@ -56,7 +56,7 @@ type AbilitiesAPIServicer interface {
 // while the service implementation can be ignored with the .openapi-generator-ignore file
 // and updated with the logic required for the API.
 type PokemonAPIServicer interface { 
-	GetPokemon(context.Context, string) (ImplResponse, error)
+	GetPokemon(context.Context, int32, int32, string) (ImplResponse, error)
 	GetPokemonDetails(context.Context, string, string) (ImplResponse, error)
 	GetPokemonForm(context.Context, string, int32, string) (ImplResponse, error)
 }

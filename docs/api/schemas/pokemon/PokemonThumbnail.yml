@@ -17,6 +17,14 @@ properties:
     type: string
     description: The image symbol of the pokemon
     example: "025"
+  type1:
+    description: The first type
+    $ref: "../types/TypePartial.yml"
+    nullable: false
+  type2:
+    $ref: "../types/TypePartial.yml"
+    description: The second type
+    nullable: true
   customProperties:
     $ref: "../CustomProperties.yml"
     description: Custom properties setted by the developer

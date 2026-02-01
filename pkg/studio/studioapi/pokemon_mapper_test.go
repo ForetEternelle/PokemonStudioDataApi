@@ -9,12 +9,14 @@ import (
 
 func TestPokemonToThumbnail(t *testing.T) {
 	lang := "test"
+	normalType := studio.PokemonType{DbSymbol: "normal"}
 	pokemon := studio.Pokemon{
 		Id:       1,
 		DbSymbol: "test",
 		Forms: []studio.PokemonForm{
 			{
-				Name: studio.Translation{lang: "testName"},
+				Name:  studio.Translation{lang: "testName"},
+				Type1: &normalType,
 			},
 		},
 	}

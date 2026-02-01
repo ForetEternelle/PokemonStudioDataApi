@@ -28,11 +28,18 @@ func NewPokemonMapper(typeMapper *TypeMapper, abilityMapper *AbilityMapper, stor
 // lang the language expected
 func (m PokemonMapper) PokemonToThumbnail(p studio.Pokemon, lang string) *PokemonThumbnail {
 	slog.Debug("Mapping pokemon to thumbnail", "lang", lang)
+	form := p.Forms[0]
+	var type2 *TypePartial
+	if form.Type2 != nil {
+		type2 = m.typeMapper.ToTypePartial(*form.Type2, lang)
+	}
 	return &PokemonThumbnail{
 		Symbol: p.DbSymbol,
 		Number: p.Id,
 		Image:  p.DbSymbol,
-		Name:   p.Forms[0].Name[lang],
+		Type1: m.typeMapper.ToTypePartial(*form.Type1, lang),
+		Type2: type2,
+		Name:   form.Name[lang],
 	}
 }
 
@@ -44,18 +51,18 @@ func (m PokemonMapper) PokemonToDetail(p studio.Pokemon, lang string) *PokemonDe
 	return &PokemonDetails{
 		Symbol:   p.DbSymbol,
 		Number:   p.Id,
-		MainForm: m.FormToPokemonFormDetails(p.Forms[0], lang),
+		MainForm: *m.FormToPokemonFormDetails(p.Forms[0], lang),
 	}
 }
 
 // FormToPokemonFormDetails map a pokemon form to a form details transfer object
 // p the pokemon form to map
 // lang the language expected
-func (m PokemonMapper) FormToPokemonFormDetails(f studio.PokemonForm, lang string) FormDetails {
+func (m PokemonMapper) FormToPokemonFormDetails(f studio.PokemonForm, lang string) *FormDetails {
 	slog.Debug("Mapping pokemon form to form details", "form", f, "lang", lang)
 
 	partialType1 := m.typeMapper.ToTypePartial(*f.Type1, lang)
-	var partialType2 TypePartial
+	var partialType2 *TypePartial
 
 	if f.Type2 != nil {
 		partialType2 = m.typeMapper.ToTypePartial(*f.Type2, lang)
@@ -66,7 +73,7 @@ func (m PokemonMapper) FormToPokemonFormDetails(f studio.PokemonForm, lang strin
 		abilityPartials = append(abilityPartials, m.abilityMapper.ToAbilityPartial(*ability, lang))
 	}
 
-	return FormDetails{
+	return &FormDetails{
 		Form:        &f.Form,
 		Name:        f.Name[lang],
 		Description: f.Description[lang],
@@ -74,8 +81,8 @@ func (m PokemonMapper) FormToPokemonFormDetails(f studio.PokemonForm, lang strin
 		Height: f.Height,
 		Weight: f.Weight,
 
-		Type1: &partialType1,
-		Type2: &partialType2,
+		Type1: partialType1,
+		Type2: partialType2,
 
 		BaseHp:  f.BaseHp,
 		BaseAtk: f.BaseAtk,

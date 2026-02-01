@@ -23,7 +23,7 @@ func (s TypeService) GetTypes(requestCtx context.Context, lang string) (ImplResp
 	res := make([]TypePartial, len(types))
 
 	for i, t := range types {
-		res[i] = s.typeMapper.ToTypePartial(t, lang)
+		res[i] = *s.typeMapper.ToTypePartial(t, lang)
 	}
 	return ImplResponse{Code: 200, Body: res}, nil
 }

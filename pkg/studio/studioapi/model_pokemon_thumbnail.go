@@ -28,16 +28,40 @@ type PokemonThumbnail struct {
 	// The image symbol of the pokemon
 	Image string `json:"image,omitempty"`
 
+	Type1 *TypePartial `json:"type1,omitempty"`
+
+	Type2 *TypePartial `json:"type2,omitempty"`
+
 	// Custom properties setted by the developer
 	CustomProperties map[string]interface{} `json:"customProperties,omitempty"`
 }
 
 // AssertPokemonThumbnailRequired checks if the required fields are not zero-ed
 func AssertPokemonThumbnailRequired(obj PokemonThumbnail) error {
+	if obj.Type1 != nil {
+		if err := AssertTypePartialRequired(*obj.Type1); err != nil {
+			return err
+		}
+	}
+	if obj.Type2 != nil {
+		if err := AssertTypePartialRequired(*obj.Type2); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 // AssertPokemonThumbnailConstraints checks if the values respects the defined constraints
 func AssertPokemonThumbnailConstraints(obj PokemonThumbnail) error {
+    if obj.Type1 != nil {
+     	if err := AssertTypePartialConstraints(*obj.Type1); err != nil {
+     		return err
+     	}
+    }
+    if obj.Type2 != nil {
+     	if err := AssertTypePartialConstraints(*obj.Type2); err != nil {
+     		return err
+     	}
+    }
 	return nil
 }

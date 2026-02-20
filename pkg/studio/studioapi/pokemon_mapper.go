@@ -37,9 +37,9 @@ func (m PokemonMapper) PokemonToThumbnail(p studio.Pokemon, lang string) *Pokemo
 		Symbol: p.DbSymbol,
 		Number: p.Id,
 		Image:  p.DbSymbol,
-		Type1: m.typeMapper.ToTypePartial(*form.Type1, lang),
-		Type2: type2,
-		Name:   form.Name[lang],
+		Type1:  m.typeMapper.ToTypePartial(*form.Type1, lang),
+		Type2:  type2,
+		Name:   p.Name[lang],
 	}
 }
 
@@ -49,14 +49,16 @@ func (m PokemonMapper) PokemonToThumbnail(p studio.Pokemon, lang string) *Pokemo
 func (m PokemonMapper) PokemonToDetail(p studio.Pokemon, lang string) *PokemonDetails {
 	slog.Debug("Mapping pokemon to details", "pokemon", p, "lang", lang)
 	return &PokemonDetails{
-		Symbol:   p.DbSymbol,
-		Number:   p.Id,
-		MainForm: *m.FormToPokemonFormDetails(p.Forms[0], lang),
+		Symbol:      p.DbSymbol,
+		Number:      p.Id,
+		Name:        p.Name[lang],
+		Description: p.Description[lang],
+		MainForm:    *m.FormToPokemonFormDetails(p.Forms[0], lang),
 	}
 }
 
 // FormToPokemonFormDetails map a pokemon form to a form details transfer object
-// p the pokemon form to map
+// f the pokemon form to map
 // lang the language expected
 func (m PokemonMapper) FormToPokemonFormDetails(f studio.PokemonForm, lang string) *FormDetails {
 	slog.Debug("Mapping pokemon form to form details", "form", f, "lang", lang)
@@ -74,9 +76,7 @@ func (m PokemonMapper) FormToPokemonFormDetails(f studio.PokemonForm, lang strin
 	}
 
 	return &FormDetails{
-		Form:        &f.Form,
-		Name:        f.Name[lang],
-		Description: f.Description[lang],
+		Form: &f.Form,
 
 		Height: f.Height,
 		Weight: f.Weight,

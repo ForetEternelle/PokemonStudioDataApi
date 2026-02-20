@@ -13,13 +13,13 @@ import (
 )
 
 const (
-	typeNameTranslationFile               = "100003.csv"
-	abilityNameTranslationFile            = "100004.csv"
-	abilityDescriptionTranslationFile     = "100005.csv"
-	moveNameTranslationFile               = "100006.csv"
-	moveDescriptionTranslationFile        = "100007.csv"
-	pokemonFormNameTranslationFile        = "100067.csv"
-	pokemonFormDescriptionTranslationFile = "100068.csv"
+	pokemonNameTranslationFile        = "100000.csv"
+	pokemonDescriptionTranslationFile = "100002.csv"
+	typeNameTranslationFile           = "100003.csv"
+	abilityNameTranslationFile        = "100004.csv"
+	abilityDescriptionTranslationFile = "100005.csv"
+	moveNameTranslationFile           = "100006.csv"
+	moveDescriptionTranslationFile    = "100007.csv"
 )
 
 func ImportAbility(studioFolder, translationFolder string) (iter.Seq[*AbilityDescriptor], error) {
@@ -77,14 +77,14 @@ func ImportPokemon(studioFolder, translationFolder string) (iter.Seq[*PokemonDes
 		return nil, err
 	}
 
-	pokemonNameTranslationPath := path.Join(translationFolder, pokemonFormNameTranslationFile)
+	pokemonNameTranslationPath := path.Join(translationFolder, pokemonNameTranslationFile)
 	pokemonNameTranslations, err := ImportTranslations(pokemonNameTranslationPath)
 	if err != nil {
 		slog.Warn("Failed to import pokemon name translations", "path", pokemonNameTranslationPath, "error", err)
 		pokemonNameTranslations = []Translation{}
 	}
 
-	pokemonDescriptionTranslationPath := path.Join(translationFolder, pokemonFormDescriptionTranslationFile)
+	pokemonDescriptionTranslationPath := path.Join(translationFolder, pokemonDescriptionTranslationFile)
 	pokemonDescriptionTranslations, err := ImportTranslations(pokemonDescriptionTranslationPath)
 	if err != nil {
 		slog.Warn("Failed to import pokemon description translations", "path", pokemonDescriptionTranslationPath, "error", err)
@@ -99,10 +99,9 @@ func ImportPokemon(studioFolder, translationFolder string) (iter.Seq[*PokemonDes
 				continue
 			}
 
-			for i, form := range pokemonDesc.Forms {
-				pokemonDesc.Forms[i].Name = MapTranslation(form.FormTextId.Name, pokemonNameTranslations)
-				pokemonDesc.Forms[i].Description = MapTranslation(form.FormTextId.Description, pokemonDescriptionTranslations)
-			}
+			// Assign translations at the Pokémon level using the dbSymbol
+			pokemonDesc.Name = MapTranslation(int(pokemonDesc.ID), pokemonNameTranslations)
+			pokemonDesc.Description = MapTranslation(int(pokemonDesc.ID), pokemonDescriptionTranslations)
 
 			if pokemonDesc != nil {
 				if !yield(pokemonDesc) {
@@ -258,7 +257,12 @@ func ImportTranslations(path string) ([]Translation, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer file.Close()
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			slog.Warn("Failed to close translation file", "path", path, "error", err)
+		}
+	}(file)
 
 	reader := csv.NewReader(file)
 

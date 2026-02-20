@@ -36,6 +36,8 @@ type Pokemon struct {
 	Id               int32
 	DbSymbol         string
 	Forms            []PokemonForm
+	Name             Translation
+	Description      Translation
 	CustomProperties map[string]any
 }
 
@@ -83,8 +85,6 @@ type PokemonForm struct {
 	Abilities      []*Ability
 	FrontOffsetY   int32
 
-	Name             Translation
-	Description      Translation
 	CustomProperties map[string]any
 }
 

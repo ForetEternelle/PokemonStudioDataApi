@@ -35,9 +35,11 @@ type ExperienceTypeDescriptor int32
 
 // PokemonDescriptor represents the raw JSON structure for Pokemon data
 type PokemonDescriptor struct {
-	ID       int32            `json:"id"`
-	DbSymbol string           `json:"dbSymbol"`
-	Forms    []FormDescriptor `json:"forms"`
+	ID          int32            `json:"id"`
+	DbSymbol    string           `json:"dbSymbol"`
+	Forms       []FormDescriptor `json:"forms"`
+	Name        Translation
+	Description Translation
 }
 
 // FormDescriptor represents the raw JSON structure for Pokemon forms
@@ -73,8 +75,6 @@ type FormDescriptor struct {
 	Abilities      []string                 `json:"abilities"`
 	FrontOffsetY   int32                    `json:"frontOffsetY"`
 	FormTextId     FormTextIdDescriptor     `json:"formTextId"`
-	Name           Translation
-	Description    Translation
 }
 
 // EvolutionDescriptor represents the raw JSON structure for evolutions

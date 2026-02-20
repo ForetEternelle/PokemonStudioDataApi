@@ -10,17 +10,8 @@
 
 package studioapi
 
-
-
-
 // FormDetails - An object containing the data of a pokemon form (ev, iv, ...)
 type FormDetails struct {
-
-	// The translated name of the pokemon
-	Name string `json:"name,omitempty"`
-
-	// The translated description of the pokemon
-	Description string `json:"description,omitempty"`
 
 	// The form number
 	Form *int32 `json:"form,omitempty"`
@@ -130,16 +121,16 @@ func AssertFormDetailsRequired(obj FormDetails) error {
 
 // AssertFormDetailsConstraints checks if the values respects the defined constraints
 func AssertFormDetailsConstraints(obj FormDetails) error {
-    if obj.Type1 != nil {
-     	if err := AssertTypePartialConstraints(*obj.Type1); err != nil {
-     		return err
-     	}
-    }
-    if obj.Type2 != nil {
-     	if err := AssertTypePartialConstraints(*obj.Type2); err != nil {
-     		return err
-     	}
-    }
+	if obj.Type1 != nil {
+		if err := AssertTypePartialConstraints(*obj.Type1); err != nil {
+			return err
+		}
+	}
+	if obj.Type2 != nil {
+		if err := AssertTypePartialConstraints(*obj.Type2); err != nil {
+			return err
+		}
+	}
 	for _, el := range obj.Abilities {
 		if err := AssertAbilityPartialConstraints(el); err != nil {
 			return err

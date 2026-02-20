@@ -50,6 +50,8 @@ func (m *PokemonMapper) MapPokemonDescriptorToPokemon(desc PokemonDescriptor) *P
 		Id:               desc.ID,
 		DbSymbol:         desc.DbSymbol,
 		Forms:            forms,
+		Name:             desc.Name,
+		Description:      desc.Description,
 		CustomProperties: make(map[string]any),
 	}
 
@@ -59,8 +61,6 @@ func (m *PokemonMapper) MapPokemonDescriptorToPokemon(desc PokemonDescriptor) *P
 // MapFormDescriptorToPokemonForm converts a FormDescriptor to a PokemonForm domain struct with reference resolution
 func (m *PokemonMapper) MapFormDescriptorToPokemonForm(desc FormDescriptor) *PokemonForm {
 	form := &PokemonForm{
-		Name:           desc.Name,
-		Description:    desc.Description,
 		Form:           desc.Form,
 		Height:         desc.Height,
 		Weight:         desc.Weight,

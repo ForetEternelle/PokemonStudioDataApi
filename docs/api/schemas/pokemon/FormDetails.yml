@@ -1,15 +1,6 @@
 type: object
 description: An object containing the data of a pokemon form (ev, iv, ...)
 properties:
-  name:
-    type: string
-    description: The translated name of the pokemon
-    example: "Pikachu"
-
-  description:
-    type: string
-    description: The translated description of the pokemon
-    example: "Pika Pika"
 
   form:
     type: integer

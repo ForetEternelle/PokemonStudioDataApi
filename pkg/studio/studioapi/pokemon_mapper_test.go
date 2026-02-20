@@ -13,9 +13,9 @@ func TestPokemonToThumbnail(t *testing.T) {
 	pokemon := studio.Pokemon{
 		Id:       1,
 		DbSymbol: "test",
+		Name:     studio.Translation{lang: "testName"},
 		Forms: []studio.PokemonForm{
 			{
-				Name:  studio.Translation{lang: "testName"},
 				Type1: &normalType,
 			},
 		},
@@ -32,8 +32,8 @@ func TestPokemonToThumbnail(t *testing.T) {
 		t.Error("Mapper should map image, expected", pokemon.DbSymbol, ", has", thumbnail.Image)
 	}
 
-	if thumbnail.Name != pokemon.Forms[0].Name[lang] {
-		t.Error("Mapper should map name, expected", pokemon.Forms[0].Name[lang], ", has", thumbnail.Name)
+	if thumbnail.Name != pokemon.Name[lang] {
+		t.Error("Mapper should map name, expected", pokemon.Name[lang], ", has", thumbnail.Name)
 	}
 
 	if thumbnail.Symbol != pokemon.DbSymbol {
@@ -49,16 +49,16 @@ func TestPokemonToDetail(t *testing.T) {
 	normalType := studio.PokemonType{DbSymbol: "normal"}
 
 	pokemon := studio.Pokemon{
-		Id:       1,
-		DbSymbol: "test",
+		Id:          1,
+		DbSymbol:    "test",
+		Name:        studio.Translation{lang: "testName"},
+		Description: studio.Translation{lang: "testDesc"},
 		Forms: []studio.PokemonForm{
 			{
-				Form:        0,
-				Name:        studio.Translation{lang: "testName"},
-				Description: studio.Translation{lang: "testDesc"},
-				Type1:       &normalType,
-				BaseHp:      100,
-				BaseAtk:     50,
+				Form:    0,
+				Type1:   &normalType,
+				BaseHp:  100,
+				BaseAtk: 50,
 			},
 		},
 	}
@@ -76,6 +76,12 @@ func TestPokemonToDetail(t *testing.T) {
 	}
 	if detail.Number != pokemon.Id {
 		t.Error("Mapper should map number")
+	}
+	if detail.Name != pokemon.Name[lang] {
+		t.Error("Mapper should map name")
+	}
+	if detail.Description != pokemon.Description[lang] {
+		t.Error("Mapper should map description")
 	}
 	if detail.MainForm.Form == nil {
 		t.Error("Mapper should map main form")

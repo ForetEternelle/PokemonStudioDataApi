@@ -20,10 +20,10 @@ func TestLoad(t *testing.T) {
 		t.Error("Import should have 5 pokemon, has", pokemonCount)
 	}
 
-	types := store.FindAllTypes()
-	typeCount := len(types)
-	if typeCount != 18 {
-		t.Error("Import should have 18 types, has", typeCount)
+	typesIter := store.FindAllTypes()
+	typesCount := len(slices.Collect(typesIter))
+	if typesCount != 18 {
+		t.Error("Import should have 18 types, has", typesCount)
 	}
 }
 
@@ -53,9 +53,10 @@ func TestFindAllTypes(t *testing.T) {
 		store.AddType(pokemonType)
 	}
 
-	all := store.FindAllTypes()
-	if len(all) != 3 {
-		t.Error("Find all length should be 3, has", len(all))
+	allIter := store.FindAllTypes()
+	allSlice := slices.Collect(allIter)
+	if len(allSlice) != 3 {
+		t.Error("Find all length should be 3, has", len(allSlice))
 	}
 }
 
@@ -103,5 +104,26 @@ func TestFindPokemonBySymbol(t *testing.T) {
 	}
 	if found.Id != 4 {
 		t.Error("Expect result ID to be 4, is", found.Id)
+	}
+}
+
+func TestFindAllPokemonWithFilters(t *testing.T) {
+	pokemonList := []Pokemon{
+		{Id: 1, DbSymbol: "pikachu"},
+		{Id: 2, DbSymbol: "bulbasaur"},
+		{Id: 3, DbSymbol: "charmander"},
+	}
+	store := NewStore()
+
+	for _, pokemon := range pokemonList {
+		store.AddPokemon(pokemon)
+	}
+
+	idGreaterThan1 := func(p Pokemon) bool { return p.Id > 1 }
+	result := store.FindAllPokemon(idGreaterThan1)
+	resultSlice := slices.Collect(result)
+
+	if len(resultSlice) != 2 {
+		t.Error("Expected 2 pokemon after filter, got", len(resultSlice))
 	}
 }

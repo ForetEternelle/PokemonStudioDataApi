@@ -12,9 +12,6 @@ type PokemonMapper struct {
 	store         *studio.Store
 }
 
-// NewPokemonMapper Create a new pokemon mapper
-// typeMapper the mapper for pokemon types
-// typeStore the store for pokemon types
 func NewPokemonMapper(
 	typeMapper *TypeMapper,
 	abilityMapper *AbilityMapper,
@@ -27,51 +24,75 @@ func NewPokemonMapper(
 	}
 }
 
-// PokemonToThumbnail map a pokemon to a thumbnail transfer object
-// p the pokemon to map
-// lang the language expected
-func (m PokemonMapper) PokemonToThumbnail(p studio.Pokemon, lang string) *PokemonThumbnail {
+func (m PokemonMapper) PokemonToThumbnail(p studio.Pokemon, lang string, policy *AccessPolicy) *PokemonThumbnail {
 	slog.Debug("Mapping pokemon to thumbnail", "lang", lang)
-	form := p.Forms[0]
+
+	// Get the main form of the pokemon
+	form, ok := p.Forms[0]
+	if !ok {
+		slog.Warn("Pokemon has no main form", "pokemon", p)
+		return nil
+	}
+
+	// Check if the form is allowed by the policy
+	for _, filter := range policy.FormFilters {
+		if !filter(form) {
+			ok = false
+			return nil
+		}
+	}
+
 	var type2 *TypePartial
 	if form.Type2 != nil {
-		type2 = m.typeMapper.ToTypePartial(*form.Type2, lang)
+		type2 = m.typeMapper.ToTypePartial(*form.Type2, lang, policy)
 	}
+
 	return &PokemonThumbnail{
-		Symbol: p.DbSymbol,
-		Number: p.Id,
-		Image:  p.DbSymbol,
-		Type1:  m.typeMapper.ToTypePartial(*form.Type1, lang),
-		Type2:  type2,
-		Name:   p.Name[lang],
+		Symbol:           p.DbSymbol,
+		Number:           p.Id,
+		Image:            p.DbSymbol,
+		Type1:            m.typeMapper.ToTypePartial(*form.Type1, lang, policy),
+		Type2:            type2,
+		Name:             p.Name[lang],
+		CustomProperties: p.CustomProperties,
 	}
 }
 
-// PokemonToDetail map a pokemon to a details transfer object
-// p the pokemon to map
-// lang the language expected
-func (m PokemonMapper) PokemonToDetail(p studio.Pokemon, lang string) *PokemonDetails {
+func (m PokemonMapper) PokemonToDetail(p studio.Pokemon, lang string, policy *AccessPolicy) *PokemonDetails {
 	slog.Debug("Mapping pokemon to details", "pokemon", p, "lang", lang)
+
+	// Get the main form of the pokemon
+	form, ok := p.Forms[0]
+	if !ok {
+		slog.Warn("Pokemon has no main form", "pokemon", p)
+		return nil
+	}
+
+	// Check if the form is allowed by the policy
+	for _, filter := range policy.FormFilters {
+		if !filter(form) {
+			ok = false
+			return nil
+		}
+	}
+
 	return &PokemonDetails{
 		Symbol:      p.DbSymbol,
 		Number:      p.Id,
 		Name:        p.Name[lang],
 		Description: p.Description[lang],
-		MainForm:    *m.FormToPokemonFormDetails(p.Forms[0], lang),
+		MainForm:    *m.FormToPokemonFormDetails(form, lang, policy),
 	}
 }
 
-// FormToPokemonFormDetails map a pokemon form to a form details transfer object
-// f the pokemon form to map
-// lang the language expected
-func (m PokemonMapper) FormToPokemonFormDetails(f studio.PokemonForm, lang string) *FormDetails {
+func (m PokemonMapper) FormToPokemonFormDetails(f studio.PokemonForm, lang string, policy *AccessPolicy) *FormDetails {
 	slog.Debug("Mapping pokemon form to form details", "form", f, "lang", lang)
 
-	partialType1 := m.typeMapper.ToTypePartial(*f.Type1, lang)
+	partialType1 := m.typeMapper.ToTypePartial(*f.Type1, lang, policy)
 	var partialType2 *TypePartial
 
 	if f.Type2 != nil {
-		partialType2 = m.typeMapper.ToTypePartial(*f.Type2, lang)
+		partialType2 = m.typeMapper.ToTypePartial(*f.Type2, lang, policy)
 	}
 
 	var abilityPartials []AbilityPartial

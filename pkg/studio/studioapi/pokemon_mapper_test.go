@@ -26,7 +26,8 @@ func TestPokemonToThumbnail(t *testing.T) {
 	store := studio.NewStore()
 	pokemonMapper := studioapi.NewPokemonMapper(typeMapper, abilityMapper, store)
 
-	thumbnail := pokemonMapper.PokemonToThumbnail(pokemon, lang)
+	policy := studioapi.NewAccessPolicy()
+	thumbnail := pokemonMapper.PokemonToThumbnail(pokemon, lang, policy)
 
 	if thumbnail.Image != pokemon.DbSymbol {
 		t.Error("Mapper should map image, expected", pokemon.DbSymbol, ", has", thumbnail.Image)
@@ -69,7 +70,8 @@ func TestPokemonToDetail(t *testing.T) {
 	store.AddType(normalType)
 	pokemonMapper := studioapi.NewPokemonMapper(typeMapper, abilityMapper, store)
 
-	detail := pokemonMapper.PokemonToDetail(pokemon, lang)
+	policy := studioapi.NewAccessPolicy()
+	detail := pokemonMapper.PokemonToDetail(pokemon, lang, policy)
 
 	if detail.Symbol != pokemon.DbSymbol {
 		t.Error("Mapper should map symbol")

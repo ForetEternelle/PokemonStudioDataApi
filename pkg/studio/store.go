@@ -46,9 +46,6 @@ func NewStore() *Store {
 	}
 }
 
-// Import a pokemon studio folder into a store
-// folder the studio project folder
-// store the store to import data to
 func Load(folder string) (*Store, error) {
 	store := NewStore()
 	translationFolder := path.Join(folder, LanguageFolder)
@@ -138,71 +135,102 @@ func (s *Store) AddMove(move Move) *Move {
 	return &move
 }
 
-// FindAllPokemon Find a page of pokemon corresponding to the page request
-// filters iterator function to filter the pokemon
 func (s *Store) FindAllPokemon(filters ...iter2.FilterFunc[Pokemon]) iter.Seq[Pokemon] {
 	it := slices.Values(s.pokemonList)
+
 	for _, filter := range filters {
 		it = iter2.Filter(filter, it)
 	}
+
 	return it
 }
 
-// FindPokemonBySymbol Find pokemon by symbol
-// symbol The symbol of the pokemon to find
-func (s *Store) FindPokemonBySymbol(symbol string) *Pokemon {
+func (s *Store) FindPokemonBySymbol(symbol string, filters ...iter2.FilterFunc[Pokemon]) *Pokemon {
 	pokemon, ok := s.pokemonBySymbol[symbol]
-	if ok {
-		return pokemon
-	} else {
+	if !ok {
 		return nil
 	}
+
+	for _, filter := range filters {
+		if !filter(*pokemon) {
+			return nil
+		}
+	}
+
+	return pokemon
 }
 
-// FindTypeBySymbol Find a type by its symbol
-// symbol The symbol to find
-func (s *Store) FindTypeBySymbol(symbol string) *PokemonType {
+func (s *Store) FindAllTypes(filters ...iter2.FilterFunc[PokemonType]) iter.Seq[PokemonType] {
+	it := slices.Values(s.types)
+
+	for _, filter := range filters {
+		it = iter2.Filter(filter, it)
+	}
+
+	return it
+}
+
+func (s *Store) FindTypeBySymbol(symbol string, filters ...iter2.FilterFunc[PokemonType]) *PokemonType {
 	pokemonType, ok := s.pokemonTypesBySymbol[symbol]
-	if ok {
-		return pokemonType
-	} else {
+	if !ok {
 		return nil
 	}
+
+	for _, filter := range filters {
+		if !filter(*pokemonType) {
+			return nil
+		}
+	}
+
+	return pokemonType
 }
 
-// FindAllTypes Find all types in the store
-func (s *Store) FindAllTypes() []PokemonType {
-	return s.types
+func (s *Store) FindAllAbilities(filters ...iter2.FilterFunc[Ability]) iter.Seq[Ability] {
+	it := slices.Values(s.abilities)
+
+	for _, filter := range filters {
+		it = iter2.Filter(filter, it)
+	}
+
+	return it
 }
 
-// FindAbilityBySymbol Find an ability by its symbol
-// symbol The symbol to find
-func (s *Store) FindAbilityBySymbol(symbol string) *Ability {
+func (s *Store) FindAbilityBySymbol(symbol string, filters ...iter2.FilterFunc[Ability]) *Ability {
 	ability, ok := s.abilitiesBySymbol[symbol]
-	if ok {
-		return ability
-	} else {
+	if !ok {
 		return nil
 	}
+
+	for _, filter := range filters {
+		if !filter(*ability) {
+			return nil
+		}
+	}
+
+	return ability
 }
 
-// FindAllAbilities Find all abilities in the store
-func (s *Store) FindAllAbilities() []Ability {
-	return s.abilities
+func (s *Store) FindAllMoves(filters ...iter2.FilterFunc[Move]) iter.Seq[Move] {
+	it := slices.Values(s.moves)
+
+	for _, filter := range filters {
+		it = iter2.Filter(filter, it)
+	}
+
+	return it
 }
 
-// FindMoveBySymbol Find a move by its symbol
-// symbol The symbol to find
-func (s *Store) FindMoveBySymbol(symbol string) *Move {
+func (s *Store) FindMoveBySymbol(symbol string, filters ...iter2.FilterFunc[Move]) *Move {
 	move, ok := s.movesBySymbol[symbol]
-	if ok {
-		return move
-	} else {
+	if !ok {
 		return nil
 	}
-}
 
-// FindAllMoves Find all moves in the store
-func (s *Store) FindAllMoves() []Move {
-	return s.moves
+	for _, filter := range filters {
+		if !filter(*move) {
+			return nil
+		}
+	}
+
+	return move
 }

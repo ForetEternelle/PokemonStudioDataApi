@@ -2,30 +2,37 @@ package studioapi
 
 import (
 	"context"
+	"slices"
 
+	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/iter2"
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio"
 )
 
 type AbilityService struct {
-	store         *studio.Store
-	abilityMapper *AbilityMapper
+	store               *studio.Store
+	abilityMapper       *AbilityMapper
+	accessPolicyFactory func(context.Context) *AccessPolicy
 }
 
-func NewAbilityService(store *studio.Store, abilityMapper *AbilityMapper) AbilitiesAPIServicer {
+func NewAbilityService(
+	store *studio.Store,
+	abilityMapper *AbilityMapper,
+	accessPolicyFactory func(context.Context) *AccessPolicy,
+) AbilitiesAPIServicer {
 	return &AbilityService{
-		store,
-		abilityMapper,
+		store:               store,
+		abilityMapper:       abilityMapper,
+		accessPolicyFactory: accessPolicyFactory,
 	}
 }
 
 func (s AbilityService) GetAbilities(requestCtx context.Context, lang string) (ImplResponse, error) {
-	abilities := s.store.FindAllAbilities()
-	res := make([]AbilityPartial, len(abilities))
-
-	for i, a := range abilities {
-		res[i] = s.abilityMapper.ToAbilityPartial(a, lang)
-	}
-	return ImplResponse{Code: 200, Body: res}, nil
+	policy := s.accessPolicyFactory(requestCtx)
+	abilitiesIter := s.store.FindAllAbilities(policy.AbilityFilters...)
+	mappedIter := iter2.Map(func(a studio.Ability) AbilityPartial {
+		return s.abilityMapper.ToAbilityPartial(a, lang)
+	}, abilitiesIter)
+	return ImplResponse{Code: 200, Body: slices.Collect(mappedIter)}, nil
 }
 
 func (s AbilityService) GetAbilityDetails(requestCtx context.Context, symbol string, lang string) (ImplResponse, error) {

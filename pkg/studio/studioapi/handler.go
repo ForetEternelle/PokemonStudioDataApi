@@ -2,69 +2,45 @@ package studioapi
 
 import (
 	"context"
-	"errors"
 
-	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/iter2"
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio"
 	"github.com/go-chi/chi/v5"
 )
 
-type RouterBuilderOption func(*RouterBuilderConfig)
-type ContextFilter[T any] func(context.Context) iter2.FilterFunc[T]
+type GetRouterOption func(*GetRouterConfig)
 
-var WithStore = func(store *studio.Store) RouterBuilderOption {
-	return func(config *RouterBuilderConfig) {
+type GetRouterConfig struct {
+	store               *studio.Store
+	accessPolicyFactory func(context.Context) *AccessPolicy
+}
+
+var WithStore = func(store *studio.Store) GetRouterOption {
+	return func(config *GetRouterConfig) {
 		config.store = store
 	}
 }
 
-var WithPokemonContextFilter = func(contextFilter ContextFilter[studio.Pokemon]) RouterBuilderOption {
-	return func(config *RouterBuilderConfig) {
-		config.pokemonContextFilter = contextFilter
+var WithAccessPolicyFactory = func(factory func(context.Context) *AccessPolicy) GetRouterOption {
+	return func(config *GetRouterConfig) {
+		config.accessPolicyFactory = factory
 	}
 }
 
-var WithFormContextFilter = func(contextFilter ContextFilter[studio.PokemonForm]) RouterBuilderOption {
-	return func(config *RouterBuilderConfig) {
-		config.formContextFilter = contextFilter
-	}
-}
-
-var DefaultPokemonContextFilter = func(context.Context) iter2.FilterFunc[studio.Pokemon] {
-	return func(studio.Pokemon) bool {
-		return true
-	}
-}
-
-var DefaultFormContextFilter = func(context.Context) iter2.FilterFunc[studio.PokemonForm] {
-	return func(studio.PokemonForm) bool {
-		return true
-	}
-}
-
-type RouterBuilderConfig struct {
-	store                 *studio.Store
-	pokemonContextFilter ContextFilter[studio.Pokemon]
-	formContextFilter    ContextFilter[studio.PokemonForm]
-}
-
-func GetRouter(opts ...RouterBuilderOption) (chi.Router, error) {
-	config := &RouterBuilderConfig{}
+func GetRouter(opts ...GetRouterOption) (chi.Router, error) {
+	config := &GetRouterConfig{}
 
 	for _, opt := range opts {
 		opt(config)
 	}
 
 	if config.store == nil {
-		return nil, errors.New("store is required")
+		config.store = studio.NewStore()
 	}
 
-	if config.pokemonContextFilter == nil {
-		config.pokemonContextFilter = DefaultPokemonContextFilter
-	}
-
-	if config.formContextFilter == nil {
-		config.formContextFilter = DefaultFormContextFilter
+	if config.accessPolicyFactory == nil {
+		config.accessPolicyFactory = func(ctx context.Context) *AccessPolicy {
+			return NewAccessPolicy()
+		}
 	}
 
 	abilityMapper := NewAbilityMapper()
@@ -72,10 +48,10 @@ func GetRouter(opts ...RouterBuilderOption) (chi.Router, error) {
 	moveMapper := NewMoveMapper(typeMapper)
 	pokemonMapper := NewPokemonMapper(typeMapper, abilityMapper, config.store)
 
-	abilityService := NewAbilityService(config.store, abilityMapper)
-	typeService := NewTypeService(config.store, typeMapper)
-	moveService := NewMoveService(config.store, moveMapper)
-	pokemonService := NewPokemonService(config.store, pokemonMapper, config.pokemonContextFilter, config.formContextFilter)
+	abilityService := NewAbilityService(config.store, abilityMapper, config.accessPolicyFactory)
+	typeService := NewTypeService(config.store, typeMapper, config.accessPolicyFactory)
+	moveService := NewMoveService(config.store, moveMapper, config.accessPolicyFactory)
+	pokemonService := NewPokemonService(config.store, pokemonMapper, config.accessPolicyFactory)
 
 	abilityController := NewAbilitiesAPIController(abilityService)
 	typeController := NewTypesAPIController(typeService)

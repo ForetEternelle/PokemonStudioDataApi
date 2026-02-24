@@ -22,7 +22,8 @@ func TestMoveToDetail(t *testing.T) {
 
 	typeMapper := studioapi.NewTypeMapper()
 	moveMapper := studioapi.NewMoveMapper(typeMapper)
-	moveDetail := moveMapper.ToMoveDetail(move, lang)
+	policy := studioapi.NewAccessPolicy()
+	moveDetail := moveMapper.ToMoveDetail(move, lang, policy)
 
 	if moveDetail.Name != move.Name[lang] {
 		t.Error("Mapper should map name, expected", move.Name[lang], ", has", moveDetail.Name)
@@ -72,7 +73,8 @@ func TestMoveToPartial(t *testing.T) {
 
 	typeMapper := studioapi.NewTypeMapper()
 	moveMapper := studioapi.NewMoveMapper(typeMapper)
-	movePartial := moveMapper.ToMovePartial(move, lang)
+	policy := studioapi.NewAccessPolicy()
+	movePartial := moveMapper.ToMovePartial(move, lang, policy)
 
 	if movePartial.Name != move.Name[lang] {
 		t.Error("Mapper should map name, expected", move.Name[lang], ", has", movePartial.Name)

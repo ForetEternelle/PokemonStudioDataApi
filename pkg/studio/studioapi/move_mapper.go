@@ -18,7 +18,7 @@ func NewMoveMapper(typeMapper *TypeMapper) *MoveMapper {
 // ToMoveDetail map a move to a move details transfer object
 // move the move to map
 // lang the language expected
-func (m MoveMapper) ToMoveDetail(move studio.Move, lang string) MoveDetails {
+func (m MoveMapper) ToMoveDetail(move studio.Move, lang string, policy *AccessPolicy) MoveDetails {
 	slog.Debug("Mapping move to details", "move", move.DbSymbol, "lang", lang)
 
 	details := MoveDetails{
@@ -35,7 +35,7 @@ func (m MoveMapper) ToMoveDetail(move studio.Move, lang string) MoveDetails {
 
 	// Map type
 	if move.Type != nil {
-		typePartial := m.typeMapper.ToTypePartial(*move.Type, lang)
+		typePartial := m.typeMapper.ToTypePartial(*move.Type, lang, policy)
 		details.Type = typePartial
 	}
 
@@ -105,7 +105,7 @@ func (m MoveMapper) ToMoveDetail(move studio.Move, lang string) MoveDetails {
 // ToMovePartial map a move to a move partial transfer object
 // move the move to map
 // lang the language expected
-func (m MoveMapper) ToMovePartial(move studio.Move, lang string) MovePartial {
+func (m MoveMapper) ToMovePartial(move studio.Move, lang string, policy *AccessPolicy) MovePartial {
 	slog.Debug("Mapping move to partial", "move", move.DbSymbol, "lang", lang)
 	partial := MovePartial{
 		Symbol:   move.DbSymbol,
@@ -118,7 +118,7 @@ func (m MoveMapper) ToMovePartial(move studio.Move, lang string) MovePartial {
 
 	// Map type
 	if move.Type != nil {
-		typePartial := m.typeMapper.ToTypePartial(*move.Type, lang)
+		typePartial := m.typeMapper.ToTypePartial(*move.Type, lang, policy)
 		partial.Type = typePartial
 	}
 

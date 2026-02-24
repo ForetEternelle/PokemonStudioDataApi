@@ -1,6 +1,8 @@
 package studio
 
-import "github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio/move"
+import (
+	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio/move"
+)
 
 var ExperienceTypeMap = map[ExperienceTypeDescriptor]string{
 	ExperienceErraticNum:     ExperienceErratic,
@@ -61,30 +63,31 @@ func (m *PokemonMapper) MapPokemonDescriptorToPokemon(desc PokemonDescriptor) *P
 // MapFormDescriptorToPokemonForm converts a FormDescriptor to a PokemonForm domain struct with reference resolution
 func (m *PokemonMapper) MapFormDescriptorToPokemonForm(desc FormDescriptor) *PokemonForm {
 	form := &PokemonForm{
-		Form:           desc.Form,
-		Height:         desc.Height,
-		Weight:         desc.Weight,
-		BaseHp:         desc.BaseHp,
-		BaseAtk:        desc.BaseAtk,
-		BaseDfe:        desc.BaseDfe,
-		BaseSpd:        desc.BaseSpd,
-		BaseAts:        desc.BaseAts,
-		BaseDfs:        desc.BaseDfs,
-		EvHp:           desc.EvHp,
-		EvAtk:          desc.EvAtk,
-		EvDfe:          desc.EvDfe,
-		EvSpd:          desc.EvSpd,
-		EvAts:          desc.EvAts,
-		EvDfs:          desc.EvDfs,
-		ExperienceType: ExperienceTypeMap[desc.ExperienceType],
-		BaseExperience: desc.BaseExperience,
-		BaseLoyalty:    desc.BaseLoyalty,
-		CatchRate:      desc.CatchRate,
-		FemaleRate:     desc.FemaleRate,
-		BreedGroups:    MapBreedGroups(desc.BreedGroups),
-		HatchSteps:     desc.HatchSteps,
-		BabyForm:       desc.BabyForm,
-		FrontOffsetY:   desc.FrontOffsetY,
+		Form:             desc.Form,
+		Height:           desc.Height,
+		Weight:           desc.Weight,
+		BaseHp:           desc.BaseHp,
+		BaseAtk:          desc.BaseAtk,
+		BaseDfe:          desc.BaseDfe,
+		BaseSpd:          desc.BaseSpd,
+		BaseAts:          desc.BaseAts,
+		BaseDfs:          desc.BaseDfs,
+		EvHp:             desc.EvHp,
+		EvAtk:            desc.EvAtk,
+		EvDfe:            desc.EvDfe,
+		EvSpd:            desc.EvSpd,
+		EvAts:            desc.EvAts,
+		EvDfs:            desc.EvDfs,
+		ExperienceType:   ExperienceTypeMap[desc.ExperienceType],
+		BaseExperience:   desc.BaseExperience,
+		BaseLoyalty:      desc.BaseLoyalty,
+		CatchRate:        desc.CatchRate,
+		FemaleRate:       desc.FemaleRate,
+		BreedGroups:      MapBreedGroups(desc.BreedGroups),
+		HatchSteps:       desc.HatchSteps,
+		BabyForm:         desc.BabyForm,
+		FrontOffsetY:     desc.FrontOffsetY,
+		CustomProperties: make(map[string]any),
 	}
 
 	if desc.BabyDbSymbol != nil {

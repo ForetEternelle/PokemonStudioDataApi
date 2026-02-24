@@ -7,20 +7,20 @@ import (
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/pagination"
 )
 
-type pokemonService struct {
+type PokemonService struct {
 	store         *studio.Store
 
 	pokemonMapper *PokemonMapper
 }
 
 func NewPokemonService(store *studio.Store, pokemonMapper *PokemonMapper) PokemonAPIServicer {
-	return &pokemonService{
+	return &PokemonService{
 		store:         store,
 		pokemonMapper: pokemonMapper,
 	}
 }
 
-func (s pokemonService) GetPokemonDetails(requestCtx context.Context, symbol string, lang string) (ImplResponse, error) {
+func (s PokemonService) GetPokemonDetails(requestCtx context.Context, symbol string, lang string) (ImplResponse, error) {
 	pkmn := s.store.FindPokemonBySymbol(symbol)
 
 	if pkmn == nil {
@@ -29,7 +29,7 @@ func (s pokemonService) GetPokemonDetails(requestCtx context.Context, symbol str
 	return ImplResponse{Code: 200, Body: s.pokemonMapper.PokemonToDetail(*pkmn, lang)}, nil
 }
 
-func (s pokemonService) GetPokemon(requestCtx context.Context, page int32, pageSize int32, lang string) (ImplResponse, error) {
+func (s PokemonService) GetPokemon(requestCtx context.Context, page int32, pageSize int32, lang string) (ImplResponse, error) {
 	p := int(page)
 	size := int(pageSize)
 	pr := pagination.NewPageRequest(p, size)
@@ -45,7 +45,7 @@ func (s pokemonService) GetPokemon(requestCtx context.Context, page int32, pageS
 	return ImplResponse{Code: 200, Body: pagination.NewPage(pr.Page, pr.Size, thumbnails, pkmnPage.Total)}, nil
 }
 
-func (s pokemonService) GetPokemonForm(requestCtx context.Context, symbol string, form int32, lang string) (ImplResponse, error) {
+func (s PokemonService) GetPokemonForm(requestCtx context.Context, symbol string, form int32, lang string) (ImplResponse, error) {
 	f := int(form)
 	pkmn := s.store.FindPokemonBySymbol(symbol)
 

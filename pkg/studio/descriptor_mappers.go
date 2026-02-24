@@ -41,9 +41,9 @@ func NewPokemonMapper(store *Store) *PokemonMapper {
 
 // MapPokemonDescriptorToPokemon converts a PokemonDescriptor to a Pokemon domain struct with reference resolution
 func (m *PokemonMapper) MapPokemonDescriptorToPokemon(desc PokemonDescriptor) *Pokemon {
-	forms := make([]PokemonForm, len(desc.Forms))
-	for i, formDesc := range desc.Forms {
-		forms[i] = *m.MapFormDescriptorToPokemonForm(formDesc)
+	forms := make(map[int32]PokemonForm, len(desc.Forms))
+	for _, formDesc := range desc.Forms {
+		forms[formDesc.Form] = *m.MapFormDescriptorToPokemonForm(formDesc)
 	}
 
 	pokemon := &Pokemon{

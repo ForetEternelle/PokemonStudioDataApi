@@ -35,7 +35,7 @@ type Translation map[string]string
 type Pokemon struct {
 	Id               int32
 	DbSymbol         string
-	Forms            []PokemonForm
+	Forms            map[int32]PokemonForm
 	Name             Translation
 	Description      Translation
 	CustomProperties map[string]any

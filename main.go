@@ -80,6 +80,11 @@ func main() {
 		panic("Failed to import data folder. Error: " + err.Error())
 	}
 
+	studioApiRouter, err := studioapi.GetRouter(studioapi.WithStore(store))
+	if err != nil {
+		panic("Failed to create api router. Error: " + err.Error())
+	}
+
 	r := chi.NewRouter()
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Throttle(100))
@@ -89,8 +94,6 @@ func main() {
 	startDate := time.Now().UTC()
 	r.Use(middleware.SetHeader("Last-Modified", startDate.Format(http.TimeFormat)))
 	r.Use(customMiddleware.Cache(startDate))
-
-	studioApiRouter := studioapi.MakeDefaultRouter(store)
 	r.Mount("/api", studioApiRouter)
 
 	addr := fmt.Sprintf(":%d", config.Port)

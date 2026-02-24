@@ -14,8 +14,8 @@ func TestPokemonToThumbnail(t *testing.T) {
 		Id:       1,
 		DbSymbol: "test",
 		Name:     studio.Translation{lang: "testName"},
-		Forms: []studio.PokemonForm{
-			{
+		Forms: map[int32]studio.PokemonForm{
+			0: {
 				Type1: &normalType,
 			},
 		},
@@ -53,8 +53,8 @@ func TestPokemonToDetail(t *testing.T) {
 		DbSymbol:    "test",
 		Name:        studio.Translation{lang: "testName"},
 		Description: studio.Translation{lang: "testDesc"},
-		Forms: []studio.PokemonForm{
-			{
+		Forms: map[int32]studio.PokemonForm{
+			0: {
 				Form:    0,
 				Type1:   &normalType,
 				BaseHp:  100,

@@ -15,7 +15,11 @@ type PokemonMapper struct {
 // NewPokemonMapper Create a new pokemon mapper
 // typeMapper the mapper for pokemon types
 // typeStore the store for pokemon types
-func NewPokemonMapper(typeMapper *TypeMapper, abilityMapper *AbilityMapper, store *studio.Store) *PokemonMapper {
+func NewPokemonMapper(
+	typeMapper *TypeMapper,
+	abilityMapper *AbilityMapper,
+	store *studio.Store,
+) *PokemonMapper {
 	return &PokemonMapper{
 		typeMapper,
 		abilityMapper,

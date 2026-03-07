@@ -1,10 +1,9 @@
-package studioapi_test
+package studioapi
 
 import (
 	"testing"
 
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio"
-	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio/studioapi"
 )
 
 func TestToTypeDetail(t *testing.T) {
@@ -19,8 +18,8 @@ func TestToTypeDetail(t *testing.T) {
 		}}),
 	)
 
-	typeMapper := studioapi.NewTypeMapper()
-	policy := studioapi.NewAccessPolicy()
+	typeMapper := NewTypeMapper()
+	policy := NewAccessPolicy()
 	typeDetail := typeMapper.ToTypeDetail(*pokemonType, lang, policy)
 
 	if typeDetail.Name != pokemonType.Name(lang) {
@@ -58,8 +57,8 @@ func TestToTypePartial(t *testing.T) {
 		studio.WithTypeName(studio.Translation{lang: "testName"}),
 	)
 
-	typeMapper := studioapi.NewTypeMapper()
-	policy := studioapi.NewAccessPolicy()
+	typeMapper := NewTypeMapper()
+	policy := NewAccessPolicy()
 	typePartial := typeMapper.ToTypePartial(*pokemonType, lang, policy)
 
 	if typePartial.Name != pokemonType.Name(lang) {

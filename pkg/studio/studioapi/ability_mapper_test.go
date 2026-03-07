@@ -1,10 +1,9 @@
-package studioapi_test
+package studioapi
 
 import (
 	"testing"
 
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio"
-	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio/studioapi"
 )
 
 func TestToAbilityDetail(t *testing.T) {
@@ -15,7 +14,7 @@ func TestToAbilityDetail(t *testing.T) {
 		studio.WithAbilityDescription(studio.Translation{lang: "testDescription"}),
 	)
 
-	abilityMapper := studioapi.NewAbilityMapper()
+	abilityMapper := NewAbilityMapper()
 	abilityDetail := abilityMapper.ToAbilityDetail(*ability, lang)
 
 	if abilityDetail.Name != ability.Name(lang) {
@@ -39,7 +38,7 @@ func TestToAbilityPartial(t *testing.T) {
 		studio.WithAbilityDescription(studio.Translation{lang: "testDescription"}),
 	)
 
-	abilityMapper := studioapi.NewAbilityMapper()
+	abilityMapper := NewAbilityMapper()
 	abilityPartial := abilityMapper.ToAbilityPartial(*ability, lang)
 
 	if abilityPartial.Name != ability.Name(lang) {

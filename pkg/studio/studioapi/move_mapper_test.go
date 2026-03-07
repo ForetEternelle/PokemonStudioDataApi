@@ -1,10 +1,9 @@
-package studioapi_test
+package studioapi
 
 import (
 	"testing"
 
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio"
-	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio/studioapi"
 )
 
 func TestMoveToDetail(t *testing.T) {
@@ -21,9 +20,9 @@ func TestMoveToDetail(t *testing.T) {
 		studio.WithMoveCategory("special"),
 	)
 
-	typeMapper := studioapi.NewTypeMapper()
-	moveMapper := studioapi.NewMoveMapper(typeMapper)
-	policy := studioapi.NewAccessPolicy()
+	typeMapper := NewTypeMapper()
+	moveMapper := NewMoveMapper(typeMapper)
+	policy := NewAccessPolicy()
 	moveDetail := moveMapper.ToMoveDetail(*move, lang, policy)
 
 	if moveDetail.Name != move.Name(lang) {
@@ -73,9 +72,9 @@ func TestMoveToPartial(t *testing.T) {
 		studio.WithMoveCategory("special"),
 	)
 
-	typeMapper := studioapi.NewTypeMapper()
-	moveMapper := studioapi.NewMoveMapper(typeMapper)
-	policy := studioapi.NewAccessPolicy()
+	typeMapper := NewTypeMapper()
+	moveMapper := NewMoveMapper(typeMapper)
+	policy := NewAccessPolicy()
 	movePartial := moveMapper.ToMovePartial(*move, lang, policy)
 
 	if movePartial.Name != move.Name(lang) {

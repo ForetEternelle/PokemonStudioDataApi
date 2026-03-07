@@ -50,19 +50,19 @@ func (m PokemonMapper) PokemonToThumbnail(p studio.Pokemon, lang string, policy 
 		return nil
 	}
 
-	var type2 *TypePartial
-	if mainForm.Type2().DbSymbol() != "" {
-		type2 = m.typeMapper.ToTypePartial(mainForm.Type2(), lang, policy)
-	}
-
-	return &PokemonThumbnail{
+	thumbnail := &PokemonThumbnail{
 		Symbol: p.DbSymbol(),
 		Number: p.ID(),
 		Image:  p.DbSymbol(),
 		Type1:  m.typeMapper.ToTypePartial(mainForm.Type1(), lang, policy),
-		Type2:  type2,
 		Name:   p.Name(lang),
 	}
+	var type2, ok = mainForm.Type2()
+	if ok {
+		thumbnail.Type2 = m.typeMapper.ToTypePartial(type2, lang, policy)
+	}
+
+	return thumbnail
 }
 
 func (m PokemonMapper) PokemonToDetail(p studio.Pokemon, lang string, policy *AccessPolicy) *PokemonDetails {
@@ -117,20 +117,14 @@ func (m PokemonMapper) FormToPokemonFormDetails(f studio.PokemonForm, lang strin
 
 	partialType1 := m.typeMapper.ToTypePartial(f.Type1(), lang, policy)
 	var partialType2 *TypePartial
-	if f.Type2().DbSymbol() != "" {
-		partialType2 = m.typeMapper.ToTypePartial(f.Type2(), lang, policy)
+	type2, ok := f.Type2()
+	if ok {
+		partialType2 = m.typeMapper.ToTypePartial(type2, lang, policy)
 	}
 
 	abilityPartials := iter2.Map(func(a studio.Ability) AbilityPartial {
 		return m.abilityMapper.ToAbilityPartial(a, lang)
 	}, slices.Values(filteredAbilities))
-
-	evHp := f.EvHp()
-	evAtk := f.EvAtk()
-	evDfe := f.EvDfe()
-	evSpd := f.EvSpd()
-	evAts := f.EvAts()
-	evDfs := f.EvDfs()
 
 	form := f.Form()
 	babyForm := f.BabyForm()
@@ -151,12 +145,12 @@ func (m PokemonMapper) FormToPokemonFormDetails(f studio.PokemonForm, lang strin
 		BaseAts: f.BaseAts(),
 		BaseDfs: f.BaseDfs(),
 
-		EvHp:  &evHp,
-		EvAtk: &evAtk,
-		EvDfe: &evDfe,
-		EvSpd: &evSpd,
-		EvAts: &evAts,
-		EvDfs: &evDfs,
+		EvHp: f.EvHp(),
+		EvAtk: f.EvAtk(),
+		EvDfe: f.EvDfe(),
+		EvSpd: f.EvSpd(),
+		EvAts: f.EvAts(),
+		EvDfs: f.EvDfs(),
 
 		ExperienceType: f.ExperienceType(),
 		BaseExperience: f.BaseExperience(),

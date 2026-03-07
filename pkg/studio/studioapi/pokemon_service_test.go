@@ -1,4 +1,4 @@
-package studioapi_test
+package studioapi
 
 import (
 	"context"
@@ -6,10 +6,9 @@ import (
 
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/pagination"
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio"
-	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio/studioapi"
 )
 
-func setupPokemonService() (*studio.Store, studioapi.PokemonAPIServicer) {
+func setupPokemonService() (*studio.Store, PokemonAPIServicer) {
 	store := studio.NewStore()
 	normalType := studio.NewPokemonType(studio.WithPokemonTypeDbSymbol("normal"), studio.WithTypeName(studio.Translation{"en": "Normal"}))
 	electricType := studio.NewPokemonType(studio.WithPokemonTypeDbSymbol("electric"), studio.WithTypeName(studio.Translation{"en": "Electric"}))
@@ -52,15 +51,15 @@ func setupPokemonService() (*studio.Store, studioapi.PokemonAPIServicer) {
 	)
 	store.AddPokemon(*bulbasaur)
 
-	typeMapper := studioapi.NewTypeMapper()
-	abilityMapper := studioapi.NewAbilityMapper()
-	pokemonMapper := studioapi.NewPokemonMapper(typeMapper, abilityMapper, store)
+	typeMapper := NewTypeMapper()
+	abilityMapper := NewAbilityMapper()
+	pokemonMapper := NewPokemonMapper(typeMapper, abilityMapper, store)
 
-	accessPolicyFactory := func(ctx context.Context) *studioapi.AccessPolicy {
-		return studioapi.NewAccessPolicy()
+	accessPolicyFactory := func(ctx context.Context) *AccessPolicy {
+		return NewAccessPolicy()
 	}
 
-	service := studioapi.NewPokemonService(store, pokemonMapper, accessPolicyFactory)
+	service := NewPokemonService(store, pokemonMapper, accessPolicyFactory)
 	return store, service
 }
 
@@ -75,7 +74,7 @@ func TestPokemonService_GetPokemonDetails(t *testing.T) {
 		t.Error("Expected status 200, got", resp.Code)
 	}
 
-	details := resp.Body.(*studioapi.PokemonDetails)
+	details := resp.Body.(*PokemonDetails)
 	if details.Symbol != "pikachu" {
 		t.Error("Expected symbol pikachu, got", details.Symbol)
 	}
@@ -110,7 +109,7 @@ func TestPokemonService_GetPokemon(t *testing.T) {
 		t.Error("Expected status 200, got", resp.Code)
 	}
 
-	page := resp.Body.(pagination.Page[*studioapi.PokemonThumbnail])
+	page := resp.Body.(pagination.Page[*PokemonThumbnail])
 	if page.Content == nil {
 		t.Error("Expected non-nil content")
 	}
@@ -138,18 +137,18 @@ func TestPokemonService_GetPokemon_Pagination(t *testing.T) {
 		store.AddPokemon(*pokemon)
 	}
 
-	typeMapper := studioapi.NewTypeMapper()
-	abilityMapper := studioapi.NewAbilityMapper()
-	pokemonMapper := studioapi.NewPokemonMapper(typeMapper, abilityMapper, store)
+	typeMapper := NewTypeMapper()
+	abilityMapper := NewAbilityMapper()
+	pokemonMapper := NewPokemonMapper(typeMapper, abilityMapper, store)
 
-	accessPolicyFactory := func(ctx context.Context) *studioapi.AccessPolicy {
-		return studioapi.NewAccessPolicy()
+	accessPolicyFactory := func(ctx context.Context) *AccessPolicy {
+		return NewAccessPolicy()
 	}
 
-	service := studioapi.NewPokemonService(store, pokemonMapper, accessPolicyFactory)
+	service := NewPokemonService(store, pokemonMapper, accessPolicyFactory)
 
 	resp, _ := service.GetPokemon(context.Background(), 0, 5, "en")
-	page := resp.Body.(pagination.Page[*studioapi.PokemonThumbnail])
+	page := resp.Body.(pagination.Page[*PokemonThumbnail])
 
 	if len(page.Content) != 5 {
 		t.Error("Expected 5 items per page, got", len(page.Content))
@@ -170,7 +169,7 @@ func TestPokemonService_GetPokemonForm(t *testing.T) {
 		t.Error("Expected status 200, got", resp.Code)
 	}
 
-	form := resp.Body.(*studioapi.FormDetails)
+	form := resp.Body.(*FormDetails)
 	if form.Form == nil {
 		t.Error("Expected non-nil form")
 	}

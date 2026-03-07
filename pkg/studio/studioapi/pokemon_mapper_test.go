@@ -1,32 +1,31 @@
-package studioapi_test
+package studioapi
 
 import (
 	"testing"
 
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio"
-	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio/studioapi"
 )
 
 func TestPokemonToThumbnail(t *testing.T) {
 	lang := "test"
-	normalType := studio.NewPokemonType(studio.WithPokemonTypeDbSymbol("normal"))
-	form := studio.NewPokemonForm(
-		studio.WithForm(0),
-		studio.WithType1(normalType),
-	)
-	pokemon := studio.NewPokemon(
-		studio.WithID(1),
-		studio.WithDbSymbol("test"),
-		studio.WithName(studio.Translation{lang: "testName"}),
-		studio.WithForms(map[int32]studio.PokemonForm{0: *form}),
-	)
+	normalType := studio.NewTypeBuilder().DbSymbol("normal").Build()
+	form := studio.NewPokemonFormBuilder().
+		Form(0).
+		Type1(normalType).
+		Build()
+	pokemon := studio.NewPokemonBuilder().
+		ID(1).
+		DbSymbol("test").
+		Name(studio.Translation{lang: "testName"}).
+		Forms(map[int32]studio.PokemonForm{0: *form}).
+		Build()
 
-	typeMapper := studioapi.NewTypeMapper()
-	abilityMapper := studioapi.NewAbilityMapper()
+	typeMapper := NewTypeMapper()
+	abilityMapper := NewAbilityMapper()
 	store := studio.NewStore()
-	pokemonMapper := studioapi.NewPokemonMapper(typeMapper, abilityMapper, store)
+	pokemonMapper := NewPokemonMapper(typeMapper, abilityMapper, store)
 
-	policy := studioapi.NewAccessPolicy()
+	policy := NewAccessPolicy()
 	thumbnail := pokemonMapper.PokemonToThumbnail(*pokemon, lang, policy)
 
 	if thumbnail.Image != pokemon.DbSymbol() {
@@ -47,29 +46,29 @@ func TestPokemonToThumbnail(t *testing.T) {
 
 func TestPokemonToDetail(t *testing.T) {
 	lang := "test"
-	normalType := studio.NewPokemonType(studio.WithPokemonTypeDbSymbol("normal"))
+	normalType := studio.NewTypeBuilder().DbSymbol("normal").Build()
 
-	form := studio.NewPokemonForm(
-		studio.WithForm(0),
-		studio.WithType1(normalType),
-		studio.WithBaseHp(100),
-		studio.WithBaseAtk(50),
-	)
-	pokemon := studio.NewPokemon(
-		studio.WithID(1),
-		studio.WithDbSymbol("test"),
-		studio.WithName(studio.Translation{lang: "testName"}),
-		studio.WithDescription(studio.Translation{lang: "testDesc"}),
-		studio.WithForms(map[int32]studio.PokemonForm{0: *form}),
-	)
+	form := studio.NewPokemonFormBuilder().
+		Form(0).
+		Type1(normalType).
+		BaseHp(100).
+		BaseAtk(50).
+		Build()
+	pokemon := studio.NewPokemonBuilder().
+		ID(1).
+		DbSymbol("test").
+		Name(studio.Translation{lang: "testName"}).
+		Description(studio.Translation{lang: "testDesc"}).
+		Forms(map[int32]studio.PokemonForm{0: *form}).
+		Build()
 
-	typeMapper := studioapi.NewTypeMapper()
-	abilityMapper := studioapi.NewAbilityMapper()
+	typeMapper := NewTypeMapper()
+	abilityMapper := NewAbilityMapper()
 	store := studio.NewStore()
 	store.AddType(*normalType)
-	pokemonMapper := studioapi.NewPokemonMapper(typeMapper, abilityMapper, store)
+	pokemonMapper := NewPokemonMapper(typeMapper, abilityMapper, store)
 
-	policy := studioapi.NewAccessPolicy()
+	policy := NewAccessPolicy()
 	detail := pokemonMapper.PokemonToDetail(*pokemon, lang, policy)
 
 	if detail.Symbol != pokemon.DbSymbol() {

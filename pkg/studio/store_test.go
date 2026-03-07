@@ -28,7 +28,7 @@ func TestLoad(t *testing.T) {
 }
 
 func TestFindTypeBySymbol(t *testing.T) {
-	types := []PokemonType{*NewPokemonType(WithPokemonTypeDbSymbol("test"))}
+	types := []PokemonType{*NewTypeBuilder().DbSymbol("test").Build()}
 	store := NewStore()
 
 	for _, pokemonType := range types {
@@ -43,9 +43,9 @@ func TestFindTypeBySymbol(t *testing.T) {
 
 func TestFindAllTypes(t *testing.T) {
 	types := []PokemonType{
-		*NewPokemonType(WithPokemonTypeDbSymbol("1")),
-		*NewPokemonType(WithPokemonTypeDbSymbol("2")),
-		*NewPokemonType(WithPokemonTypeDbSymbol("3")),
+		*NewTypeBuilder().DbSymbol("1").Build(),
+		*NewTypeBuilder().DbSymbol("2").Build(),
+		*NewTypeBuilder().DbSymbol("3").Build(),
 	}
 	store := NewStore()
 
@@ -62,9 +62,9 @@ func TestFindAllTypes(t *testing.T) {
 
 func TestFindAllPokemon(t *testing.T) {
 	pokemonList := []Pokemon{
-		*NewPokemon(WithID(1), WithDbSymbol("1")),
-		*NewPokemon(WithID(2), WithDbSymbol("2")),
-		*NewPokemon(WithID(4), WithDbSymbol("4")),
+		*NewPokemonBuilder().ID(1).DbSymbol("1").Build(),
+		*NewPokemonBuilder().ID(2).DbSymbol("2").Build(),
+		*NewPokemonBuilder().ID(4).DbSymbol("4").Build(),
 	}
 
 	store := NewStore()
@@ -83,9 +83,9 @@ func TestFindAllPokemon(t *testing.T) {
 
 func TestFindPokemonBySymbol(t *testing.T) {
 	pokemonList := []Pokemon{
-		*NewPokemon(WithID(1), WithDbSymbol("1")),
-		*NewPokemon(WithID(2), WithDbSymbol("2")),
-		*NewPokemon(WithID(4), WithDbSymbol("4")),
+		*NewPokemonBuilder().ID(1).DbSymbol("1").Build(),
+		*NewPokemonBuilder().ID(2).DbSymbol("2").Build(),
+		*NewPokemonBuilder().ID(4).DbSymbol("4").Build(),
 	}
 	store := NewStore()
 
@@ -109,9 +109,9 @@ func TestFindPokemonBySymbol(t *testing.T) {
 
 func TestFindAllPokemonWithFilters(t *testing.T) {
 	pokemonList := []Pokemon{
-		*NewPokemon(WithID(1), WithDbSymbol("pikachu")),
-		*NewPokemon(WithID(2), WithDbSymbol("bulbasaur")),
-		*NewPokemon(WithID(3), WithDbSymbol("charmander")),
+		*NewPokemonBuilder().ID(1).DbSymbol("pikachu").Build(),
+		*NewPokemonBuilder().ID(2).DbSymbol("bulbasaur").Build(),
+		*NewPokemonBuilder().ID(3).DbSymbol("charmander").Build(),
 	}
 	store := NewStore()
 

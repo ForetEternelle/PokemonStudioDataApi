@@ -10,45 +10,45 @@ import (
 
 func setupPokemonService() (*studio.Store, PokemonAPIServicer) {
 	store := studio.NewStore()
-	normalType := studio.NewPokemonType(studio.WithPokemonTypeDbSymbol("normal"), studio.WithTypeName(studio.Translation{"en": "Normal"}))
-	electricType := studio.NewPokemonType(studio.WithPokemonTypeDbSymbol("electric"), studio.WithTypeName(studio.Translation{"en": "Electric"}))
+	normalType := studio.NewTypeBuilder().DbSymbol("normal").Name(studio.Translation{"en": "Normal"}).Build()
+	electricType := studio.NewTypeBuilder().DbSymbol("electric").Name(studio.Translation{"en": "Electric"}).Build()
 	store.AddType(*normalType)
 	store.AddType(*electricType)
 
-	form0 := studio.NewPokemonForm(
-		studio.WithForm(0),
-		studio.WithType1(electricType),
-		studio.WithBaseHp(35),
-		studio.WithBaseAtk(55),
-	)
-	form1 := studio.NewPokemonForm(
-		studio.WithForm(1),
-		studio.WithType1(electricType),
-		studio.WithBaseHp(20),
-		studio.WithBaseAtk(40),
-	)
-	pikachu := studio.NewPokemon(
-		studio.WithID(25),
-		studio.WithDbSymbol("pikachu"),
-		studio.WithName(studio.Translation{"en": "Pikachu"}),
-		studio.WithDescription(studio.Translation{"en": "Electric mouse"}),
-		studio.WithForms(map[int32]studio.PokemonForm{0: *form0, 1: *form1}),
-	)
+	form0 := studio.NewPokemonFormBuilder().
+		Form(0).
+		Type1(electricType).
+		BaseHp(35).
+		BaseAtk(55).
+		Build()
+	form1 := studio.NewPokemonFormBuilder().
+		Form(1).
+		Type1(electricType).
+		BaseHp(20).
+		BaseAtk(40).
+		Build()
+	pikachu := studio.NewPokemonBuilder().
+		ID(25).
+		DbSymbol("pikachu").
+		Name(studio.Translation{"en": "Pikachu"}).
+		Description(studio.Translation{"en": "Electric mouse"}).
+		Forms(map[int32]studio.PokemonForm{0: *form0, 1: *form1}).
+		Build()
 	store.AddPokemon(*pikachu)
 
-	bulbasaurForm := studio.NewPokemonForm(
-		studio.WithForm(0),
-		studio.WithType1(normalType),
-		studio.WithBaseHp(45),
-		studio.WithBaseAtk(49),
-	)
-	bulbasaur := studio.NewPokemon(
-		studio.WithID(1),
-		studio.WithDbSymbol("bulbasaur"),
-		studio.WithName(studio.Translation{"en": "Bulbasaur"}),
-		studio.WithDescription(studio.Translation{"en": "Grass starter"}),
-		studio.WithForms(map[int32]studio.PokemonForm{0: *bulbasaurForm}),
-	)
+	bulbasaurForm := studio.NewPokemonFormBuilder().
+		Form(0).
+		Type1(normalType).
+		BaseHp(45).
+		BaseAtk(49).
+		Build()
+	bulbasaur := studio.NewPokemonBuilder().
+		ID(1).
+		DbSymbol("bulbasaur").
+		Name(studio.Translation{"en": "Bulbasaur"}).
+		Description(studio.Translation{"en": "Grass starter"}).
+		Forms(map[int32]studio.PokemonForm{0: *bulbasaurForm}).
+		Build()
 	store.AddPokemon(*bulbasaur)
 
 	typeMapper := NewTypeMapper()
@@ -120,20 +120,20 @@ func TestPokemonService_GetPokemon(t *testing.T) {
 
 func TestPokemonService_GetPokemon_Pagination(t *testing.T) {
 	store := studio.NewStore()
-	normalType := studio.NewPokemonType(studio.WithPokemonTypeDbSymbol("normal"))
+	normalType := studio.NewTypeBuilder().DbSymbol("normal").Build()
 	store.AddType(*normalType)
 
 	for i := 1; i <= 15; i++ {
-		form := studio.NewPokemonForm(
-			studio.WithForm(0),
-			studio.WithType1(normalType),
-		)
-		pokemon := studio.NewPokemon(
-			studio.WithID(int32(i)),
-			studio.WithDbSymbol("pokemon_"+string(rune(i))),
-			studio.WithName(studio.Translation{"en": "Pokemon"}),
-			studio.WithForms(map[int32]studio.PokemonForm{0: *form}),
-		)
+		form := studio.NewPokemonFormBuilder().
+			Form(0).
+			Type1(normalType).
+			Build()
+		pokemon := studio.NewPokemonBuilder().
+			ID(int32(i)).
+			DbSymbol("pokemon_" + string(rune(i))).
+			Name(studio.Translation{"en": "Pokemon"}).
+			Forms(map[int32]studio.PokemonForm{0: *form}).
+			Build()
 		store.AddPokemon(*pokemon)
 	}
 

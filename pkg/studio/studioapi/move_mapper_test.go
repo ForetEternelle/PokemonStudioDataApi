@@ -8,17 +8,17 @@ import (
 
 func TestMoveToDetail(t *testing.T) {
 	lang := "test"
-	fireType := studio.NewPokemonType(studio.WithPokemonTypeDbSymbol("fire"))
-	move := studio.NewMove(
-		studio.WithMoveDbSymbol("testDbSymbol"),
-		studio.WithMoveName(studio.Translation{lang: "testName"}),
-		studio.WithMoveDescription(studio.Translation{lang: "testDescription"}),
-		studio.WithMovePower(80),
-		studio.WithMoveAccuracy(100),
-		studio.WithMovePP(15),
-		studio.WithMoveType(fireType),
-		studio.WithMoveCategory("special"),
-	)
+	fireType := studio.NewTypeBuilder().DbSymbol("fire").Build()
+	move := studio.NewMoveBuilder().
+		DbSymbol("testDbSymbol").
+		Name(studio.Translation{lang: "testName"}).
+		Description(studio.Translation{lang: "testDescription"}).
+		Power(80).
+		Accuracy(100).
+		PP(15).
+		Type(fireType).
+		Category("special").
+		Build()
 
 	typeMapper := NewTypeMapper()
 	moveMapper := NewMoveMapper(typeMapper)
@@ -60,17 +60,17 @@ func TestMoveToDetail(t *testing.T) {
 
 func TestMoveToPartial(t *testing.T) {
 	lang := "test"
-	fireType := studio.NewPokemonType(studio.WithPokemonTypeDbSymbol("fire"))
-	move := studio.NewMove(
-		studio.WithMoveDbSymbol("testDbSymbol"),
-		studio.WithMoveName(studio.Translation{lang: "testName"}),
-		studio.WithMoveDescription(studio.Translation{lang: "testDescription"}),
-		studio.WithMovePower(80),
-		studio.WithMoveAccuracy(100),
-		studio.WithMovePP(15),
-		studio.WithMoveType(fireType),
-		studio.WithMoveCategory("special"),
-	)
+	fireType := studio.NewTypeBuilder().DbSymbol("fire").Build()
+	move := studio.NewMoveBuilder().
+		DbSymbol("testDbSymbol").
+		Name(studio.Translation{lang: "testName"}).
+		Description(studio.Translation{lang: "testDescription"}).
+		Power(80).
+		Accuracy(100).
+		PP(15).
+		Type(fireType).
+		Category("special").
+		Build()
 
 	typeMapper := NewTypeMapper()
 	moveMapper := NewMoveMapper(typeMapper)

@@ -8,15 +8,15 @@ import (
 
 func TestToTypeDetail(t *testing.T) {
 	lang := "test"
-	pokemonType := studio.NewPokemonType(
-		studio.WithPokemonTypeDbSymbol("testDbSymbol"),
-		studio.WithTypeColor("testColor"),
-		studio.WithTypeName(studio.Translation{lang: "testName"}),
-		studio.WithDamageTo([]studio.TypeDamage{{
+	pokemonType := studio.NewTypeBuilder().
+		DbSymbol("testDbSymbol").
+		Color("testColor").
+		Name(studio.Translation{lang: "testName"}).
+		DamageTo([]studio.TypeDamage{{
 			DefensiveType: "testDefType",
 			Factor:        0.2,
-		}}),
-	)
+		}}).
+		Build()
 
 	typeMapper := NewTypeMapper()
 	policy := NewAccessPolicy()
@@ -51,11 +51,11 @@ func TestToTypeDetail(t *testing.T) {
 
 func TestToTypePartial(t *testing.T) {
 	lang := "test"
-	pokemonType := studio.NewPokemonType(
-		studio.WithPokemonTypeDbSymbol("testDbSymbol"),
-		studio.WithTypeColor("testColor"),
-		studio.WithTypeName(studio.Translation{lang: "testName"}),
-	)
+	pokemonType := studio.NewTypeBuilder().
+		DbSymbol("testDbSymbol").
+		Color("testColor").
+		Name(studio.Translation{lang: "testName"}).
+		Build()
 
 	typeMapper := NewTypeMapper()
 	policy := NewAccessPolicy()

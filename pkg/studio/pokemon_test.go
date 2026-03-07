@@ -5,9 +5,9 @@ import (
 )
 
 func TestComparePokemonId(t *testing.T) {
-	p1 := NewPokemon(WithID(1))
-	p2 := NewPokemon(WithID(2))
-	p3 := NewPokemon(WithID(1))
+	p1 := NewPokemonBuilder().ID(1).Build()
+	p2 := NewPokemonBuilder().ID(2).Build()
+	p3 := NewPokemonBuilder().ID(1).Build()
 
 	if ComparePokemonId(p1, p2) != -1 {
 		t.Error("ComparePokemonId with p1:", p1.ID(), "and p2:", p2.ID(), "should return -1")

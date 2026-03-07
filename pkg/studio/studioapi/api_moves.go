@@ -19,7 +19,7 @@ import (
 
 // MovesAPIController binds http requests to an api service and writes the service results to the http response
 type MovesAPIController struct {
-	service      MovesAPIServicer
+	service MovesAPIServicer
 	errorHandler ErrorHandler
 }
 

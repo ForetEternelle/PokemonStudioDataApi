@@ -102,36 +102,36 @@ func Load(folder string) (*Store, error) {
 func (s *Store) AddPokemon(pokemon Pokemon) *Pokemon {
 	insertIndex := len(s.pokemonList)
 	for i, existingPokemon := range s.pokemonList {
-		if pokemon.Id < existingPokemon.Id {
+		if pokemon.ID() < existingPokemon.ID() {
 			insertIndex = i
 			break
 		}
 	}
 
 	s.pokemonList = slices.Insert(s.pokemonList, insertIndex, pokemon)
-	s.pokemonBySymbol[pokemon.DbSymbol] = &pokemon
-	slog.Info("Adding pokemon", "symbol", pokemon.DbSymbol)
+	s.pokemonBySymbol[pokemon.DbSymbol()] = &pokemon
+	slog.Info("Adding pokemon", "symbol", pokemon.DbSymbol())
 	return &pokemon
 }
 
 func (s *Store) AddType(pokemonType PokemonType) *PokemonType {
 	s.types = append(s.types, pokemonType)
-	s.pokemonTypesBySymbol[pokemonType.DbSymbol] = &pokemonType
-	slog.Info("Adding pokemon type", "symbol", pokemonType.DbSymbol)
+	s.pokemonTypesBySymbol[pokemonType.DbSymbol()] = &pokemonType
+	slog.Info("Adding pokemon type", "symbol", pokemonType.DbSymbol())
 	return &pokemonType
 }
 
 func (s *Store) AddAbility(ability Ability) *Ability {
 	s.abilities = append(s.abilities, ability)
-	s.abilitiesBySymbol[ability.DbSymbol] = &ability
-	slog.Info("Adding ability", "symbol", ability.DbSymbol)
+	s.abilitiesBySymbol[ability.DbSymbol()] = &ability
+	slog.Info("Adding ability", "symbol", ability.DbSymbol())
 	return &ability
 }
 
 func (s *Store) AddMove(move Move) *Move {
 	s.moves = append(s.moves, move)
-	s.movesBySymbol[move.DbSymbol] = &move
-	slog.Info("Adding move", "symbol", move.DbSymbol)
+	s.movesBySymbol[move.DbSymbol()] = &move
+	slog.Info("Adding move", "symbol", move.DbSymbol())
 	return &move
 }
 

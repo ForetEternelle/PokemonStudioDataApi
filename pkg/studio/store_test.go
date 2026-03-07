@@ -28,7 +28,7 @@ func TestLoad(t *testing.T) {
 }
 
 func TestFindTypeBySymbol(t *testing.T) {
-	types := []PokemonType{{DbSymbol: "test"}}
+	types := []PokemonType{*NewPokemonType(WithPokemonTypeDbSymbol("test"))}
 	store := NewStore()
 
 	for _, pokemonType := range types {
@@ -43,9 +43,9 @@ func TestFindTypeBySymbol(t *testing.T) {
 
 func TestFindAllTypes(t *testing.T) {
 	types := []PokemonType{
-		{DbSymbol: "1"},
-		{DbSymbol: "2"},
-		{DbSymbol: "3"},
+		*NewPokemonType(WithPokemonTypeDbSymbol("1")),
+		*NewPokemonType(WithPokemonTypeDbSymbol("2")),
+		*NewPokemonType(WithPokemonTypeDbSymbol("3")),
 	}
 	store := NewStore()
 
@@ -62,9 +62,9 @@ func TestFindAllTypes(t *testing.T) {
 
 func TestFindAllPokemon(t *testing.T) {
 	pokemonList := []Pokemon{
-		{Id: 1, DbSymbol: "1"},
-		{Id: 2, DbSymbol: "2"},
-		{Id: 4, DbSymbol: "4"},
+		*NewPokemon(WithID(1), WithDbSymbol("1")),
+		*NewPokemon(WithID(2), WithDbSymbol("2")),
+		*NewPokemon(WithID(4), WithDbSymbol("4")),
 	}
 
 	store := NewStore()
@@ -72,7 +72,7 @@ func TestFindAllPokemon(t *testing.T) {
 		store.AddPokemon(pokemon)
 	}
 
-	idLessThan3 := func(pkmn Pokemon) bool { return pkmn.Id < 3 }
+	idLessThan3 := func(pkmn Pokemon) bool { return pkmn.ID() < 3 }
 	result := store.FindAllPokemon(idLessThan3)
 	resultLen := len(slices.Collect(result))
 
@@ -83,9 +83,9 @@ func TestFindAllPokemon(t *testing.T) {
 
 func TestFindPokemonBySymbol(t *testing.T) {
 	pokemonList := []Pokemon{
-		{Id: 1, DbSymbol: "1"},
-		{Id: 2, DbSymbol: "2"},
-		{Id: 4, DbSymbol: "4"},
+		*NewPokemon(WithID(1), WithDbSymbol("1")),
+		*NewPokemon(WithID(2), WithDbSymbol("2")),
+		*NewPokemon(WithID(4), WithDbSymbol("4")),
 	}
 	store := NewStore()
 
@@ -102,16 +102,16 @@ func TestFindPokemonBySymbol(t *testing.T) {
 	if found == nil {
 		t.Error("Expect result not to be null")
 	}
-	if found.Id != 4 {
-		t.Error("Expect result ID to be 4, is", found.Id)
+	if found.ID() != 4 {
+		t.Error("Expect result ID to be 4, is", found.ID())
 	}
 }
 
 func TestFindAllPokemonWithFilters(t *testing.T) {
 	pokemonList := []Pokemon{
-		{Id: 1, DbSymbol: "pikachu"},
-		{Id: 2, DbSymbol: "bulbasaur"},
-		{Id: 3, DbSymbol: "charmander"},
+		*NewPokemon(WithID(1), WithDbSymbol("pikachu")),
+		*NewPokemon(WithID(2), WithDbSymbol("bulbasaur")),
+		*NewPokemon(WithID(3), WithDbSymbol("charmander")),
 	}
 	store := NewStore()
 
@@ -119,7 +119,7 @@ func TestFindAllPokemonWithFilters(t *testing.T) {
 		store.AddPokemon(pokemon)
 	}
 
-	idGreaterThan1 := func(p Pokemon) bool { return p.Id > 1 }
+	idGreaterThan1 := func(p Pokemon) bool { return p.ID() > 1 }
 	result := store.FindAllPokemon(idGreaterThan1)
 	resultSlice := slices.Collect(result)
 

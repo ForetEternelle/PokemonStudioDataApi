@@ -9,48 +9,48 @@ import (
 
 func TestToAbilityDetail(t *testing.T) {
 	lang := "test"
-	ability := studio.Ability{
-		DbSymbol:    "testDbSymbol",
-		Name:        studio.Translation{lang: "testName"},
-		Description: studio.Translation{lang: "testDescription"},
-	}
+	ability := studio.NewAbility(
+		studio.WithAbilityDbSymbol("testDbSymbol"),
+		studio.WithAbilityName(studio.Translation{lang: "testName"}),
+		studio.WithAbilityDescription(studio.Translation{lang: "testDescription"}),
+	)
 
 	abilityMapper := studioapi.NewAbilityMapper()
-	abilityDetail := abilityMapper.ToAbilityDetail(ability, lang)
+	abilityDetail := abilityMapper.ToAbilityDetail(*ability, lang)
 
-	if abilityDetail.Name != ability.Name[lang] {
-		t.Error("Mapper should map name, expected", ability.Name[lang], ", has", abilityDetail.Name)
+	if abilityDetail.Name != ability.Name(lang) {
+		t.Error("Mapper should map name, expected", ability.Name(lang), ", has", abilityDetail.Name)
 	}
 
-	if abilityDetail.Symbol != ability.DbSymbol {
-		t.Error("Mapper should map db symbol, expected", ability.DbSymbol, ", has", abilityDetail.Symbol)
+	if abilityDetail.Symbol != ability.DbSymbol() {
+		t.Error("Mapper should map db symbol, expected", ability.DbSymbol(), ", has", abilityDetail.Symbol)
 	}
 
-	if abilityDetail.Description != ability.Description[lang] {
-		t.Error("Mapper should map description, expected", ability.Description[lang], ", has", abilityDetail.Description)
+	if abilityDetail.Description != ability.Description(lang) {
+		t.Error("Mapper should map description, expected", ability.Description(lang), ", has", abilityDetail.Description)
 	}
 }
 
 func TestToAbilityPartial(t *testing.T) {
 	lang := "test"
-	ability := studio.Ability{
-		DbSymbol:    "testDbSymbol",
-		Name:        studio.Translation{lang: "testName"},
-		Description: studio.Translation{lang: "testDescription"},
-	}
+	ability := studio.NewAbility(
+		studio.WithAbilityDbSymbol("testDbSymbol"),
+		studio.WithAbilityName(studio.Translation{lang: "testName"}),
+		studio.WithAbilityDescription(studio.Translation{lang: "testDescription"}),
+	)
 
 	abilityMapper := studioapi.NewAbilityMapper()
-	abilityPartial := abilityMapper.ToAbilityPartial(ability, lang)
+	abilityPartial := abilityMapper.ToAbilityPartial(*ability, lang)
 
-	if abilityPartial.Name != ability.Name[lang] {
-		t.Error("Mapper should map name, expected", ability.Name[lang], ", has", abilityPartial.Name)
+	if abilityPartial.Name != ability.Name(lang) {
+		t.Error("Mapper should map name, expected", ability.Name(lang), ", has", abilityPartial.Name)
 	}
 
-	if abilityPartial.Symbol != ability.DbSymbol {
-		t.Error("Mapper should map db symbol, expected", ability.DbSymbol, ", has", abilityPartial.Symbol)
+	if abilityPartial.Symbol != ability.DbSymbol() {
+		t.Error("Mapper should map db symbol, expected", ability.DbSymbol(), ", has", abilityPartial.Symbol)
 	}
 
-	if abilityPartial.Description != ability.Description[lang] {
-		t.Error("Mapper should map description, expected", ability.Description[lang], ", has", abilityPartial.Description)
+	if abilityPartial.Description != ability.Description(lang) {
+		t.Error("Mapper should map description, expected", ability.Description(lang), ", has", abilityPartial.Description)
 	}
 }

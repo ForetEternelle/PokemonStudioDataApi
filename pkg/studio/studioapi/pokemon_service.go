@@ -63,15 +63,27 @@ func (s PokemonService) GetPokemonForm(requestCtx context.Context, symbol string
 		return ImplResponse{Code: 404, Body: nil}, nil
 	}
 
-	pkmnForm, ok := pkmn.Forms[form]
-	if !ok {
-		return ImplResponse{Code: 404, Body: nil}, nil
+	var pkmnForm studio.PokemonForm
+	hasForm := false
+	for formId, f := range pkmn.Forms() {
+		if formId == form {
+			passesFilter := true
+			for _, filter := range policy.FormFilters {
+				if !filter(f) {
+					passesFilter = false
+					break
+				}
+			}
+			if passesFilter {
+				pkmnForm = f
+				hasForm = true
+				break
+			}
+		}
 	}
 
-	for _, filter := range policy.FormFilters {
-		if !filter(pkmnForm) {
-			return ImplResponse{Code: 404, Body: nil}, nil
-		}
+	if !hasForm {
+		return ImplResponse{Code: 404, Body: nil}, nil
 	}
 
 	return ImplResponse{Code: 200, Body: s.pokemonMapper.FormToPokemonFormDetails(pkmnForm, lang, policy)}, nil

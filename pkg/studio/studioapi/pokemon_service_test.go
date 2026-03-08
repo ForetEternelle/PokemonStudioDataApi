@@ -1,65 +1,70 @@
-package studioapi_test
+package studioapi
 
 import (
 	"context"
 	"testing"
 
-	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/iter2"
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/pagination"
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio"
-	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio/studioapi"
 )
 
-func setupPokemonService(
-	pokemonCtxFilter studioapi.ContextFilter[studio.Pokemon],
-	formCtxFilter studioapi.ContextFilter[studio.PokemonForm],
-) (*studio.Store, studioapi.PokemonAPIServicer) {
+func setupPokemonService() (*studio.Store, PokemonAPIServicer) {
 	store := studio.NewStore()
-	normalType := studio.PokemonType{DbSymbol: "normal", Name: studio.Translation{"en": "Normal"}}
-	electricType := studio.PokemonType{DbSymbol: "electric", Name: studio.Translation{"en": "Electric"}}
-	store.AddType(normalType)
-	store.AddType(electricType)
+	normalType := studio.NewTypeBuilder().DbSymbol("normal").Name(studio.Translation{"en": "Normal"}).Build()
+	electricType := studio.NewTypeBuilder().DbSymbol("electric").Name(studio.Translation{"en": "Electric"}).Build()
+	store.AddType(*normalType)
+	store.AddType(*electricType)
 
-	pikachu := studio.Pokemon{
-		Id:          25,
-		DbSymbol:    "pikachu",
-		Name:        studio.Translation{"en": "Pikachu"},
-		Description: studio.Translation{"en": "Electric mouse"},
-		Forms: map[int32]studio.PokemonForm{
-			0: {Form: 0, Type1: &electricType, BaseHp: 35, BaseAtk: 55},
-			1: {Form: 1, Type1: &electricType, BaseHp: 20, BaseAtk: 40},
-		},
+	form0 := studio.NewPokemonFormBuilder().
+		Form(0).
+		Type1(electricType).
+		BaseHp(35).
+		BaseAtk(55).
+		Build()
+	form1 := studio.NewPokemonFormBuilder().
+		Form(1).
+		Type1(electricType).
+		BaseHp(20).
+		BaseAtk(40).
+		Build()
+	pikachu := studio.NewPokemonBuilder().
+		ID(25).
+		DbSymbol("pikachu").
+		Name(studio.Translation{"en": "Pikachu"}).
+		Description(studio.Translation{"en": "Electric mouse"}).
+		Forms(map[int32]studio.PokemonForm{0: *form0, 1: *form1}).
+		Build()
+	store.AddPokemon(*pikachu)
+
+	bulbasaurForm := studio.NewPokemonFormBuilder().
+		Form(0).
+		Type1(normalType).
+		BaseHp(45).
+		BaseAtk(49).
+		Build()
+	bulbasaur := studio.NewPokemonBuilder().
+		ID(1).
+		DbSymbol("bulbasaur").
+		Name(studio.Translation{"en": "Bulbasaur"}).
+		Description(studio.Translation{"en": "Grass starter"}).
+		Forms(map[int32]studio.PokemonForm{0: *bulbasaurForm}).
+		Build()
+	store.AddPokemon(*bulbasaur)
+
+	typeMapper := NewTypeMapper()
+	abilityMapper := NewAbilityMapper()
+	pokemonMapper := NewPokemonMapper(typeMapper, abilityMapper, store)
+
+	accessPolicyFactory := func(ctx context.Context) *AccessPolicy {
+		return NewAccessPolicy()
 	}
-	store.AddPokemon(pikachu)
 
-	bulbasaur := studio.Pokemon{
-		Id:          1,
-		DbSymbol:    "bulbasaur",
-		Name:        studio.Translation{"en": "Bulbasaur"},
-		Description: studio.Translation{"en": "Grass starter"},
-		Forms: map[int32]studio.PokemonForm{
-			0: {Form: 0, Type1: &normalType, BaseHp: 45, BaseAtk: 49},
-		},
-	}
-	store.AddPokemon(bulbasaur)
-
-	typeMapper := studioapi.NewTypeMapper()
-	abilityMapper := studioapi.NewAbilityMapper()
-	pokemonMapper := studioapi.NewPokemonMapper(typeMapper, abilityMapper, store)
-
-	if pokemonCtxFilter == nil {
-		pokemonCtxFilter = studioapi.DefaultPokemonContextFilter
-	}
-	if formCtxFilter == nil {
-		formCtxFilter = studioapi.DefaultFormContextFilter
-	}
-
-	service := studioapi.NewPokemonService(store, pokemonMapper, pokemonCtxFilter, formCtxFilter)
+	service := NewPokemonService(store, pokemonMapper, accessPolicyFactory)
 	return store, service
 }
 
 func TestPokemonService_GetPokemonDetails(t *testing.T) {
-	_, service := setupPokemonService(studioapi.DefaultPokemonContextFilter, studioapi.DefaultFormContextFilter)
+	_, service := setupPokemonService()
 
 	resp, err := service.GetPokemonDetails(context.Background(), "pikachu", "en")
 	if err != nil {
@@ -69,7 +74,7 @@ func TestPokemonService_GetPokemonDetails(t *testing.T) {
 		t.Error("Expected status 200, got", resp.Code)
 	}
 
-	details := resp.Body.(*studioapi.PokemonDetails)
+	details := resp.Body.(*PokemonDetails)
 	if details.Symbol != "pikachu" {
 		t.Error("Expected symbol pikachu, got", details.Symbol)
 	}
@@ -79,7 +84,7 @@ func TestPokemonService_GetPokemonDetails(t *testing.T) {
 }
 
 func TestPokemonService_GetPokemonDetails_NotFound(t *testing.T) {
-	_, service := setupPokemonService(studioapi.DefaultPokemonContextFilter, studioapi.DefaultFormContextFilter)
+	_, service := setupPokemonService()
 
 	resp, err := service.GetPokemonDetails(context.Background(), "mewtwo", "en")
 	if err != nil {
@@ -94,7 +99,7 @@ func TestPokemonService_GetPokemonDetails_NotFound(t *testing.T) {
 }
 
 func TestPokemonService_GetPokemon(t *testing.T) {
-	_, service := setupPokemonService(studioapi.DefaultPokemonContextFilter, studioapi.DefaultFormContextFilter)
+	_, service := setupPokemonService()
 
 	resp, err := service.GetPokemon(context.Background(), 0, 10, "en")
 	if err != nil {
@@ -104,7 +109,7 @@ func TestPokemonService_GetPokemon(t *testing.T) {
 		t.Error("Expected status 200, got", resp.Code)
 	}
 
-	page := resp.Body.(pagination.Page[*studioapi.PokemonThumbnail])
+	page := resp.Body.(pagination.Page[*PokemonThumbnail])
 	if page.Content == nil {
 		t.Error("Expected non-nil content")
 	}
@@ -115,28 +120,35 @@ func TestPokemonService_GetPokemon(t *testing.T) {
 
 func TestPokemonService_GetPokemon_Pagination(t *testing.T) {
 	store := studio.NewStore()
-	normalType := studio.PokemonType{DbSymbol: "normal"}
-	store.AddType(normalType)
+	normalType := studio.NewTypeBuilder().DbSymbol("normal").Build()
+	store.AddType(*normalType)
 
 	for i := 1; i <= 15; i++ {
-		store.AddPokemon(studio.Pokemon{
-			Id:       int32(i),
-			DbSymbol: "pokemon_" + string(rune(i)),
-			Name:     studio.Translation{"en": "Pokemon"},
-			Forms: map[int32]studio.PokemonForm{
-				0: {Form: 0, Type1: &normalType},
-			},
-		})
+		form := studio.NewPokemonFormBuilder().
+			Form(0).
+			Type1(normalType).
+			Build()
+		pokemon := studio.NewPokemonBuilder().
+			ID(int32(i)).
+			DbSymbol("pokemon_" + string(rune(i))).
+			Name(studio.Translation{"en": "Pokemon"}).
+			Forms(map[int32]studio.PokemonForm{0: *form}).
+			Build()
+		store.AddPokemon(*pokemon)
 	}
 
-	typeMapper := studioapi.NewTypeMapper()
-	abilityMapper := studioapi.NewAbilityMapper()
-	pokemonMapper := studioapi.NewPokemonMapper(typeMapper, abilityMapper, store)
+	typeMapper := NewTypeMapper()
+	abilityMapper := NewAbilityMapper()
+	pokemonMapper := NewPokemonMapper(typeMapper, abilityMapper, store)
 
-	service := studioapi.NewPokemonService(store, pokemonMapper, studioapi.DefaultPokemonContextFilter, studioapi.DefaultFormContextFilter)
+	accessPolicyFactory := func(ctx context.Context) *AccessPolicy {
+		return NewAccessPolicy()
+	}
+
+	service := NewPokemonService(store, pokemonMapper, accessPolicyFactory)
 
 	resp, _ := service.GetPokemon(context.Background(), 0, 5, "en")
-	page := resp.Body.(pagination.Page[*studioapi.PokemonThumbnail])
+	page := resp.Body.(pagination.Page[*PokemonThumbnail])
 
 	if len(page.Content) != 5 {
 		t.Error("Expected 5 items per page, got", len(page.Content))
@@ -147,7 +159,7 @@ func TestPokemonService_GetPokemon_Pagination(t *testing.T) {
 }
 
 func TestPokemonService_GetPokemonForm(t *testing.T) {
-	_, service := setupPokemonService(studioapi.DefaultPokemonContextFilter, studioapi.DefaultFormContextFilter)
+	_, service := setupPokemonService()
 
 	resp, err := service.GetPokemonForm(context.Background(), "pikachu", 0, "en")
 	if err != nil {
@@ -157,14 +169,14 @@ func TestPokemonService_GetPokemonForm(t *testing.T) {
 		t.Error("Expected status 200, got", resp.Code)
 	}
 
-	form := resp.Body.(*studioapi.FormDetails)
+	form := resp.Body.(*FormDetails)
 	if form.Form == nil {
 		t.Error("Expected non-nil form")
 	}
 }
 
 func TestPokemonService_GetPokemonForm_NotFound(t *testing.T) {
-	_, service := setupPokemonService(studioapi.DefaultPokemonContextFilter, studioapi.DefaultFormContextFilter)
+	_, service := setupPokemonService()
 
 	resp, err := service.GetPokemonForm(context.Background(), "pikachu", 99, "en")
 	if err != nil {
@@ -172,59 +184,5 @@ func TestPokemonService_GetPokemonForm_NotFound(t *testing.T) {
 	}
 	if resp.Code != 404 {
 		t.Error("Expected status 404 for non-existent form, got", resp.Code)
-	}
-}
-
-func TestPokemonService_WithPokemonContextFilter(t *testing.T) {
-	pokemonCtxFilter := func(ctx context.Context) iter2.FilterFunc[studio.Pokemon] {
-		return func(p studio.Pokemon) bool {
-			return p.DbSymbol == "pikachu"
-		}
-	}
-	_, service := setupPokemonService(pokemonCtxFilter, studioapi.DefaultFormContextFilter)
-
-	resp, _ := service.GetPokemon(context.Background(), 0, 10, "en")
-	page := resp.Body.(pagination.Page[*studioapi.PokemonThumbnail])
-
-	if len(page.Content) != 1 {
-		t.Error("Expected 1 pokemon after filter, got", len(page.Content))
-	}
-}
-
-func TestPokemonService_WithFormContextFilter(t *testing.T) {
-	store := studio.NewStore()
-	electricType := studio.PokemonType{DbSymbol: "electric"}
-	store.AddType(electricType)
-
-	store.AddPokemon(studio.Pokemon{
-		Id:       1,
-		DbSymbol: "pikachu",
-		Name:     studio.Translation{"en": "Pikachu"},
-		Forms: map[int32]studio.PokemonForm{
-			0: {Form: 0, Type1: &electricType},
-			1: {Form: 1, Type1: &electricType},
-		},
-	})
-
-	typeMapper := studioapi.NewTypeMapper()
-	abilityMapper := studioapi.NewAbilityMapper()
-	pokemonMapper := studioapi.NewPokemonMapper(typeMapper, abilityMapper, store)
-
-	formCtxFilter := func(ctx context.Context) iter2.FilterFunc[studio.PokemonForm] {
-		return func(f studio.PokemonForm) bool {
-			return f.Form == 0
-		}
-	}
-
-	service := studioapi.NewPokemonService(store, pokemonMapper, studioapi.DefaultPokemonContextFilter, formCtxFilter)
-
-	resp, _ := service.GetPokemonForm(context.Background(), "pikachu", 0, "en")
-	if resp.Code != 200 {
-		t.Error("Expected status 200 for form 0, got", resp.Code)
-	}
-
-	resp, _ = service.GetPokemonForm(context.Background(), "pikachu", 1, "en")
-	if resp.Code != 404 {
-		t.Error("Expected status 404 for filtered form 1, got", resp.Code)
 	}
 }

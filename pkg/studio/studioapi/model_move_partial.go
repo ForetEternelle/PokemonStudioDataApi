@@ -10,6 +10,9 @@
 
 package studioapi
 
+
+
+
 // MovePartial - An object containing partial data of a pokemon move
 type MovePartial struct {
 
@@ -46,10 +49,10 @@ func AssertMovePartialRequired(obj MovePartial) error {
 
 // AssertMovePartialConstraints checks if the values respects the defined constraints
 func AssertMovePartialConstraints(obj MovePartial) error {
-	if obj.Type != nil {
-		if err := AssertTypePartialConstraints(*obj.Type); err != nil {
-			return err
-		}
-	}
+    if obj.Type != nil {
+     	if err := AssertTypePartialConstraints(*obj.Type); err != nil {
+     		return err
+     	}
+    }
 	return nil
 }

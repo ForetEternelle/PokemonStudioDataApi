@@ -1,86 +1,86 @@
-package studioapi_test
+package studioapi
 
 import (
 	"testing"
 
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio"
-	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio/studioapi"
 )
 
 func TestPokemonToThumbnail(t *testing.T) {
 	lang := "test"
-	normalType := studio.PokemonType{DbSymbol: "normal"}
-	pokemon := studio.Pokemon{
-		Id:       1,
-		DbSymbol: "test",
-		Name:     studio.Translation{lang: "testName"},
-		Forms: map[int32]studio.PokemonForm{
-			0: {
-				Type1: &normalType,
-			},
-		},
-	}
+	normalType := studio.NewTypeBuilder().DbSymbol("normal").Build()
+	form := studio.NewPokemonFormBuilder().
+		Form(0).
+		Type1(normalType).
+		Build()
+	pokemon := studio.NewPokemonBuilder().
+		ID(1).
+		DbSymbol("test").
+		Name(studio.Translation{lang: "testName"}).
+		Forms(map[int32]studio.PokemonForm{0: *form}).
+		Build()
 
-	typeMapper := studioapi.NewTypeMapper()
-	abilityMapper := studioapi.NewAbilityMapper()
+	typeMapper := NewTypeMapper()
+	abilityMapper := NewAbilityMapper()
 	store := studio.NewStore()
-	pokemonMapper := studioapi.NewPokemonMapper(typeMapper, abilityMapper, store)
+	pokemonMapper := NewPokemonMapper(typeMapper, abilityMapper, store)
 
-	thumbnail := pokemonMapper.PokemonToThumbnail(pokemon, lang)
+	policy := NewAccessPolicy()
+	thumbnail := pokemonMapper.PokemonToThumbnail(*pokemon, lang, policy)
 
-	if thumbnail.Image != pokemon.DbSymbol {
-		t.Error("Mapper should map image, expected", pokemon.DbSymbol, ", has", thumbnail.Image)
+	if thumbnail.Image != pokemon.DbSymbol() {
+		t.Error("Mapper should map image, expected", pokemon.DbSymbol(), ", has", thumbnail.Image)
 	}
 
-	if thumbnail.Name != pokemon.Name[lang] {
-		t.Error("Mapper should map name, expected", pokemon.Name[lang], ", has", thumbnail.Name)
+	if thumbnail.Name != pokemon.Name(lang) {
+		t.Error("Mapper should map name, expected", pokemon.Name(lang), ", has", thumbnail.Name)
 	}
 
-	if thumbnail.Symbol != pokemon.DbSymbol {
-		t.Error("Mapper should map db symbol, expected", pokemon.DbSymbol, ", has", thumbnail.Symbol)
+	if thumbnail.Symbol != pokemon.DbSymbol() {
+		t.Error("Mapper should map db symbol, expected", pokemon.DbSymbol(), ", has", thumbnail.Symbol)
 	}
-	if thumbnail.Number != pokemon.Id {
-		t.Error("Mapper should map Id, expected", pokemon.Id, ", has", thumbnail.Number)
+	if thumbnail.Number != pokemon.ID() {
+		t.Error("Mapper should map Id, expected", pokemon.ID(), ", has", thumbnail.Number)
 	}
 }
 
 func TestPokemonToDetail(t *testing.T) {
 	lang := "test"
-	normalType := studio.PokemonType{DbSymbol: "normal"}
+	normalType := studio.NewTypeBuilder().DbSymbol("normal").Build()
 
-	pokemon := studio.Pokemon{
-		Id:          1,
-		DbSymbol:    "test",
-		Name:        studio.Translation{lang: "testName"},
-		Description: studio.Translation{lang: "testDesc"},
-		Forms: map[int32]studio.PokemonForm{
-			0: {
-				Form:    0,
-				Type1:   &normalType,
-				BaseHp:  100,
-				BaseAtk: 50,
-			},
-		},
-	}
+	form := studio.NewPokemonFormBuilder().
+		Form(0).
+		Type1(normalType).
+		BaseHp(100).
+		BaseAtk(50).
+		Build()
+	pokemon := studio.NewPokemonBuilder().
+		ID(1).
+		DbSymbol("test").
+		Name(studio.Translation{lang: "testName"}).
+		Description(studio.Translation{lang: "testDesc"}).
+		Forms(map[int32]studio.PokemonForm{0: *form}).
+		Build()
 
-	typeMapper := studioapi.NewTypeMapper()
-	abilityMapper := studioapi.NewAbilityMapper()
+	typeMapper := NewTypeMapper()
+	abilityMapper := NewAbilityMapper()
 	store := studio.NewStore()
-	store.AddType(normalType)
-	pokemonMapper := studioapi.NewPokemonMapper(typeMapper, abilityMapper, store)
+	store.AddType(*normalType)
+	pokemonMapper := NewPokemonMapper(typeMapper, abilityMapper, store)
 
-	detail := pokemonMapper.PokemonToDetail(pokemon, lang)
+	policy := NewAccessPolicy()
+	detail := pokemonMapper.PokemonToDetail(*pokemon, lang, policy)
 
-	if detail.Symbol != pokemon.DbSymbol {
+	if detail.Symbol != pokemon.DbSymbol() {
 		t.Error("Mapper should map symbol")
 	}
-	if detail.Number != pokemon.Id {
+	if detail.Number != pokemon.ID() {
 		t.Error("Mapper should map number")
 	}
-	if detail.Name != pokemon.Name[lang] {
+	if detail.Name != pokemon.Name(lang) {
 		t.Error("Mapper should map name")
 	}
-	if detail.Description != pokemon.Description[lang] {
+	if detail.Description != pokemon.Description(lang) {
 		t.Error("Mapper should map description")
 	}
 	if detail.MainForm.Form == nil {

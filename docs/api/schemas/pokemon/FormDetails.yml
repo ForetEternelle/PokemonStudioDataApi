@@ -53,32 +53,26 @@ properties:
   evHp:
     type: integer
     description: The HP EV given
-    nullable: true
     example: 0
   evAtk:
     type: integer
     description: The attack EV given
-    nullable: true
     example: 0
   evDfe:
     type: integer
     description: The defense EV given
-    nullable: true
     example: 0
   evSpd:
     type: integer
     description: The speed EV given
-    nullable: true
     example: 2
   evAts:
     type: integer
     description: The special attack EV given
-    nullable: true
     example: 0
   evDfs:
     type: integer
     description: The special defense EV given
-    nullable: true
     example: 0
 
   experienceType:

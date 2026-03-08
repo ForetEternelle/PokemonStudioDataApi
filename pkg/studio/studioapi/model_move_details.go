@@ -10,6 +10,9 @@
 
 package studioapi
 
+
+
+
 // MoveDetails - Full definition of a battle move
 type MoveDetails struct {
 
@@ -65,10 +68,10 @@ func AssertMoveDetailsRequired(obj MoveDetails) error {
 
 // AssertMoveDetailsConstraints checks if the values respects the defined constraints
 func AssertMoveDetailsConstraints(obj MoveDetails) error {
-	if obj.Type != nil {
-		if err := AssertTypePartialConstraints(*obj.Type); err != nil {
-			return err
-		}
-	}
+    if obj.Type != nil {
+     	if err := AssertTypePartialConstraints(*obj.Type); err != nil {
+     		return err
+     	}
+    }
 	return nil
 }

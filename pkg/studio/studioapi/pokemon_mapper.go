@@ -2,7 +2,9 @@ package studioapi
 
 import (
 	"log/slog"
+	"slices"
 
+	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/iter2"
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio"
 )
 
@@ -12,9 +14,6 @@ type PokemonMapper struct {
 	store         *studio.Store
 }
 
-// NewPokemonMapper Create a new pokemon mapper
-// typeMapper the mapper for pokemon types
-// typeStore the store for pokemon types
 func NewPokemonMapper(
 	typeMapper *TypeMapper,
 	abilityMapper *AbilityMapper,
@@ -27,90 +26,140 @@ func NewPokemonMapper(
 	}
 }
 
-// PokemonToThumbnail map a pokemon to a thumbnail transfer object
-// p the pokemon to map
-// lang the language expected
-func (m PokemonMapper) PokemonToThumbnail(p studio.Pokemon, lang string) *PokemonThumbnail {
+func (m PokemonMapper) PokemonToThumbnail(p studio.Pokemon, lang string, policy *AccessPolicy) *PokemonThumbnail {
 	slog.Debug("Mapping pokemon to thumbnail", "lang", lang)
-	form := p.Forms[0]
-	var type2 *TypePartial
-	if form.Type2 != nil {
-		type2 = m.typeMapper.ToTypePartial(*form.Type2, lang)
+
+	var mainForm studio.PokemonForm
+	hasForm := false
+	for _, form := range p.Forms() {
+		passesFilter := true
+		for _, filter := range policy.FormFilters {
+			if !filter(form) {
+				passesFilter = false
+				break
+			}
+		}
+		if passesFilter {
+			mainForm = form
+			hasForm = true
+			break
+		}
 	}
-	return &PokemonThumbnail{
-		Symbol: p.DbSymbol,
-		Number: p.Id,
-		Image:  p.DbSymbol,
-		Type1:  m.typeMapper.ToTypePartial(*form.Type1, lang),
-		Type2:  type2,
-		Name:   p.Name[lang],
+
+	if !hasForm {
+		return nil
 	}
+
+	thumbnail := &PokemonThumbnail{
+		Symbol: p.DbSymbol(),
+		Number: p.ID(),
+		Image:  p.DbSymbol(),
+		Type1:  m.typeMapper.ToTypePartial(mainForm.Type1(), lang, policy),
+		Name:   p.Name(lang),
+	}
+	var type2, ok = mainForm.Type2()
+	if ok {
+		thumbnail.Type2 = m.typeMapper.ToTypePartial(type2, lang, policy)
+	}
+
+	return thumbnail
 }
 
-// PokemonToDetail map a pokemon to a details transfer object
-// p the pokemon to map
-// lang the language expected
-func (m PokemonMapper) PokemonToDetail(p studio.Pokemon, lang string) *PokemonDetails {
+func (m PokemonMapper) PokemonToDetail(p studio.Pokemon, lang string, policy *AccessPolicy) *PokemonDetails {
 	slog.Debug("Mapping pokemon to details", "pokemon", p, "lang", lang)
+
+	var mainForm studio.PokemonForm
+	hasForm := false
+	for _, form := range p.Forms() {
+		passesFilter := true
+		for _, filter := range policy.FormFilters {
+			if !filter(form) {
+				passesFilter = false
+				break
+			}
+		}
+		if passesFilter {
+			mainForm = form
+			hasForm = true
+			break
+		}
+	}
+
+	if !hasForm {
+		return nil
+	}
+
 	return &PokemonDetails{
-		Symbol:      p.DbSymbol,
-		Number:      p.Id,
-		Name:        p.Name[lang],
-		Description: p.Description[lang],
-		MainForm:    *m.FormToPokemonFormDetails(p.Forms[0], lang),
+		Symbol:      p.DbSymbol(),
+		Number:      p.ID(),
+		Name:        p.Name(lang),
+		Description: p.Description(lang),
+		MainForm:    *m.FormToPokemonFormDetails(mainForm, lang, policy),
 	}
 }
 
-// FormToPokemonFormDetails map a pokemon form to a form details transfer object
-// f the pokemon form to map
-// lang the language expected
-func (m PokemonMapper) FormToPokemonFormDetails(f studio.PokemonForm, lang string) *FormDetails {
+func (m PokemonMapper) FormToPokemonFormDetails(f studio.PokemonForm, lang string, policy *AccessPolicy) *FormDetails {
 	slog.Debug("Mapping pokemon form to form details", "form", f, "lang", lang)
 
-	partialType1 := m.typeMapper.ToTypePartial(*f.Type1, lang)
+	var filteredAbilities []studio.Ability
+	for _, a := range f.Abilities() {
+		passesFilter := true
+		for _, filter := range policy.AbilityFilters {
+			if !filter(a) {
+				passesFilter = false
+				break
+			}
+		}
+		if passesFilter {
+			filteredAbilities = append(filteredAbilities, a)
+		}
+	}
+
+	partialType1 := m.typeMapper.ToTypePartial(f.Type1(), lang, policy)
 	var partialType2 *TypePartial
-
-	if f.Type2 != nil {
-		partialType2 = m.typeMapper.ToTypePartial(*f.Type2, lang)
+	type2, ok := f.Type2()
+	if ok {
+		partialType2 = m.typeMapper.ToTypePartial(type2, lang, policy)
 	}
 
-	var abilityPartials []AbilityPartial
-	for _, ability := range f.Abilities {
-		abilityPartials = append(abilityPartials, m.abilityMapper.ToAbilityPartial(*ability, lang))
-	}
+	abilityPartials := iter2.Map(func(a studio.Ability) AbilityPartial {
+		return m.abilityMapper.ToAbilityPartial(a, lang)
+	}, slices.Values(filteredAbilities))
+
+	form := f.Form()
+	babyForm := f.BabyForm()
 
 	return &FormDetails{
-		Form: &f.Form,
+		Form: &form,
 
-		Height: f.Height,
-		Weight: f.Weight,
+		Height: f.Height(),
+		Weight: f.Weight(),
 
 		Type1: partialType1,
 		Type2: partialType2,
 
-		BaseHp:  f.BaseHp,
-		BaseAtk: f.BaseAtk,
-		BaseDfe: f.BaseDfe,
-		BaseSpd: f.BaseSpd,
-		BaseAts: f.BaseAts,
-		BaseDfs: f.BaseDfs,
+		BaseHp:  f.BaseHp(),
+		BaseAtk: f.BaseAtk(),
+		BaseDfe: f.BaseDfe(),
+		BaseSpd: f.BaseSpd(),
+		BaseAts: f.BaseAts(),
+		BaseDfs: f.BaseDfs(),
 
-		EvHp:  &f.EvHp,
-		EvAtk: &f.EvAtk,
-		EvDfe: &f.EvDfe,
-		EvSpd: &f.EvSpd,
-		EvAts: &f.EvAts,
-		EvDfs: &f.EvDfs,
+		EvHp: f.EvHp(),
+		EvAtk: f.EvAtk(),
+		EvDfe: f.EvDfe(),
+		EvSpd: f.EvSpd(),
+		EvAts: f.EvAts(),
+		EvDfs: f.EvDfs(),
 
-		ExperienceType: f.ExperienceType,
-		BaseExperience: f.BaseExperience,
-		BaseLoyalty:    f.BaseLoyalty,
-		CatchRate:      f.CatchRate,
-		FemaleRate:     f.FemaleRate,
-		BreedGroups:    f.BreedGroups,
-		HatchSteps:     f.HatchSteps,
-		BabyDbSymbol:   f.BabyDbSymbol,
-		BabyForm:       &f.BabyForm,
-		Abilities:      abilityPartials,
+		ExperienceType: f.ExperienceType(),
+		BaseExperience: f.BaseExperience(),
+		BaseLoyalty:    f.BaseLoyalty(),
+		CatchRate:      f.CatchRate(),
+		FemaleRate:     f.FemaleRate(),
+		HatchSteps:     f.HatchSteps(),
+		BabyDbSymbol:   f.BabyDbSymbol(),
+		BabyForm:       &babyForm,
+		Abilities:      slices.Collect(abilityPartials),
 	}
 }

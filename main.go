@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio"
 	customMiddleware "github.com/ForetEternelle/PokemonStudioDataApi/pkg/middleware"
+	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio"
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio/studioapi"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -80,7 +80,9 @@ func main() {
 		panic("Failed to import data folder. Error: " + err.Error())
 	}
 
-	studioApiRouter, err := studioapi.GetRouter(studioapi.WithStore(store))
+	studioApiRouter, err := studioapi.GetRouter(
+		studioapi.WithStore(store),
+	)
 	if err != nil {
 		panic("Failed to create api router. Error: " + err.Error())
 	}

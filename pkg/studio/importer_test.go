@@ -56,14 +56,14 @@ func TestMapPokemonTypeDescriptorToPokemonType_Ok(t *testing.T) {
 	mapper := NewTypeMapper(store)
 	pokemonType := mapper.MapPokemonTypeDescriptorToPokemonType(*desc)
 
-	if pokemonType.DbSymbol != "test" {
+	if pokemonType.DbSymbol() != "test" {
 		t.Error("DbSymbol should be 'test'")
 	}
-	if pokemonType.Color != "#FF0000" {
+	if pokemonType.Color() != "#FF0000" {
 		t.Error("Color should be '#FF0000'")
 	}
-	if pokemonType.Name != nil {
-		t.Error("Translation for type name should be nil when FormTextId removed")
+	if pokemonType.Name("en") != "" {
+		t.Error("Translation for type name should be empty when FormTextId removed")
 	}
 }
 
@@ -152,42 +152,6 @@ func TestMapTranslation_Valid(t *testing.T) {
 	result := MapTranslation(1, translations)
 	if result == nil || result["en"] != "second" {
 		t.Error("MapTranslation with valid ID should return correct translation")
-	}
-}
-
-func TestNewPokemonMapper(t *testing.T) {
-	store := NewStore()
-	mapper := NewPokemonMapper(store)
-
-	if mapper == nil {
-		t.Error("NewPokemonMapper should return non-nil mapper")
-	}
-	if mapper.store != store {
-		t.Error("NewPokemonMapper should set store correctly")
-	}
-}
-
-func TestNewTypeMapper(t *testing.T) {
-	store := NewStore()
-	mapper := NewTypeMapper(store)
-
-	if mapper == nil {
-		t.Error("NewTypeMapper should return non-nil mapper")
-	}
-	if mapper.store != store {
-		t.Error("NewTypeMapper should set store correctly")
-	}
-}
-
-func TestNewAbilityMapper(t *testing.T) {
-	store := NewStore()
-	mapper := NewAbilityMapper(store)
-
-	if mapper == nil {
-		t.Error("NewAbilityMapper should return non-nil mapper")
-	}
-	if mapper.store != store {
-		t.Error("NewAbilityMapper should set store correctly")
 	}
 }
 

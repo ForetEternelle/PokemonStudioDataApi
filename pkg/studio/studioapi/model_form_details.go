@@ -10,6 +10,9 @@
 
 package studioapi
 
+
+
+
 // FormDetails - An object containing the data of a pokemon form (ev, iv, ...)
 type FormDetails struct {
 
@@ -45,22 +48,22 @@ type FormDetails struct {
 	BaseDfs int32 `json:"baseDfs,omitempty"`
 
 	// The HP EV given
-	EvHp *int32 `json:"evHp,omitempty"`
+	EvHp int32 `json:"evHp,omitempty"`
 
 	// The attack EV given
-	EvAtk *int32 `json:"evAtk,omitempty"`
+	EvAtk int32 `json:"evAtk,omitempty"`
 
 	// The defense EV given
-	EvDfe *int32 `json:"evDfe,omitempty"`
+	EvDfe int32 `json:"evDfe,omitempty"`
 
 	// The speed EV given
-	EvSpd *int32 `json:"evSpd,omitempty"`
+	EvSpd int32 `json:"evSpd,omitempty"`
 
 	// The special attack EV given
-	EvAts *int32 `json:"evAts,omitempty"`
+	EvAts int32 `json:"evAts,omitempty"`
 
 	// The special defense EV given
-	EvDfs *int32 `json:"evDfs,omitempty"`
+	EvDfs int32 `json:"evDfs,omitempty"`
 
 	// The experience type
 	ExperienceType string `json:"experienceType,omitempty"`
@@ -121,16 +124,16 @@ func AssertFormDetailsRequired(obj FormDetails) error {
 
 // AssertFormDetailsConstraints checks if the values respects the defined constraints
 func AssertFormDetailsConstraints(obj FormDetails) error {
-	if obj.Type1 != nil {
-		if err := AssertTypePartialConstraints(*obj.Type1); err != nil {
-			return err
-		}
-	}
-	if obj.Type2 != nil {
-		if err := AssertTypePartialConstraints(*obj.Type2); err != nil {
-			return err
-		}
-	}
+    if obj.Type1 != nil {
+     	if err := AssertTypePartialConstraints(*obj.Type1); err != nil {
+     		return err
+     	}
+    }
+    if obj.Type2 != nil {
+     	if err := AssertTypePartialConstraints(*obj.Type2); err != nil {
+     		return err
+     	}
+    }
 	for _, el := range obj.Abilities {
 		if err := AssertAbilityPartialConstraints(el); err != nil {
 			return err

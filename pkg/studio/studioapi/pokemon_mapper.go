@@ -101,19 +101,19 @@ func (m PokemonMapper) PokemonToDetail(p studio.Pokemon, lang string, policy *Ac
 func (m PokemonMapper) FormToPokemonFormDetails(f studio.PokemonForm, lang string, policy *AccessPolicy) *FormDetails {
 	slog.Debug("Mapping pokemon form to form details", "form", f, "lang", lang)
 
-	var filteredAbilities []studio.Ability
-	for _, a := range f.Abilities() {
-		passesFilter := true
+	abilityIt := f.Abilities()
+	abilityIt = iter2.Filter(func(a studio.Ability) bool {
 		for _, filter := range policy.AbilityFilters {
 			if !filter(a) {
-				passesFilter = false
-				break
+				return false
 			}
 		}
-		if passesFilter {
-			filteredAbilities = append(filteredAbilities, a)
-		}
-	}
+		return true
+	}, abilityIt)
+
+	abilityPartialIt := iter2.Map(func(a studio.Ability) AbilityPartial {
+		return m.abilityMapper.ToAbilityPartial(a, lang)
+	}, abilityIt)
 
 	partialType1 := m.typeMapper.ToTypePartial(f.Type1(), lang, policy)
 	var partialType2 *TypePartial
@@ -121,10 +121,6 @@ func (m PokemonMapper) FormToPokemonFormDetails(f studio.PokemonForm, lang strin
 	if ok {
 		partialType2 = m.typeMapper.ToTypePartial(type2, lang, policy)
 	}
-
-	abilityPartials := iter2.Map(func(a studio.Ability) AbilityPartial {
-		return m.abilityMapper.ToAbilityPartial(a, lang)
-	}, slices.Values(filteredAbilities))
 
 	form := f.Form()
 	babyForm := f.BabyForm()
@@ -145,7 +141,7 @@ func (m PokemonMapper) FormToPokemonFormDetails(f studio.PokemonForm, lang strin
 		BaseAts: f.BaseAts(),
 		BaseDfs: f.BaseDfs(),
 
-		EvHp: f.EvHp(),
+		EvHp:  f.EvHp(),
 		EvAtk: f.EvAtk(),
 		EvDfe: f.EvDfe(),
 		EvSpd: f.EvSpd(),
@@ -160,6 +156,6 @@ func (m PokemonMapper) FormToPokemonFormDetails(f studio.PokemonForm, lang strin
 		HatchSteps:     f.HatchSteps(),
 		BabyDbSymbol:   f.BabyDbSymbol(),
 		BabyForm:       &babyForm,
-		Abilities:      slices.Collect(abilityPartials),
+		Abilities:      slices.Collect(abilityPartialIt),
 	}
 }

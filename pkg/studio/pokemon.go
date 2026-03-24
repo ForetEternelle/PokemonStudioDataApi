@@ -274,10 +274,10 @@ func (f *PokemonForm) CustomProperties() map[string]any {
 }
 
 // Evolutions returns an iterator over the evolutions of the PokemonForm.
-func (f *PokemonForm) Evolutions() iter.Seq2[int, Evolution] {
-	return func(yield func(int, Evolution) bool) {
-		for i, e := range f.evolutions {
-			if !yield(i, e) {
+func (f *PokemonForm) Evolutions() iter.Seq[Evolution] {
+	return func(yield func(Evolution) bool) {
+		for _, e := range f.evolutions {
+			if !yield(e) {
 				return
 			}
 		}
@@ -293,10 +293,10 @@ func (f *PokemonForm) Evolution(i int) (Evolution, bool) {
 }
 
 // ItemHeld returns an iterator over the items held by the PokemonForm.
-func (f *PokemonForm) ItemHeld() iter.Seq2[int, *ItemHeld] {
-	return func(yield func(int, *ItemHeld) bool) {
-		for i, item := range f.itemHeld {
-			if !yield(i, item) {
+func (f *PokemonForm) ItemHeld() iter.Seq[*ItemHeld] {
+	return func(yield func(*ItemHeld) bool) {
+		for _, item := range f.itemHeld {
+			if !yield(item) {
 				return
 			}
 		}
@@ -312,10 +312,10 @@ func (f *PokemonForm) Item(i int) (*ItemHeld, bool) {
 }
 
 // Abilities returns an iterator over the abilities of the PokemonForm.
-func (f *PokemonForm) Abilities() iter.Seq2[int, Ability] {
-	return func(yield func(int, Ability) bool) {
-		for i, a := range f.abilities {
-			if !yield(i, *a) {
+func (f *PokemonForm) Abilities() iter.Seq[Ability] {
+	return func(yield func(Ability) bool) {
+		for _, a := range f.abilities {
+			if !yield(*a) {
 				return
 			}
 		}
@@ -331,10 +331,10 @@ func (f *PokemonForm) Ability(i int) (Ability, bool) {
 }
 
 // AbilitySymbols returns an iterator over the ability symbols of the PokemonForm.
-func (f *PokemonForm) AbilitySymbols() iter.Seq2[int, string] {
-	return func(yield func(int, string) bool) {
-		for i, s := range f.abilitySymbols {
-			if !yield(i, s) {
+func (f *PokemonForm) AbilitySymbols() iter.Seq[string] {
+	return func(yield func(string) bool) {
+		for _, s := range f.abilitySymbols {
+			if !yield(s) {
 				return
 			}
 		}
@@ -350,10 +350,10 @@ func (f *PokemonForm) AbilitySymbol(i int) (string, bool) {
 }
 
 // BreedGroups returns an iterator over the breed groups of the PokemonForm.
-func (f *PokemonForm) BreedGroups() iter.Seq2[int, string] {
-	return func(yield func(int, string) bool) {
-		for i, g := range f.breedGroups {
-			if !yield(i, g) {
+func (f *PokemonForm) BreedGroups() iter.Seq[string] {
+	return func(yield func(string) bool) {
+		for _, g := range f.breedGroups {
+			if !yield(g) {
 				return
 			}
 		}
@@ -385,4 +385,3 @@ type ItemHeld struct {
 	DbSymbol string
 	Chance   int32
 }
-

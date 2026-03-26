@@ -50,6 +50,11 @@ func NewPokemonAPIController(s PokemonAPIServicer, opts ...PokemonAPIOption) *Po
 // Routes returns all the api routes for the PokemonAPIController
 func (c *PokemonAPIController) Routes() Routes {
 	return Routes{
+		"GetFormsByPokemon": Route{
+			strings.ToUpper("Get"),
+			"/pokemon/{symbol}/forms",
+			c.GetFormsByPokemon,
+		},
 		"GetPokemon": Route{
 			strings.ToUpper("Get"),
 			"/pokemon",
@@ -62,10 +67,41 @@ func (c *PokemonAPIController) Routes() Routes {
 		},
 		"GetPokemonForm": Route{
 			strings.ToUpper("Get"),
-			"/pokemon/{symbol}/{form}",
+			"/pokemon/{symbol}/forms/{form}",
 			c.GetPokemonForm,
 		},
 	}
+}
+
+// GetFormsByPokemon - Get all given pokemon's forms
+func (c *PokemonAPIController) GetFormsByPokemon(w http.ResponseWriter, r *http.Request) {
+	query, err := parseQuery(r.URL.RawQuery)
+	if err != nil {
+		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
+		return
+	}
+	symbolParam := chi.URLParam(r, "symbol")
+	if symbolParam == "" {
+		c.errorHandler(w, r, &RequiredError{"symbol"}, nil)
+		return
+	}
+	var langParam string
+	if query.Has("lang") {
+		param := query.Get("lang")
+
+		langParam = param
+	} else {
+		param := "en"
+		langParam = param
+	}
+	result, err := c.service.GetFormsByPokemon(r.Context(), symbolParam, langParam)
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	_ = EncodeJSONResponse(result.Body, &result.Code, w)
 }
 
 // GetPokemon - Get a page of pokemon

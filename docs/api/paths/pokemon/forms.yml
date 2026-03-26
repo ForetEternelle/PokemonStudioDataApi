@@ -1,0 +1,26 @@
+get:
+  tags:
+    - Pokemon
+  summary: Get all given pokemon's forms
+  description: This endpoint returns a list of all the forms of a given pokemon. For example, this endpoint will return the different forms of Deoxys (Normal, Attack, Defense, Speed).
+  operationId: getFormsByPokemon
+  parameters:
+    - $ref: "../../parameters/lang.yml"
+    - name: symbol
+      in: path
+      description: The symbol of the pokemon
+      required: true
+      schema:
+        type: string
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            title: "Forms"
+            type: array
+            items:
+              $ref: "../../schemas/pokemon/FormPartial.yml"
+    "400":
+      $ref: "../../responses/InvalidParameterError.yml"

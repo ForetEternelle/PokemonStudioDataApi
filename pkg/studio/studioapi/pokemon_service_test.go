@@ -20,33 +20,38 @@ func setupPokemonService() (*studio.Store, PokemonAPIServicer) {
 		Type1(electricType).
 		BaseHp(35).
 		BaseAtk(55).
+		BaseSpd(90).
+		Name(studio.Translation{"en": "Pikachu"}).
+		Description(studio.Translation{"en": "Electric mouse"}).
 		Build()
 	form1 := studio.NewPokemonFormBuilder().
 		Form(1).
 		Type1(electricType).
+		Name(studio.Translation{"en": "Pikachu"}).
+		Description(studio.Translation{"en": "Electric mouse"}).
 		BaseHp(20).
 		BaseAtk(40).
 		Build()
 	pikachu := studio.NewPokemonBuilder().
 		ID(25).
 		DbSymbol("pikachu").
-		Name(studio.Translation{"en": "Pikachu"}).
-		Description(studio.Translation{"en": "Electric mouse"}).
 		Forms(map[int32]studio.PokemonForm{0: *form0, 1: *form1}).
 		Build()
 	store.AddPokemon(*pikachu)
 
 	bulbasaurForm := studio.NewPokemonFormBuilder().
 		Form(0).
+		Name(studio.Translation{"en": "Bulbasaur"}).
+		Description(studio.Translation{"en": "Grass starter"}).
 		Type1(normalType).
 		BaseHp(45).
 		BaseAtk(49).
+		Name(studio.Translation{"en": "Bulbasaur"}).
+		Description(studio.Translation{"en": "Grass starter"}).
 		Build()
 	bulbasaur := studio.NewPokemonBuilder().
 		ID(1).
 		DbSymbol("bulbasaur").
-		Name(studio.Translation{"en": "Bulbasaur"}).
-		Description(studio.Translation{"en": "Grass starter"}).
 		Forms(map[int32]studio.PokemonForm{0: *bulbasaurForm}).
 		Build()
 	store.AddPokemon(*bulbasaur)
@@ -78,8 +83,8 @@ func TestPokemonService_GetPokemonDetails(t *testing.T) {
 	if details.Symbol != "pikachu" {
 		t.Error("Expected symbol pikachu, got", details.Symbol)
 	}
-	if details.Name != "Pikachu" {
-		t.Error("Expected name Pikachu, got", details.Name)
+	if details.MainForm.Name != "Pikachu" {
+		t.Error("Expected name Pikachu, got", details.MainForm.Name)
 	}
 }
 
@@ -127,11 +132,11 @@ func TestPokemonService_GetPokemon_Pagination(t *testing.T) {
 		form := studio.NewPokemonFormBuilder().
 			Form(0).
 			Type1(normalType).
+			Name(studio.Translation{"en": "Pokemon"}).
 			Build()
 		pokemon := studio.NewPokemonBuilder().
 			ID(int32(i)).
 			DbSymbol("pokemon_" + string(rune(i))).
-			Name(studio.Translation{"en": "Pokemon"}).
 			Forms(map[int32]studio.PokemonForm{0: *form}).
 			Build()
 		store.AddPokemon(*pokemon)

@@ -13,13 +13,15 @@ import (
 )
 
 const (
-	pokemonNameTranslationFile        = "100000.csv"
-	pokemonDescriptionTranslationFile = "100002.csv"
-	typeNameTranslationFile           = "100003.csv"
-	abilityNameTranslationFile        = "100004.csv"
-	abilityDescriptionTranslationFile = "100005.csv"
-	moveNameTranslationFile           = "100006.csv"
-	moveDescriptionTranslationFile    = "100007.csv"
+	pokemonNameTranslationFile            = "100000.csv"
+	pokemonDescriptionTranslationFile     = "100002.csv"
+	pokemonFormNameTranslationFile        = "100067.csv"
+	pokemonFormDescriptionTranslationFile = "100068.csv"
+	typeNameTranslationFile               = "100003.csv"
+	abilityNameTranslationFile            = "100004.csv"
+	abilityDescriptionTranslationFile     = "100005.csv"
+	moveNameTranslationFile               = "100006.csv"
+	moveDescriptionTranslationFile        = "100007.csv"
 )
 
 func ImportAbility(studioFolder, translationFolder string) (iter.Seq[*AbilityDescriptor], error) {
@@ -78,18 +80,16 @@ func ImportPokemon(studioFolder, translationFolder string) (iter.Seq[*PokemonDes
 	}
 
 	pokemonNameTranslationPath := path.Join(translationFolder, pokemonNameTranslationFile)
-	pokemonNameTranslations, err := ImportTranslations(pokemonNameTranslationPath)
-	if err != nil {
-		slog.Warn("Failed to import pokemon name translations", "path", pokemonNameTranslationPath, "error", err)
-		pokemonNameTranslations = []Translation{}
-	}
+	pokemonNameTranslations := ImportTranslationsOrEmpty(pokemonNameTranslationPath)
 
 	pokemonDescriptionTranslationPath := path.Join(translationFolder, pokemonDescriptionTranslationFile)
-	pokemonDescriptionTranslations, err := ImportTranslations(pokemonDescriptionTranslationPath)
-	if err != nil {
-		slog.Warn("Failed to import pokemon description translations", "path", pokemonDescriptionTranslationPath, "error", err)
-		pokemonDescriptionTranslations = []Translation{}
-	}
+	pokemonDescriptionTranslations := ImportTranslationsOrEmpty(pokemonDescriptionTranslationPath)
+
+	pokemonFormNameTranslationPath := path.Join(translationFolder, pokemonFormNameTranslationFile)
+	pokemonFormNameTranslations := ImportTranslationsOrEmpty(pokemonFormNameTranslationPath)
+
+	pokemonFormDescriptionTranslationPath := path.Join(translationFolder, pokemonFormDescriptionTranslationFile)
+	pokemonFormDescriptionTranslations := ImportTranslationsOrEmpty(pokemonFormDescriptionTranslationPath)
 
 	return func(yield func(*PokemonDescriptor) bool) {
 		for pokemonFile := range pokemonFileIterator {
@@ -99,9 +99,22 @@ func ImportPokemon(studioFolder, translationFolder string) (iter.Seq[*PokemonDes
 				continue
 			}
 
-			// Assign translations at the Pokémon level using the dbSymbol
-			pokemonDesc.Name = MapTranslation(int(pokemonDesc.ID), pokemonNameTranslations)
-			pokemonDesc.Description = MapTranslation(int(pokemonDesc.ID), pokemonDescriptionTranslations)
+			for i := range pokemonDesc.Forms {
+				form := &pokemonDesc.Forms[i]
+				formTextId := form.FormTextId
+
+				if formTextId.Name == 0{
+					form.Name = MapTranslation(int(pokemonDesc.ID), pokemonNameTranslations)
+				}else{
+					form.Name = MapTranslation(formTextId.Name, pokemonFormNameTranslations)
+				}
+
+				if formTextId.Description == 0 {
+					form.Description = MapTranslation(int(pokemonDesc.ID), pokemonDescriptionTranslations)
+				} else {
+					form.Description = MapTranslation(formTextId.Description, pokemonFormDescriptionTranslations)
+				}
+			}
 
 			if pokemonDesc != nil {
 				if !yield(pokemonDesc) {
@@ -248,6 +261,16 @@ func UnmarshalMoveDescriptor(moveContent []byte) (*MoveDescriptor, error) {
 	return moveDescriptor, nil
 }
 
+// ImportTranslationsOrEmpty import translations from file, if it fails log the error and return an empty list
+func ImportTranslationsOrEmpty(path string) []Translation {
+	translations, err := ImportTranslations(path)
+	if err != nil {
+		slog.Error("Failed to import translations", "path", path, "error", err)
+		return []Translation{}
+	}
+	return translations
+}
+
 // ImportTranslations import translations from file
 // path the path of the file to import
 func ImportTranslations(path string) ([]Translation, error) {
@@ -293,8 +316,6 @@ func ImportTranslations(path string) ([]Translation, error) {
 	return results, nil
 }
 
-// MapTranslation safely retrieves a translation by ID and returns a pointer to it
-// entityType: type of entity for logging ("form", "type", "ability", etc.)
 func MapTranslation(textId int, translations []Translation) Translation {
 	if textId >= 0 && textId < len(translations) {
 		translation := translations[textId]

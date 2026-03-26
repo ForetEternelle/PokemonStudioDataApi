@@ -55,6 +55,21 @@ func (s PokemonService) GetPokemon(requestCtx context.Context, page int32, pageS
 	return ImplResponse{Code: 200, Body: pagination.NewPage(pr.Page, pr.Size, slices.Collect(thumbnailsIter), pkmnPage.Total)}, nil
 }
 
+func (s PokemonService) GetFormsByPokemon(requestCtx context.Context, symbol string, lang string) (ImplResponse, error) {
+	policy := s.accessPolicyFactory(requestCtx)
+	pkmn := s.store.FindPokemonBySymbol(symbol, policy.PokemonFilters...)
+
+	if pkmn == nil {
+		return ImplResponse{Code: 404, Body: nil}, nil
+	}
+
+	formsIter := iter2.Map2(func(_ int32,form studio.PokemonForm) *FormPartial {
+		return s.pokemonMapper.FormToPokemonFormPartial(form, lang, policy)
+	}, pkmn.Forms())
+
+	return ImplResponse{Code: 200, Body: slices.Collect(formsIter)}, nil
+}
+
 func (s PokemonService) GetPokemonForm(requestCtx context.Context, symbol string, form int32, lang string) (ImplResponse, error) {
 	policy := s.accessPolicyFactory(requestCtx)
 	pkmn := s.store.FindPokemonBySymbol(symbol, policy.PokemonFilters...)

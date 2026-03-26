@@ -35,6 +35,7 @@ type MovesAPIRouter interface {
 // The PokemonAPIRouter implementation should parse necessary information from the http request,
 // pass the data to a PokemonAPIServicer to perform the required actions, then write the service results to the http response.
 type PokemonAPIRouter interface { 
+	GetFormsByPokemon(http.ResponseWriter, *http.Request)
 	GetPokemon(http.ResponseWriter, *http.Request)
 	GetPokemonDetails(http.ResponseWriter, *http.Request)
 	GetPokemonForm(http.ResponseWriter, *http.Request)
@@ -73,6 +74,7 @@ type MovesAPIServicer interface {
 // while the service implementation can be ignored with the .openapi-generator-ignore file
 // and updated with the logic required for the API.
 type PokemonAPIServicer interface { 
+	GetFormsByPokemon(context.Context, string, string) (ImplResponse, error)
 	GetPokemon(context.Context, int32, int32, string) (ImplResponse, error)
 	GetPokemonDetails(context.Context, string, string) (ImplResponse, error)
 	GetPokemonForm(context.Context, string, int32, string) (ImplResponse, error)

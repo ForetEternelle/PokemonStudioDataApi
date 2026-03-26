@@ -29,24 +29,9 @@ func NewPokemonMapper(
 func (m PokemonMapper) PokemonToThumbnail(p studio.Pokemon, lang string, policy *AccessPolicy) *PokemonThumbnail {
 	slog.Debug("Mapping pokemon to thumbnail", "lang", lang)
 
-	var mainForm studio.PokemonForm
-	hasForm := false
-	for _, form := range p.Forms() {
-		passesFilter := true
-		for _, filter := range policy.FormFilters {
-			if !filter(form) {
-				passesFilter = false
-				break
-			}
-		}
-		if passesFilter {
-			mainForm = form
-			hasForm = true
-			break
-		}
-	}
+	mainForm, okMainForm := p.Form(0);
 
-	if !hasForm {
+	if !okMainForm {
 		return nil
 	}
 
@@ -55,10 +40,11 @@ func (m PokemonMapper) PokemonToThumbnail(p studio.Pokemon, lang string, policy 
 		Number: p.ID(),
 		Image:  p.DbSymbol(),
 		Type1:  m.typeMapper.ToTypePartial(mainForm.Type1(), lang, policy),
-		Name:   p.Name(lang),
+		Name:   mainForm.Name(lang),
 	}
-	var type2, ok = mainForm.Type2()
-	if ok {
+
+	var type2, okType2 = mainForm.Type2()
+	if okType2 {
 		thumbnail.Type2 = m.typeMapper.ToTypePartial(type2, lang, policy)
 	}
 
@@ -66,7 +52,7 @@ func (m PokemonMapper) PokemonToThumbnail(p studio.Pokemon, lang string, policy 
 }
 
 func (m PokemonMapper) PokemonToDetail(p studio.Pokemon, lang string, policy *AccessPolicy) *PokemonDetails {
-	slog.Debug("Mapping pokemon to details", "pokemon", p, "lang", lang)
+	slog.Debug("Mapping pokemon to details", "pokemon", p.DbSymbol(), "lang", lang)
 
 	var mainForm studio.PokemonForm
 	hasForm := false
@@ -92,14 +78,12 @@ func (m PokemonMapper) PokemonToDetail(p studio.Pokemon, lang string, policy *Ac
 	return &PokemonDetails{
 		Symbol:      p.DbSymbol(),
 		Number:      p.ID(),
-		Name:        p.Name(lang),
-		Description: p.Description(lang),
 		MainForm:    *m.FormToPokemonFormDetails(mainForm, lang, policy),
 	}
 }
 
 func (m PokemonMapper) FormToPokemonFormDetails(f studio.PokemonForm, lang string, policy *AccessPolicy) *FormDetails {
-	slog.Debug("Mapping pokemon form to form details", "form", f, "lang", lang)
+	slog.Debug("Mapping pokemon form to form details", "form", f.Form(), "lang", lang)
 
 	abilityIt := f.Abilities()
 	abilityIt = iter2.Filter(func(a studio.Ability) bool {
@@ -128,6 +112,8 @@ func (m PokemonMapper) FormToPokemonFormDetails(f studio.PokemonForm, lang strin
 	return &FormDetails{
 		Form: &form,
 
+		Name:        f.Name(lang),
+		Description: f.Description(lang),
 		Height: f.Height(),
 		Weight: f.Weight(),
 

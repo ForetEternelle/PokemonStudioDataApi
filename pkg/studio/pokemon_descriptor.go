@@ -104,6 +104,8 @@ type FormDescriptor struct {
 	Abilities      []string                 `json:"abilities"`
 	FrontOffsetY   int32                    `json:"frontOffsetY"`
 	FormTextId     FormTextIdDescriptor     `json:"formTextId"`
+	Name           Translation
+	Description    Translation
 }
 
 // EvolutionDescriptor is the JSON descriptor for an evolution.
@@ -129,4 +131,3 @@ type FormTextIdDescriptor struct {
 	Name        int `json:"name"`
 	Description int `json:"description"`
 }
-

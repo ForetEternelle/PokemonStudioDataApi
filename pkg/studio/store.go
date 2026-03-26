@@ -9,6 +9,17 @@ import (
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/iter2"
 )
 
+const (
+	StudioFolder   = "Studio"
+	LanguageFolder = "Text/Dialogs"
+
+	UndefType = "__undef__"
+)
+
+// Translation is a map of language codes to translated strings.
+type Translation map[string]string
+
+// Store is an in-memory store for a studio project
 type Store struct {
 	pokemonList []Pokemon
 	types       []PokemonType
@@ -20,13 +31,6 @@ type Store struct {
 	abilitiesBySymbol    map[string]*Ability
 	movesBySymbol        map[string]*Move
 }
-
-const (
-	StudioFolder   = "Studio"
-	LanguageFolder = "Text/Dialogs"
-
-	UndefType = "__undef__"
-)
 
 func NewStore() *Store {
 	pokemonBySymbol := make(map[string]*Pokemon)

@@ -24,18 +24,6 @@ func (b *PokemonBuilder) DbSymbol(dbSymbol string) *PokemonBuilder {
 	return b
 }
 
-// Name sets the name translations of the Pokemon.
-func (b *PokemonBuilder) Name(name Translation) *PokemonBuilder {
-	b.pokemon.name = name
-	return b
-}
-
-// Description sets the description translations of the Pokemon.
-func (b *PokemonBuilder) Description(desc Translation) *PokemonBuilder {
-	b.pokemon.description = desc
-	return b
-}
-
 // Forms sets the forms of the Pokemon.
 func (b *PokemonBuilder) Forms(forms map[int32]PokemonForm) *PokemonBuilder {
 	b.pokemon.forms = forms
@@ -249,6 +237,18 @@ func (b *PokemonFormBuilder) Abilities(abilities []*Ability) *PokemonFormBuilder
 // FrontOffsetY sets the front offset Y of the PokemonForm.
 func (b *PokemonFormBuilder) FrontOffsetY(y int32) *PokemonFormBuilder {
 	b.form.frontOffsetY = y
+	return b
+}
+
+// Name sets the name translations of the PokemonForm.
+func (b *PokemonFormBuilder) Name(name Translation) *PokemonFormBuilder {
+	b.form.name = name
+	return b
+}
+
+// Description sets the description translations of the PokemonForm.
+func (b *PokemonFormBuilder) Description(desc Translation) *PokemonFormBuilder {
+	b.form.description = desc
 	return b
 }
 

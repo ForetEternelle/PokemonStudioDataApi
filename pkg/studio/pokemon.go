@@ -36,16 +36,11 @@ const (
 // ExperienceType is a type alias for experience types.
 type ExperienceType string
 
-// Translation is a map of language codes to translated strings.
-type Translation map[string]string
-
 // Pokemon represents a Pokémon species with all its forms.
 type Pokemon struct {
 	id               int32
 	dbSymbol         string
 	forms            map[int32]PokemonForm
-	name             Translation
-	description      Translation
 	customProperties map[string]any
 }
 
@@ -57,16 +52,6 @@ func (p *Pokemon) ID() int32 {
 // DbSymbol returns the database symbol of the Pokemon.
 func (p *Pokemon) DbSymbol() string {
 	return p.dbSymbol
-}
-
-// Name returns the localized name of the Pokemon for the given language.
-func (p *Pokemon) Name(lang string) string {
-	return p.name[lang]
-}
-
-// Description returns the localized description of the Pokemon for the given language.
-func (p *Pokemon) Description(lang string) string {
-	return p.description[lang]
 }
 
 // Forms returns an iterator over all forms of the Pokemon.
@@ -132,6 +117,8 @@ type PokemonForm struct {
 	abilitySymbols   []string
 	abilities        []*Ability
 	frontOffsetY     int32
+	name             Translation
+	description      Translation
 	customProperties map[string]any
 }
 
@@ -266,6 +253,16 @@ func (f *PokemonForm) BabyForm() int32 {
 // FrontOffsetY returns the front offset Y of the PokemonForm.
 func (f *PokemonForm) FrontOffsetY() int32 {
 	return f.frontOffsetY
+}
+
+// Name returns the name translations of the PokemonForm.
+func (f *PokemonForm) Name(lang string) string {
+	return f.name[lang]
+}
+
+// Description returns the description translations of the PokemonForm.
+func (f *PokemonForm) Description(lang string) string {
+	return f.description[lang]
 }
 
 // CustomProperties returns the custom properties of the PokemonForm.

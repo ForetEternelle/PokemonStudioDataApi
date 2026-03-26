@@ -20,8 +20,6 @@ func (m *PokemonMapper) MapPokemonDescriptorToPokemon(desc PokemonDescriptor) *P
 	pokemon := NewPokemonBuilder().
 		ID(desc.ID).
 		DbSymbol(desc.DbSymbol).
-		Name(desc.Name).
-		Description(desc.Description).
 		Forms(forms).
 		Build()
 
@@ -57,6 +55,8 @@ func (m *PokemonMapper) MapFormDescriptorToPokemonForm(desc FormDescriptor) *Pok
 		BabyForm(desc.BabyForm).
 		BabyDbSymbol(desc.BabyDbSymbol).
 		FrontOffsetY(desc.FrontOffsetY).
+		Name(desc.Name).
+		Description(desc.Description).
 		Evolutions(m.MapEvolutions(desc.Evolutions)).
 		ItemHeld(m.MapItemHelds(desc.ItemHeld)).
 		CustomProperties(make(map[string]any)).

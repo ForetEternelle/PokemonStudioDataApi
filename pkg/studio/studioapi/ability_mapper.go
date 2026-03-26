@@ -20,7 +20,7 @@ func NewAbilityMapper() *AbilityMapper {
 // ability the ability to map
 // lang the language expected
 func (m AbilityMapper) ToAbilityDetail(ability studio.Ability, lang string) AbilityDetails {
-	slog.Debug("Mapping ability to details", "ability", ability, "lang", lang)
+	slog.Debug("Mapping ability to details", "ability", ability.DbSymbol(), "lang", lang)
 	return AbilityDetails{
 		Symbol:      ability.DbSymbol(),
 		Name:        ability.Name(lang),
@@ -32,7 +32,7 @@ func (m AbilityMapper) ToAbilityDetail(ability studio.Ability, lang string) Abil
 // ability the ability to map
 // lang the language expected
 func (m AbilityMapper) ToAbilityPartial(ability studio.Ability, lang string) AbilityPartial {
-	slog.Debug("Mapping ability to partial", "ability", ability, "lang", lang)
+	slog.Debug("Mapping ability to partial", "ability", ability.DbSymbol(), "lang", lang)
 	return AbilityPartial{
 		Symbol:      ability.DbSymbol(),
 		Name:        ability.Name(lang),

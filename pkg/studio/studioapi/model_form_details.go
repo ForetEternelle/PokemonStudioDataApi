@@ -19,6 +19,12 @@ type FormDetails struct {
 	// The form number
 	Form *int32 `json:"form,omitempty"`
 
+	// The translated name of the form
+	Name string `json:"name,omitempty"`
+
+	// The translated description of the form
+	Description string `json:"description,omitempty"`
+
 	// The height
 	Height float32 `json:"height,omitempty"`
 

@@ -3,7 +3,7 @@ package iter2
 import "iter"
 
 type MapFunc[T any, R any] func(T) R
-type MapFunc2[T any, R any] func(int, T) R
+type MapFunc2[K any, T any, R any] func(K, T) R
 
 func Map[T any, R any](fn MapFunc[T, R], it iter.Seq[T]) iter.Seq[R] {
 	return func(yield func(R) bool) {
@@ -15,14 +15,12 @@ func Map[T any, R any](fn MapFunc[T, R], it iter.Seq[T]) iter.Seq[R] {
 	}
 }
 
-func Map2[T any, R any](fn MapFunc2[T, R], it iter.Seq[T]) iter.Seq[R] {
-	i := 0
+func Map2[K any, V any, R any](fn MapFunc2[K, V, R], it iter.Seq2[K, V]) iter.Seq[R] {
 	return func(yield func(R) bool) {
-		for item := range it {
-			if !yield(fn(i, item)) {
+		for k, value := range it {
+			if !yield(fn(k, value)) {
 				break
 			}
-			i++
 		}
 	}
 }

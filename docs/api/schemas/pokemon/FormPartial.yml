@@ -1,0 +1,49 @@
+type: object
+description: An object containing the data of a pokemon form (ev, iv, ...)
+properties:
+    form:
+        type: integer
+        description: The form number
+        nullable: true
+        example: 0
+    name:
+        type: string
+        description: The translated name of the form
+        example: "Pikachu"
+
+    type1:
+        description: The first type
+        $ref: "../types/TypePartial.yml"
+        nullable: false
+    type2:
+        $ref: "../types/TypePartial.yml"
+        description: The second type
+        nullable: true
+    baseHp:
+        type: integer
+        description: The base HP stat
+        example: 35
+    baseAtk:
+        type: integer
+        description: The base attack stat
+        example: 55
+    baseDfe:
+        type: integer
+        description: The base defense stat
+        example: 40
+    baseSpd:
+        type: integer
+        description: The base speed stat
+        example: 90
+    baseAts:
+        type: integer
+        description: The base special attack stat
+        example: 50
+    baseDfs:
+        type: integer
+        description: The base special defense stat
+        example: 50
+    image:
+        description: The image symbol of the form
+        type: string
+        example: "025"

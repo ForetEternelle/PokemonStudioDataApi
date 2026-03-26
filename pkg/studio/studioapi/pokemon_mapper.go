@@ -29,7 +29,7 @@ func NewPokemonMapper(
 func (m PokemonMapper) PokemonToThumbnail(p studio.Pokemon, lang string, policy *AccessPolicy) *PokemonThumbnail {
 	slog.Debug("Mapping pokemon to thumbnail", "lang", lang)
 
-	mainForm, okMainForm := p.Form(0);
+	mainForm, okMainForm := p.Form(0)
 
 	if !okMainForm {
 		return nil
@@ -76,9 +76,9 @@ func (m PokemonMapper) PokemonToDetail(p studio.Pokemon, lang string, policy *Ac
 	}
 
 	return &PokemonDetails{
-		Symbol:      p.DbSymbol(),
-		Number:      p.ID(),
-		MainForm:    *m.FormToPokemonFormDetails(mainForm, lang, policy),
+		Symbol:   p.DbSymbol(),
+		Number:   p.ID(),
+		MainForm: *m.FormToPokemonFormDetails(mainForm, lang, policy),
 	}
 }
 
@@ -114,8 +114,8 @@ func (m PokemonMapper) FormToPokemonFormDetails(f studio.PokemonForm, lang strin
 
 		Name:        f.Name(lang),
 		Description: f.Description(lang),
-		Height: f.Height(),
-		Weight: f.Weight(),
+		Height:      f.Height(),
+		Weight:      f.Weight(),
 
 		Type1: partialType1,
 		Type2: partialType2,
@@ -143,5 +143,33 @@ func (m PokemonMapper) FormToPokemonFormDetails(f studio.PokemonForm, lang strin
 		BabyDbSymbol:   f.BabyDbSymbol(),
 		BabyForm:       &babyForm,
 		Abilities:      slices.Collect(abilityPartialIt),
+	}
+}
+
+func (m PokemonMapper) FormToPokemonFormPartial(f studio.PokemonForm, lang string, policy *AccessPolicy) *FormPartial {
+	slog.Debug("Mapping pokemon form to form partial", "form", f.Form(), "lang", lang)
+
+	partialType1 := m.typeMapper.ToTypePartial(f.Type1(), lang, policy)
+	var partialType2 *TypePartial
+	type2, ok := f.Type2()
+	if ok {
+		partialType2 = m.typeMapper.ToTypePartial(type2, lang, policy)
+	}
+
+	form := f.Form()
+	return &FormPartial{
+		Form: &form,
+
+		Name: f.Name(lang),
+
+		Type1: partialType1,
+		Type2: partialType2,
+
+		BaseHp:  f.BaseHp(),
+		BaseAtk: f.BaseAtk(),
+		BaseDfe: f.BaseDfe(),
+		BaseSpd: f.BaseSpd(),
+		BaseAts: f.BaseAts(),
+		BaseDfs: f.BaseDfs(),
 	}
 }

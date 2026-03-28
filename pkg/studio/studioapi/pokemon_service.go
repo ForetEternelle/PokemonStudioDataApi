@@ -63,11 +63,12 @@ func (s PokemonService) GetFormsByPokemon(requestCtx context.Context, symbol str
 		return ImplResponse{Code: 404, Body: nil}, nil
 	}
 
-	formsIter := iter2.Map2(func(_ int32, form studio.PokemonForm) *FormPartial {
+	formsIter := iter2.Values(pkmn.Forms())
+	formPartialsIter := iter2.Map(func(form studio.PokemonForm) *FormPartial {
 		return s.pokemonMapper.FormToPokemonFormPartial(form, lang, policy)
-	}, pkmn.Forms())
+	}, formsIter)
 
-	return ImplResponse{Code: 200, Body: slices.Collect(formsIter)}, nil
+	return ImplResponse{Code: 200, Body: slices.Collect(formPartialsIter)}, nil
 }
 
 func (s PokemonService) GetPokemonForm(requestCtx context.Context, symbol string, form int32, lang string) (ImplResponse, error) {
@@ -78,18 +79,8 @@ func (s PokemonService) GetPokemonForm(requestCtx context.Context, symbol string
 		return ImplResponse{Code: 404, Body: nil}, nil
 	}
 
-	var pkmnForm studio.PokemonForm
-	hasForm := false
-	formFilter := iter2.And(policy.FormFilter)
-	for formId, f := range pkmn.Forms() {
-		if formId == form && formFilter(f) {
-			pkmnForm = f
-			hasForm = true
-			break
-		}
-	}
-
-	if !hasForm {
+	pkmnForm, ok := pkmn.Form(form)
+	if !ok {
 		return ImplResponse{Code: 404, Body: nil}, nil
 	}
 

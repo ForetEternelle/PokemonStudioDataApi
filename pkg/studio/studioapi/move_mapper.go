@@ -34,7 +34,8 @@ func (m MoveMapper) ToMoveDetail(move studio.Move, lang string, policy *AccessPo
 	}
 
 	// Map type
-	if move.Type().DbSymbol() != "" {
+	t := move.Type()
+	if t.DbSymbol() != "" {
 		typePartial := m.typeMapper.ToTypePartial(move.Type(), lang, policy)
 		details.Type = typePartial
 	}
@@ -121,8 +122,8 @@ func (m MoveMapper) ToMovePartial(move studio.Move, lang string, policy *AccessP
 		Accuracy: int32(move.Accuracy()),
 	}
 
-	// Map type
-	if move.Type().DbSymbol() != "" {
+	t := move.Type()
+	if t.DbSymbol() != "" {
 		typePartial := m.typeMapper.ToTypePartial(move.Type(), lang, policy)
 		partial.Type = typePartial
 	}

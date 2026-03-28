@@ -49,8 +49,9 @@ func TestMoveToDetail(t *testing.T) {
 		t.Error("Mapper should map pp, expected", move.PP(), ", has", moveDetail.Pp)
 	}
 
-	if moveDetail.Type.Symbol != move.Type().DbSymbol() {
-		t.Error("Mapper should map type symbol, expected", move.Type().DbSymbol(), ", has", moveDetail.Type.Symbol)
+	pt := move.Type()
+	if moveDetail.Type.Symbol != pt.DbSymbol() {
+		t.Error("Mapper should map type symbol, expected", pt.DbSymbol(), ", has", moveDetail.Type.Symbol)
 	}
 
 	if moveDetail.Category != string(move.Category()) {

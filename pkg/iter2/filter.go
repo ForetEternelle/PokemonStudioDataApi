@@ -51,3 +51,22 @@ func True[T any](T) bool {
 func False[T any](T) bool {
 	return false
 }
+
+func First[V any](it iter.Seq[V]) (V, bool) {
+	for item := range it {
+		return item, true
+	}
+	var zero V
+	return zero, false
+}
+
+func Peek[V any](peek func(V), it iter.Seq[V]) iter.Seq[V] {
+	return func(yield func(V) bool) {
+		for item := range it {
+			peek(item)
+			if !yield(item) {
+				break
+			}
+		}
+	}
+}

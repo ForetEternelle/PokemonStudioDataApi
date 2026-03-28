@@ -28,7 +28,7 @@ func NewAbilityService(
 
 func (s AbilityService) GetAbilities(requestCtx context.Context, lang string) (ImplResponse, error) {
 	policy := s.accessPolicyFactory(requestCtx)
-	abilitiesIter := s.store.FindAllAbilities(policy.AbilityFilters...)
+	abilitiesIter := s.store.FindAllAbilities(policy.AbilityFilter)
 	mappedIter := iter2.Map(func(a studio.Ability) AbilityPartial {
 		return s.abilityMapper.ToAbilityPartial(a, lang)
 	}, abilitiesIter)

@@ -155,10 +155,8 @@ func (s *Store) FindPokemonBySymbol(symbol string, filters ...iter2.FilterFunc[P
 		return nil
 	}
 
-	for _, filter := range filters {
-		if !filter(*pokemon) {
-			return nil
-		}
+	if len(filters) > 0 && !iter2.And(filters...)(*pokemon) {
+		return nil
 	}
 
 	return pokemon
@@ -180,10 +178,8 @@ func (s *Store) FindTypeBySymbol(symbol string, filters ...iter2.FilterFunc[Poke
 		return nil
 	}
 
-	for _, filter := range filters {
-		if !filter(*pokemonType) {
-			return nil
-		}
+	if len(filters) > 0 && !iter2.And(filters...)(*pokemonType) {
+		return nil
 	}
 
 	return pokemonType
@@ -205,10 +201,8 @@ func (s *Store) FindAbilityBySymbol(symbol string, filters ...iter2.FilterFunc[A
 		return nil
 	}
 
-	for _, filter := range filters {
-		if !filter(*ability) {
-			return nil
-		}
+	if len(filters) > 0 && !iter2.And(filters...)(*ability) {
+		return nil
 	}
 
 	return ability
@@ -230,10 +224,8 @@ func (s *Store) FindMoveBySymbol(symbol string, filters ...iter2.FilterFunc[Move
 		return nil
 	}
 
-	for _, filter := range filters {
-		if !filter(*move) {
-			return nil
-		}
+	if len(filters) > 0 && !iter2.And(filters...)(*move) {
+		return nil
 	}
 
 	return move

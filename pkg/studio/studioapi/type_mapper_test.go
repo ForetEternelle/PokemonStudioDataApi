@@ -12,10 +12,9 @@ func TestToTypeDetail(t *testing.T) {
 		DbSymbol("testDbSymbol").
 		Color("testColor").
 		Name(studio.Translation{lang: "testName"}).
-		DamageTo([]studio.TypeDamage{{
-			DefensiveType: "testDefType",
-			Factor:        0.2,
-		}}).
+		DamageTo(map[string]float32{
+			"defType2": 0.5,
+		}).
 		Build()
 
 	typeMapper := NewTypeMapper()
@@ -34,18 +33,11 @@ func TestToTypeDetail(t *testing.T) {
 		t.Error("Mapper should map db symbol, expected", pokemonType.DbSymbol(), ", has", typeDetail.Symbol)
 	}
 
-	i := 0
-	for _, typeDamage := range pokemonType.DamageTo() {
-		result := typeDetail.TypeDamage[i]
-
-		if typeDamage.DefensiveType != result.DefensiveType {
-			t.Error("Mapper should map defensive type, expected", typeDamage.DefensiveType, ", has", result.DefensiveType)
-		}
-
-		if typeDamage.Factor != *result.Factor {
-			t.Error("Mapper should map factor damage, expected", typeDamage.Factor, ", has", result.Factor)
-		}
-		i++
+	def, ok := typeDetail.TypeDamage["defType2"]
+	if !ok {
+		t.Error("Mapper should map damage to, expected key 'defType2' to be present")
+	} else if def != 0.5 {
+		t.Error("Mapper should map damage to, expected value 0.5 for key 'defType2', has", def)
 	}
 }
 

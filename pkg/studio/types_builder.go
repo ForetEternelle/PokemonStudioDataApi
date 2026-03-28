@@ -35,7 +35,7 @@ func (b *TypeBuilder) Name(name Translation) *TypeBuilder {
 }
 
 // DamageTo sets the damage relations of the PokemonType.
-func (b *TypeBuilder) DamageTo(damageTo []TypeDamage) *TypeBuilder {
+func (b *TypeBuilder) DamageTo(damageTo map[string]float32) *TypeBuilder {
 	b.pokemonType.damageTo = damageTo
 	return b
 }

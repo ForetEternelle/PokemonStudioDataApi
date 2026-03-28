@@ -26,25 +26,15 @@ type TypeDetails struct {
 	Color string `json:"color,omitempty"`
 
 	// The damage inflicted by this type
-	TypeDamage []TypeDamage `json:"typeDamage,omitempty"`
+	TypeDamage map[string]float32 `json:"typeDamage,omitempty"`
 }
 
 // AssertTypeDetailsRequired checks if the required fields are not zero-ed
 func AssertTypeDetailsRequired(obj TypeDetails) error {
-	for _, el := range obj.TypeDamage {
-		if err := AssertTypeDamageRequired(el); err != nil {
-			return err
-		}
-	}
 	return nil
 }
 
 // AssertTypeDetailsConstraints checks if the values respects the defined constraints
 func AssertTypeDetailsConstraints(obj TypeDetails) error {
-	for _, el := range obj.TypeDamage {
-		if err := AssertTypeDamageConstraints(el); err != nil {
-			return err
-		}
-	}
 	return nil
 }

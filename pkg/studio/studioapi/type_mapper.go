@@ -2,6 +2,7 @@ package studioapi
 
 import (
 	"log/slog"
+	"maps"
 
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/studio"
 )
@@ -16,20 +17,11 @@ func NewTypeMapper() *TypeMapper {
 func (t TypeMapper) ToTypeDetail(pokemonType studio.PokemonType, lang string, policy *AccessPolicy) *TypeDetails {
 	slog.Debug("Mapping type to details", "type", pokemonType.DbSymbol(), "lang", lang)
 
-	typeDamage := make([]TypeDamage, 0)
-	for _, damage := range pokemonType.DamageTo() {
-		factor := damage.Factor
-		typeDamage = append(typeDamage, TypeDamage{
-			DefensiveType: damage.DefensiveType,
-			Factor:        &factor,
-		})
-	}
-
 	return &TypeDetails{
 		Symbol:     pokemonType.DbSymbol(),
 		Name:       pokemonType.Name(lang),
 		Color:      pokemonType.Color(),
-		TypeDamage: typeDamage,
+		TypeDamage: maps.Collect(pokemonType.DamageTo()),
 	}
 }
 

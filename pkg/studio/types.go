@@ -2,6 +2,7 @@ package studio
 
 import (
 	"iter"
+	"maps"
 )
 
 // PokemonType represents a Pokemon type (e.g., Fire, Water, Grass).
@@ -10,13 +11,7 @@ type PokemonType struct {
 	color    string
 	textId   int
 	name     Translation
-	damageTo []TypeDamage
-}
-
-// TypeDamage represents a type damage relation.
-type TypeDamage struct {
-	DefensiveType string
-	Factor        float32
+	damageTo map[string]float32
 }
 
 // DbSymbol returns the database symbol of the PokemonType.
@@ -40,26 +35,12 @@ func (t PokemonType) Name(lang string) string {
 }
 
 // DamageTo returns an iterator over the type damage relations.
-func (t PokemonType) DamageTo() iter.Seq2[int, TypeDamage] {
-	return func(yield func(int, TypeDamage) bool) {
-		for i, d := range t.damageTo {
-			if !yield(i, d) {
-				return
-			}
-		}
-	}
+func (t PokemonType) DamageTo() iter.Seq2[string, float32] {
+	return maps.All(t.damageTo)
 }
 
 // Damage returns the type damage relation for a defending type.
-func (t PokemonType) Damage(defType string) (TypeDamage, bool) {
-	for _, d := range t.damageTo {
-		if d.DefensiveType == defType {
-			return d, true
-		}
-	}
-	return TypeDamage{}, false
+func (t PokemonType) Damage(defType string) (float32, bool) {
+	factor, ok := t.damageTo[defType]
+	return factor, ok
 }
-
-
-
-

@@ -1,6 +1,5 @@
 package studio
 
-
 // TypeMapper maps Type descriptors to PokemonType entities.
 type TypeMapper struct {
 	store *Store
@@ -25,17 +24,10 @@ func (m *TypeMapper) MapPokemonTypeDescriptorToPokemonType(desc PokemonTypeDescr
 }
 
 // MapTypeDamages maps type damage descriptors to type damage entities.
-func (m *TypeMapper) MapTypeDamages(damages []TypeDamageDescriptor) []TypeDamage {
-	if len(damages) == 0 {
-		return nil
-	}
-
-	mapped := make([]TypeDamage, len(damages))
-	for i, tdDesc := range damages {
-		mapped[i] = TypeDamage{
-			DefensiveType: tdDesc.DefensiveType,
-			Factor:        tdDesc.Factor,
-		}
+func (m *TypeMapper) MapTypeDamages(damages []TypeDamageDescriptor) map[string]float32 {
+	mapped := make(map[string]float32, len(damages))
+	for _, tdDesc := range damages {
+		mapped[tdDesc.DefensiveType] = tdDesc.Factor
 	}
 	return mapped
 }

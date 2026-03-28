@@ -14,7 +14,7 @@ properties:
         description: The color of the pokemon type
         example: "#F8D030"
     typeDamage:
-        type: array
+        type: object
         description: The damage inflicted by this type
-        items:
-            $ref: "./TypeDamage.yml"
+        additionalProperties:
+            type: number

@@ -15,3 +15,39 @@ func Filter[T any](filter FilterFunc[T], it iter.Seq[T]) iter.Seq[T] {
 		}
 	}
 }
+
+func Or[T any](filters ...FilterFunc[T]) FilterFunc[T] {
+	if len(filters) == 0 {
+		return True[T]
+	}
+	return func(item T) bool {
+		for _, filter := range filters {
+			if filter(item) {
+				return true
+			}
+		}
+		return false
+	}
+}
+
+func And[T any](filters ...FilterFunc[T]) FilterFunc[T] {
+	if len(filters) == 0 {
+		return True[T]
+	}
+	return func(item T) bool {
+		for _, filter := range filters {
+			if !filter(item) {
+				return false
+			}
+		}
+		return true
+	}
+}
+
+func True[T any](T) bool {
+	return true
+}
+
+func False[T any](T) bool {
+	return false
+}

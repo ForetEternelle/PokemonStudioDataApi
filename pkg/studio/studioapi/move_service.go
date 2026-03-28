@@ -26,7 +26,7 @@ func NewMoveService(
 
 func (s MoveService) GetMoveDetails(requestCtx context.Context, symbol string, lang string) (ImplResponse, error) {
 	policy := s.accessPolicyFactory(requestCtx)
-	m := s.store.FindMoveBySymbol(symbol, policy.MoveFilters...)
+	m := s.store.FindMoveBySymbol(symbol, policy.MoveFilter)
 	if m == nil {
 		return ImplResponse{Code: 404, Body: nil}, nil
 	}
@@ -35,7 +35,7 @@ func (s MoveService) GetMoveDetails(requestCtx context.Context, symbol string, l
 
 func (s MoveService) GetMove(requestCtx context.Context, symbol string, lang string) (ImplResponse, error) {
 	policy := s.accessPolicyFactory(requestCtx)
-	m := s.store.FindMoveBySymbol(symbol, policy.MoveFilters...)
+	m := s.store.FindMoveBySymbol(symbol, policy.MoveFilter)
 	if m == nil {
 		return ImplResponse{Code: 404, Body: nil}, nil
 	}

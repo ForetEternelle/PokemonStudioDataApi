@@ -56,15 +56,9 @@ func (m PokemonMapper) PokemonToDetail(p studio.Pokemon, lang string, policy *Ac
 
 	var mainForm studio.PokemonForm
 	hasForm := false
+	formFilter := iter2.And(policy.FormFilter)
 	for _, form := range p.Forms() {
-		passesFilter := true
-		for _, filter := range policy.FormFilters {
-			if !filter(form) {
-				passesFilter = false
-				break
-			}
-		}
-		if passesFilter {
+		if formFilter(form) {
 			mainForm = form
 			hasForm = true
 			break
@@ -86,14 +80,7 @@ func (m PokemonMapper) FormToPokemonFormDetails(f studio.PokemonForm, lang strin
 	slog.Debug("Mapping pokemon form to form details", "form", f.Form(), "lang", lang)
 
 	abilityIt := f.Abilities()
-	abilityIt = iter2.Filter(func(a studio.Ability) bool {
-		for _, filter := range policy.AbilityFilters {
-			if !filter(a) {
-				return false
-			}
-		}
-		return true
-	}, abilityIt)
+	abilityIt = iter2.Filter(policy.AbilityFilter, abilityIt)
 
 	abilityPartialIt := iter2.Map(func(a studio.Ability) AbilityPartial {
 		return m.abilityMapper.ToAbilityPartial(a, lang)

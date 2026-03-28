@@ -27,90 +27,87 @@ type Move struct {
 }
 
 // ID returns the ID of the Move.
-func (m Move) ID() int {
+func (m *Move) ID() int {
 	return m.id
 }
 
 // DbSymbol returns the database symbol of the Move.
-func (m Move) DbSymbol() string {
+func (m *Move) DbSymbol() string {
 	return m.dbSymbol
 }
 
 // Type returns the type of the Move.
-func (m Move) Type() PokemonType {
-	if m.moveType == nil {
-		return PokemonType{}
-	}
+func (m *Move) Type() PokemonType {
 	return *m.moveType
 }
 
 // Category returns the category of the Move.
-func (m Move) Category() MoveCategory {
+func (m *Move) Category() MoveCategory {
 	return m.category
 }
 
 // Power returns the power of the Move.
-func (m Move) Power() int {
+func (m *Move) Power() int {
 	return m.power
 }
 
 // Accuracy returns the accuracy of the Move.
-func (m Move) Accuracy() int {
+func (m *Move) Accuracy() int {
 	return m.accuracy
 }
 
 // PP returns the PP of the Move.
-func (m Move) PP() int {
+func (m *Move) PP() int {
 	return m.pp
 }
 
 // CriticalRate returns the critical rate of the Move.
-func (m Move) CriticalRate() int {
+func (m *Move) CriticalRate() int {
 	return m.criticalRate
 }
 
 // Priority returns the priority of the Move.
-func (m Move) Priority() int {
+func (m *Move) Priority() int {
 	return m.priority
 }
 
 // MapUse returns the map use of the Move.
-func (m Move) MapUse() int {
+func (m *Move) MapUse() int {
 	return m.mapUse
 }
 
 // Name returns the localized name of the Move for the given language.
-func (m Move) Name(lang string) string {
+func (m *Move) Name(lang string) string {
 	return m.name[lang]
 }
 
 // Description returns the localized description of the Move for the given language.
-func (m Move) Description(lang string) string {
+func (m *Move) Description(lang string) string {
 	return m.description[lang]
 }
 
 // Targeting returns the targeting of the Move.
-func (m Move) Targeting() MoveTargeting {
+func (m *Move) Targeting() MoveTargeting {
 	return m.targeting
 }
 
 // Execution returns the execution of the Move.
-func (m Move) Execution() MoveExecution {
+func (m *Move) Execution() MoveExecution {
 	return m.execution
 }
 
 // MechanicalTags returns the mechanical tags of the Move.
-func (m Move) MechanicalTags() []MoveMechanicalTag {
+func (m *Move) MechanicalTags() []MoveMechanicalTag {
 	return m.mechanicalTags
 }
 
 // Interactions returns the interactions of the Move.
-func (m Move) Interactions() []MoveInteraction {
+func (m *Move) Interactions() []MoveInteraction {
 	return m.interactions
 }
 
 // SecondaryEffects returns the secondary effects of the Move.
-func (m Move) SecondaryEffects() MoveSecondaryEffects {
+func (m *Move) SecondaryEffects() MoveSecondaryEffects {
 	return m.secondaryEffects
 }
 

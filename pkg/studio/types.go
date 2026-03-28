@@ -15,32 +15,47 @@ type PokemonType struct {
 }
 
 // DbSymbol returns the database symbol of the PokemonType.
-func (t PokemonType) DbSymbol() string {
+func (t *PokemonType) DbSymbol() string {
 	return t.dbSymbol
 }
 
 // Color returns the color of the PokemonType.
-func (t PokemonType) Color() string {
+func (t *PokemonType) Color() string {
 	return t.color
 }
 
 // TextId returns the text ID of the PokemonType.
-func (t PokemonType) TextId() int {
+func (t *PokemonType) TextId() int {
 	return t.textId
 }
 
 // Name returns the localized name of the PokemonType for the given language.
-func (t PokemonType) Name(lang string) string {
+func (t *PokemonType) Name(lang string) string {
 	return t.name[lang]
 }
 
 // DamageTo returns an iterator over the type damage relations.
-func (t PokemonType) DamageTo() iter.Seq2[string, float32] {
+func (t *PokemonType) DamageTo() iter.Seq2[string, float32] {
 	return maps.All(t.damageTo)
 }
 
 // Damage returns the type damage relation for a defending type.
-func (t PokemonType) Damage(defType string) (float32, bool) {
+func (t *PokemonType) Damage(defType string) (float32, bool) {
 	factor, ok := t.damageTo[defType]
 	return factor, ok
+}
+
+// DamageToTypes calculates the overall damage factor when attacking a Pokemon with the given types.
+func (t *PokemonType) DamageToTypes(type1, type2 string) float32 {
+	var res float32 = 1
+	type1Dmg, okType1 := t.Damage(type1)
+	if okType1 {
+		res *= type1Dmg
+	}
+
+	type2Dmg, okType2 := t.Damage(type2)
+	if okType2 {
+		res *= type2Dmg
+	}
+	return res
 }

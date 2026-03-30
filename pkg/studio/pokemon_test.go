@@ -67,3 +67,35 @@ func TestNewMoveMapper(t *testing.T) {
 		t.Error("NewMoveMapper should set store correctly")
 	}
 }
+
+func TestMaxHp(t *testing.T) {
+	expect := int32(386)
+	result := MaxHp(91)
+	if result != expect {
+		t.Error("MaxHp with base stat 91 should return", expect, "but has", result)
+	}
+}
+
+func TextMinHp(t *testing.T) {
+	expect := int32(292)
+	result := MinHp(91)
+	if result != expect {
+		t.Error("MinHp with base stat 91 should return", expect, "but has", result)
+	}
+}
+
+func TestMaxStat(t *testing.T) {
+	expect := int32(403)
+	result := MaxStat(134)
+	if result != expect {
+		t.Error("MaxStat with base stat 91 should return", expect, "but has", result)
+	}
+}
+
+func TestMinStat(t *testing.T) {
+	expect := int32(245)
+	result := MinStat(134)
+	if result != expect {
+		t.Error("MinStat with base stat 91 should return", expect, "but has", result)
+	}
+}

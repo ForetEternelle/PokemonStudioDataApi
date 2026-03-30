@@ -365,6 +365,7 @@ func (f *PokemonForm) BreedGroup(i int) (string, bool) {
 	return f.breedGroups[i], true
 }
 
+
 // Evolution represents an evolution from one Pokemon to another.
 type Evolution struct {
 	DbSymbol   string
@@ -381,4 +382,28 @@ type Condition struct {
 type ItemHeld struct {
 	DbSymbol string
 	Chance   int32
+}
+
+// MaxHp calculates the maximum possible HP value for a given base HP.
+func MaxHp(base int32) int32 {
+	res := float64(base*2+204)
+	return int32(res)
+}
+
+// MinHp calculates the minimum possible HP value for a given base HP.
+func MinHp(base int32) int32 {
+	res := float64(base*2+10)
+	return int32(res)
+}
+
+// MaxStat calculates the maximum possible stat value for a given base stat.
+func MaxStat(base int32) int32 {
+	res := 1.1 * float64(base*2+99)
+	return int32(res)
+}
+
+// MinStat calculates the minimum possible stat value for a given base stat.
+func MinStat(base int32) int32 {
+	res := 0.9 * float64(base*2+5)
+	return int32(res)
 }

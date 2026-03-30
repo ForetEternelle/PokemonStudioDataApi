@@ -157,6 +157,25 @@ func (s *Store) FindPokemonBySymbol(symbol string, filters ...FilterFunc[Pokemon
 	return pokemon
 }
 
+func (s *Store) FindPokemonByName(name string, filters ...FilterFunc[Pokemon]) *Pokemon {
+	for i := range s.pokemonList {
+		pokemon := &s.pokemonList[i]
+
+		if !And(filters...)(*pokemon) {
+			continue
+		}
+
+		for _, form := range pokemon.forms {
+			for _, translatedName := range form.name {
+				if translatedName == name {
+					return pokemon
+				}
+			}
+		}
+	}
+	return nil
+}
+
 func (s *Store) FindAllTypes(filters ...FilterFunc[PokemonType]) iter.Seq[PokemonType] {
 	it := slices.Values(s.types)
 	return Filter(And(filters...), it)

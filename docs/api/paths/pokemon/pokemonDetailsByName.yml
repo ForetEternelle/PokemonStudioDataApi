@@ -1,0 +1,25 @@
+get:
+  tags:
+    - Pokemon
+  summary: Get a pokemon details by name
+  description: This endpoint returns a pokemon details based on the name. The name is the translated name of the pokemon in any language.
+  operationId: getPokemonDetailsByName
+  parameters:
+    - $ref: "../../parameters/lang.yml"
+    - name: name
+      in: path
+      description: The name of the pokemon in any language
+      required: true
+      schema:
+        type: string
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/pokemon/PokemonDetails.yml"
+    "400":
+      $ref: "../../responses/InvalidParameterError.yml"
+    "404":
+      $ref: "../../responses/NotFoundError.yml"

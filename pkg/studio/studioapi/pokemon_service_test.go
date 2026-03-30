@@ -21,7 +21,7 @@ func setupPokemonService() (*studio.Store, PokemonAPIServicer) {
 		BaseHp(35).
 		BaseAtk(55).
 		BaseSpd(90).
-		Name(studio.Translation{"en": "Pikachu"}).
+		Name(studio.Translation{"en": "Pikachu", "fr": "PikachuFR"}).
 		Description(studio.Translation{"en": "Electric mouse"}).
 		Build()
 	form1 := studio.NewPokemonFormBuilder().
@@ -189,5 +189,53 @@ func TestPokemonService_GetPokemonForm_NotFound(t *testing.T) {
 	}
 	if resp.Code != 404 {
 		t.Error("Expected status 404 for non-existent form, got", resp.Code)
+	}
+}
+
+func TestPokemonService_GetPokemonDetailsByName(t *testing.T) {
+	_, service := setupPokemonService()
+
+	// Test English name
+	resp, err := service.GetPokemonDetailsByName(context.Background(), "Pikachu", "en")
+	if err != nil {
+		t.Error("Expected no error, got", err)
+	}
+	if resp.Code != 200 {
+		t.Error("Expected status 200, got", resp.Code)
+	}
+	details := resp.Body.(*PokemonDetails)
+	if details.Symbol != "pikachu" {
+		t.Error("Expected symbol pikachu, got", details.Symbol)
+	}
+
+	// Test French name
+	resp, err = service.GetPokemonDetailsByName(context.Background(), "PikachuFR", "en")
+	if err != nil {
+		t.Error("Expected no error, got", err)
+	}
+	if resp.Code != 200 {
+		t.Error("Expected status 200, got", resp.Code)
+	}
+	details = resp.Body.(*PokemonDetails)
+	if details.Symbol != "pikachu" {
+		t.Error("Expected symbol pikachu, got", details.Symbol)
+	}
+
+	// Test Bulbasaur
+	resp, err = service.GetPokemonDetailsByName(context.Background(), "Bulbasaur", "en")
+	if err != nil {
+		t.Error("Expected no error, got", err)
+	}
+	if resp.Code != 200 {
+		t.Error("Expected status 200, got", resp.Code)
+	}
+
+	// Test Not Found
+	resp, err = service.GetPokemonDetailsByName(context.Background(), "Mewtwo", "en")
+	if err != nil {
+		t.Error("Expected no error, got", err)
+	}
+	if resp.Code != 404 {
+		t.Error("Expected status 404, got", resp.Code)
 	}
 }

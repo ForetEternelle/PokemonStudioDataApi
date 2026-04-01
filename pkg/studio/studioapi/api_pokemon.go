@@ -19,7 +19,7 @@ import (
 
 // PokemonAPIController binds http requests to an api service and writes the service results to the http response
 type PokemonAPIController struct {
-	service PokemonAPIServicer
+	service      PokemonAPIServicer
 	errorHandler ErrorHandler
 }
 
@@ -64,6 +64,11 @@ func (c *PokemonAPIController) Routes() Routes {
 			strings.ToUpper("Get"),
 			"/pokemon/{symbol}",
 			c.GetPokemonDetails,
+		},
+		"GetPokemonDetailsByName": Route{
+			strings.ToUpper("Get"),
+			"/pokemon/name/{name}",
+			c.GetPokemonDetailsByName,
 		},
 		"GetPokemonForm": Route{
 			strings.ToUpper("Get"),
@@ -187,6 +192,37 @@ func (c *PokemonAPIController) GetPokemonDetails(w http.ResponseWriter, r *http.
 		langParam = param
 	}
 	result, err := c.service.GetPokemonDetails(r.Context(), symbolParam, langParam)
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	_ = EncodeJSONResponse(result.Body, &result.Code, w)
+}
+
+// GetPokemonDetailsByName - Get a pokemon details by name
+func (c *PokemonAPIController) GetPokemonDetailsByName(w http.ResponseWriter, r *http.Request) {
+	query, err := parseQuery(r.URL.RawQuery)
+	if err != nil {
+		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
+		return
+	}
+	nameParam := chi.URLParam(r, "name")
+	if nameParam == "" {
+		c.errorHandler(w, r, &RequiredError{"name"}, nil)
+		return
+	}
+	var langParam string
+	if query.Has("lang") {
+		param := query.Get("lang")
+
+		langParam = param
+	} else {
+		param := "en"
+		langParam = param
+	}
+	result, err := c.service.GetPokemonDetailsByName(r.Context(), nameParam, langParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

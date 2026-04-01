@@ -38,6 +38,17 @@ func (s PokemonService) GetPokemonDetails(requestCtx context.Context, symbol str
 	return ImplResponse{Code: 200, Body: s.pokemonMapper.PokemonToDetail(*pkmn, lang, policy)}, nil
 }
 
+func (s PokemonService) GetPokemonDetailsByName(requestCtx context.Context, name string, lang string) (ImplResponse, error) {
+	policy := s.accessPolicyFactory(requestCtx)
+	pkmn := s.store.FindPokemonByName(name, policy.PokemonFilter)
+
+	if pkmn == nil {
+		return ImplResponse{Code: 404, Body: nil}, nil
+	}
+
+	return ImplResponse{Code: 200, Body: s.pokemonMapper.PokemonToDetail(*pkmn, lang, policy)}, nil
+}
+
 func (s PokemonService) GetPokemon(requestCtx context.Context, page int32, pageSize int32, lang string) (ImplResponse, error) {
 	policy := s.accessPolicyFactory(requestCtx)
 

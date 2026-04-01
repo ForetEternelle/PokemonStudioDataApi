@@ -11,6 +11,8 @@ paths:
     $ref: "paths/pokemon/pokemonPage.yml"
   /pokemon/{symbol}:
     $ref: "paths/pokemon/pokemonDetails.yml"
+  /pokemon/name/{name}:
+    $ref: "paths/pokemon/pokemonDetailsByName.yml"
   /pokemon/{symbol}/forms:
     $ref: "paths/pokemon/forms.yml"
   /pokemon/{symbol}/forms/{form}:

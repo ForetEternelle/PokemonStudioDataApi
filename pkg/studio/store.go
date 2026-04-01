@@ -3,11 +3,12 @@ package studio
 import (
 	"iter"
 	"log/slog"
+	"maps"
 	"path"
 	"slices"
 	"strings"
 
-	. "github.com/ForetEternelle/PokemonStudioDataApi/pkg/iter2"
+	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/iter2"
 )
 
 const (
@@ -151,83 +152,76 @@ func (s *Store) AddMove(move Move) *Move {
 	return &move
 }
 
-func (s *Store) FindAllPokemon(filters ...FilterFunc[Pokemon]) iter.Seq[Pokemon] {
+func (s *Store) FindAllPokemon(filters ...iter2.FilterFunc[Pokemon]) iter.Seq[Pokemon] {
 	it := slices.Values(s.pokemonList)
-	return Filter(And(filters...), it)
+	return iter2.Filter(iter2.And(filters...), it)
 }
 
-func (s *Store) FindPokemonBySymbol(symbol string, filters ...FilterFunc[Pokemon]) *Pokemon {
+func (s *Store) FindPokemonBySymbol(symbol string, filters ...iter2.FilterFunc[Pokemon]) *Pokemon {
 	pokemon, ok := s.pokemonBySymbol[symbol]
 	if !ok {
 		return nil
 	}
 
-	if !And(filters...)(*pokemon) {
+	if !iter2.And(filters...)(*pokemon) {
 		return nil
 	}
 
 	return pokemon
 }
 
-func (s *Store) FindPokemonByName(name string, filters ...FilterFunc[Pokemon]) *Pokemon {
+func (s *Store) FindPokemonByName(name string, filters ...iter2.FilterFunc[Pokemon]) *Pokemon {
 	normalizedName := strings.ToLower(strings.TrimSpace(name))
 
-	for i := range s.pokemonList {
-		pokemon := &s.pokemonList[i]
-
-		if !And(filters...)(*pokemon) {
-			continue
+	pokemonIter := s.FindAllPokemon(filters...)
+	found, foundOk := iter2.First(iter2.Filter(func(p Pokemon) bool {
+		// Check symbol
+		if strings.ToLower(p.DbSymbol()) == normalizedName {
+			return true
 		}
 
-		for _, form := range pokemon.forms {
-			for _, translatedName := range form.name {
-				if strings.ToLower(strings.TrimSpace(translatedName)) == normalizedName {
-					return pokemon
+		// Check all names in forms
+		for form := range iter2.Values(p.Forms()) {
+			for val := range maps.Values(form.name) {
+				if strings.ToLower(strings.TrimSpace(val)) == normalizedName {
+					return true
 				}
 			}
 		}
 
-		if strings.ToLower(pokemon.dbSymbol) == normalizedName {
-			return pokemon
-		}
-	}
-
-	// Check the name translations as a fallback
-	for _, translation := range s.pokemonNameTranslations {
-		found := false
-		for _, val := range translation {
-			if strings.ToLower(strings.TrimSpace(val)) == normalizedName {
-				found = true
-				break
-			}
-		}
-
-		if found {
-			enName, ok := translation["en"]
-			if ok {
-				symbol := strings.ToLower(strings.TrimSpace(enName))
-				if pokemon := s.FindPokemonBySymbol(symbol, filters...); pokemon != nil {
-					return pokemon
+		// Check the name translations as a fallback
+		id := int(p.ID())
+		if id >= 0 && id < len(s.pokemonNameTranslations) {
+			translation := s.pokemonNameTranslations[id]
+			for val := range maps.Values(translation) {
+				if strings.ToLower(strings.TrimSpace(val)) == normalizedName {
+					return true
 				}
 			}
 		}
+
+		return false
+	}, pokemonIter))
+
+	if foundOk {
+		return s.pokemonBySymbol[found.DbSymbol()]
 	}
 
 	return nil
 }
 
-func (s *Store) FindAllTypes(filters ...FilterFunc[PokemonType]) iter.Seq[PokemonType] {
+func (s *Store) FindAllTypes(filters ...iter2.FilterFunc[PokemonType]) iter.Seq[PokemonType] {
 	it := slices.Values(s.types)
-	return Filter(And(filters...), it)
+	return iter2.Filter(iter2.And(filters...), it)
 }
 
-func (s *Store) FindTypeBySymbol(symbol string, filters ...FilterFunc[PokemonType]) *PokemonType {
+func (s *Store) FindTypeBySymbol(symbol string, filters ...iter2.FilterFunc[PokemonType]) *PokemonType {
 	pokemonType, ok := s.pokemonTypesBySymbol[symbol]
 	if !ok {
 		return nil
 	}
 
-	if !And(filters...)(*pokemonType) {
+	if !iter2.And(filters...)(*pokemonType) {
 		return nil
 	}
 
@@ -235,47 +229,47 @@ func (s *Store) FindTypeBySymbol(symbol string, filters ...FilterFunc[PokemonTyp
 }
 
 // Resistances calculates the type resistances of the PokemonForm based on its types.
-func (s *Store) Resistances(type1, type2 string, filters ...FilterFunc[PokemonType]) iter.Seq2[string, float32] {
+func (s *Store) Resistances(type1, type2 string, filters ...iter2.FilterFunc[PokemonType]) iter.Seq2[string, float32] {
 	typeIt := s.FindAllTypes(filters...)
-	ptResIT := ToSeq2(typeIt, func(pt PokemonType) float32 {
+	ptResIT := iter2.ToSeq2(typeIt, func(pt PokemonType) float32 {
 		return pt.DamageToTypes(type1, type2)
 	})
 
-	return Map2(func(pt PokemonType, res float32) (string, float32) {
+	return iter2.Map2(func(pt PokemonType, res float32) (string, float32) {
 		return pt.DbSymbol(), res
 	}, ptResIT)
 }
 
-func (s *Store) FindAllAbilities(filters ...FilterFunc[Ability]) iter.Seq[Ability] {
+func (s *Store) FindAllAbilities(filters ...iter2.FilterFunc[Ability]) iter.Seq[Ability] {
 	it := slices.Values(s.abilities)
-	return Filter(And(filters...), it)
+	return iter2.Filter(iter2.And(filters...), it)
 }
 
-func (s *Store) FindAbilityBySymbol(symbol string, filters ...FilterFunc[Ability]) *Ability {
+func (s *Store) FindAbilityBySymbol(symbol string, filters ...iter2.FilterFunc[Ability]) *Ability {
 	ability, ok := s.abilitiesBySymbol[symbol]
 	if !ok {
 		return nil
 	}
 
-	if !And(filters...)(*ability) {
+	if !iter2.And(filters...)(*ability) {
 		return nil
 	}
 
 	return ability
 }
 
-func (s *Store) FindAllMoves(filters ...FilterFunc[Move]) iter.Seq[Move] {
+func (s *Store) FindAllMoves(filters ...iter2.FilterFunc[Move]) iter.Seq[Move] {
 	it := slices.Values(s.moves)
-	return Filter(And(filters...), it)
+	return iter2.Filter(iter2.And(filters...), it)
 }
 
-func (s *Store) FindMoveBySymbol(symbol string, filters ...FilterFunc[Move]) *Move {
+func (s *Store) FindMoveBySymbol(symbol string, filters ...iter2.FilterFunc[Move]) *Move {
 	move, ok := s.movesBySymbol[symbol]
 	if !ok {
 		return nil
 	}
 
-	if !And(filters...)(*move) {
+	if !iter2.And(filters...)(*move) {
 		return nil
 	}
 

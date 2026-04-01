@@ -5,7 +5,6 @@ import (
 	"log/slog"
 	"path"
 	"slices"
-	"strconv"
 	"strings"
 
 	. "github.com/ForetEternelle/PokemonStudioDataApi/pkg/iter2"
@@ -32,6 +31,8 @@ type Store struct {
 	pokemonTypesBySymbol map[string]*PokemonType
 	abilitiesBySymbol    map[string]*Ability
 	movesBySymbol        map[string]*Move
+
+	pokemonNameTranslations []Translation
 }
 
 func NewStore() *Store {
@@ -41,14 +42,15 @@ func NewStore() *Store {
 	movesBySymbol := make(map[string]*Move)
 
 	return &Store{
-		pokemonList:          []Pokemon{},
-		types:                []PokemonType{},
-		abilities:            []Ability{},
-		moves:                []Move{},
-		pokemonBySymbol:      pokemonBySymbol,
-		pokemonTypesBySymbol: pokemonTypesBySymbol,
-		abilitiesBySymbol:    abilitiesBySymbol,
-		movesBySymbol:        movesBySymbol,
+		pokemonList:             []Pokemon{},
+		types:                   []PokemonType{},
+		abilities:               []Ability{},
+		moves:                   []Move{},
+		pokemonBySymbol:         pokemonBySymbol,
+		pokemonTypesBySymbol:    pokemonTypesBySymbol,
+		abilitiesBySymbol:       abilitiesBySymbol,
+		movesBySymbol:           movesBySymbol,
+		pokemonNameTranslations: []Translation{},
 	}
 }
 
@@ -101,6 +103,15 @@ func Load(folder string) (*Store, error) {
 		pokemon := pokemonMapper.MapPokemonDescriptorToPokemon(*descriptor)
 		store.AddPokemon(*pokemon)
 	}
+
+	// Load pokemon name translations for FindPokemonByName fallback
+	pokemonNameTranslationsPath := path.Join(translationFolder, "100000.csv")
+	store.pokemonNameTranslations = ImportTranslationsOrEmpty(pokemonNameTranslationsPath)
+
+	// Add form name translations as well
+	pokemonFormNameTranslationsPath := path.Join(translationFolder, "100067.csv")
+	formTranslations := ImportTranslationsOrEmpty(pokemonFormNameTranslationsPath)
+	store.pokemonNameTranslations = append(store.pokemonNameTranslations, formTranslations...)
 
 	return store, nil
 }
@@ -161,6 +172,7 @@ func (s *Store) FindPokemonBySymbol(symbol string, filters ...FilterFunc[Pokemon
 
 func (s *Store) FindPokemonByName(name string, filters ...FilterFunc[Pokemon]) *Pokemon {
 	normalizedName := strings.ToLower(strings.TrimSpace(name))
+
 	for i := range s.pokemonList {
 		pokemon := &s.pokemonList[i]
 
@@ -168,7 +180,6 @@ func (s *Store) FindPokemonByName(name string, filters ...FilterFunc[Pokemon]) *
 			continue
 		}
 
-		// First try translated names
 		for _, form := range pokemon.forms {
 			for _, translatedName := range form.name {
 				if strings.ToLower(strings.TrimSpace(translatedName)) == normalizedName {
@@ -177,16 +188,32 @@ func (s *Store) FindPokemonByName(name string, filters ...FilterFunc[Pokemon]) *
 			}
 		}
 
-		// Try DbSymbol (for cases where translations are not found or user uses the internal symbol)
 		if strings.ToLower(pokemon.dbSymbol) == normalizedName {
 			return pokemon
 		}
+	}
 
-		// Try ID as string
-		if strconv.FormatInt(int64(pokemon.id), 10) == normalizedName {
-			return pokemon
+	// Check the name translations as a fallback
+	for _, translation := range s.pokemonNameTranslations {
+		found := false
+		for _, val := range translation {
+			if strings.ToLower(strings.TrimSpace(val)) == normalizedName {
+				found = true
+				break
+			}
+		}
+
+		if found {
+			enName, ok := translation["en"]
+			if ok {
+				symbol := strings.ToLower(strings.TrimSpace(enName))
+				if pokemon := s.FindPokemonBySymbol(symbol, filters...); pokemon != nil {
+					return pokemon
+				}
+			}
 		}
 	}
+
 	return nil
 }
 

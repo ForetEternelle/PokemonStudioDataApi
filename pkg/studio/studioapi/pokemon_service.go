@@ -3,7 +3,6 @@ package studioapi
 import (
 	"context"
 	"slices"
-	"strings"
 
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/iter2"
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/pagination"
@@ -41,7 +40,7 @@ func (s PokemonService) GetPokemonDetails(requestCtx context.Context, symbol str
 
 func (s PokemonService) GetPokemonDetailsByName(requestCtx context.Context, name string, lang string) (ImplResponse, error) {
 	policy := s.accessPolicyFactory(requestCtx)
-	pkmn := s.store.FindPokemonByName(strings.Title(strings.ToLower(name)), policy.PokemonFilter)
+	pkmn := s.store.FindPokemonByName(name, policy.PokemonFilter)
 
 	if pkmn == nil {
 		return ImplResponse{Code: 404, Body: nil}, nil

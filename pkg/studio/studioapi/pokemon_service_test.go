@@ -56,6 +56,21 @@ func setupPokemonService() (*studio.Store, PokemonAPIServicer) {
 		Build()
 	store.AddPokemon(*bulbasaur)
 
+	smettleForm := studio.NewPokemonFormBuilder().
+		Form(0).
+		Name(studio.Translation{"en": "Smettle", "fr": "Malortie"}).
+		Description(studio.Translation{"en": "Smettle is a mischievous Pokémon.", "fr": "Malortie est un Pokémon malicieux."}).
+		Type1(normalType).
+		BaseHp(45).
+		BaseAtk(49).
+		Build()
+	smettle := studio.NewPokemonBuilder().
+		ID(724).
+		DbSymbol("smettle").
+		Forms(map[int32]studio.PokemonForm{0: *smettleForm}).
+		Build()
+	store.AddPokemon(*smettle)
+
 	typeMapper := NewTypeMapper()
 	abilityMapper := NewAbilityMapper()
 	pokemonMapper := NewPokemonMapper(typeMapper, abilityMapper, store)
@@ -118,8 +133,8 @@ func TestPokemonService_GetPokemon(t *testing.T) {
 	if page.Content == nil {
 		t.Error("Expected non-nil content")
 	}
-	if len(page.Content) != 2 {
-		t.Error("Expected 2 pokemon, got", len(page.Content))
+	if len(page.Content) != 3 {
+		t.Error("Expected 3 pokemon, got", len(page.Content))
 	}
 }
 
@@ -221,6 +236,41 @@ func TestPokemonService_GetPokemonDetailsByName(t *testing.T) {
 		t.Error("Expected symbol pikachu, got", details.Symbol)
 	}
 
+	// Test Case Insensitivity
+	resp, err = service.GetPokemonDetailsByName(context.Background(), "pikachu", "en")
+	if err != nil {
+		t.Error("Expected no error, got", err)
+	}
+	if resp.Code != 200 {
+		t.Error("Expected status 200 for lowercase name, got", resp.Code)
+	}
+
+	// Test Symbol search (new fallback)
+	resp, err = service.GetPokemonDetailsByName(context.Background(), "pikachu", "en")
+	if err != nil {
+		t.Error("Expected no error, got", err)
+	}
+	if resp.Code != 200 {
+		t.Error("Expected status 200 for symbol search, got", resp.Code)
+	}
+
+	resp, err = service.GetPokemonDetailsByName(context.Background(), "PIKACHU", "en")
+	if err != nil {
+		t.Error("Expected no error, got", err)
+	}
+	if resp.Code != 200 {
+		t.Error("Expected status 200 for uppercase name, got", resp.Code)
+	}
+
+	// Test with spaces
+	resp, err = service.GetPokemonDetailsByName(context.Background(), "  Pikachu  ", "en")
+	if err != nil {
+		t.Error("Expected no error, got", err)
+	}
+	if resp.Code != 200 {
+		t.Error("Expected status 200 for name with spaces, got", resp.Code)
+	}
+
 	// Test Bulbasaur
 	resp, err = service.GetPokemonDetailsByName(context.Background(), "Bulbasaur", "en")
 	if err != nil {
@@ -228,6 +278,32 @@ func TestPokemonService_GetPokemonDetailsByName(t *testing.T) {
 	}
 	if resp.Code != 200 {
 		t.Error("Expected status 200, got", resp.Code)
+	}
+
+	// Test Smettle (English)
+	resp, err = service.GetPokemonDetailsByName(context.Background(), "Smettle", "en")
+	if err != nil {
+		t.Error("Expected no error, got", err)
+	}
+	if resp.Code != 200 {
+		t.Error("Expected status 200 for Smettle, got", resp.Code)
+	}
+	details = resp.Body.(*PokemonDetails)
+	if details.Symbol != "smettle" {
+		t.Error("Expected symbol smettle, got", details.Symbol)
+	}
+
+	// Test Malortie (French name for Smettle)
+	resp, err = service.GetPokemonDetailsByName(context.Background(), "Malortie", "fr")
+	if err != nil {
+		t.Error("Expected no error, got", err)
+	}
+	if resp.Code != 200 {
+		t.Error("Expected status 200 for Malortie, got", resp.Code)
+	}
+	details = resp.Body.(*PokemonDetails)
+	if details.Symbol != "smettle" {
+		t.Error("Expected symbol smettle for name Malortie, got", details.Symbol)
 	}
 
 	// Test Not Found

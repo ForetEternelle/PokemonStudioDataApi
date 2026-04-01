@@ -5,6 +5,8 @@ import (
 	"log/slog"
 	"path"
 	"slices"
+	"strconv"
+	"strings"
 
 	. "github.com/ForetEternelle/PokemonStudioDataApi/pkg/iter2"
 )
@@ -158,6 +160,7 @@ func (s *Store) FindPokemonBySymbol(symbol string, filters ...FilterFunc[Pokemon
 }
 
 func (s *Store) FindPokemonByName(name string, filters ...FilterFunc[Pokemon]) *Pokemon {
+	normalizedName := strings.ToLower(strings.TrimSpace(name))
 	for i := range s.pokemonList {
 		pokemon := &s.pokemonList[i]
 
@@ -165,12 +168,23 @@ func (s *Store) FindPokemonByName(name string, filters ...FilterFunc[Pokemon]) *
 			continue
 		}
 
+		// First try translated names
 		for _, form := range pokemon.forms {
 			for _, translatedName := range form.name {
-				if translatedName == name {
+				if strings.ToLower(strings.TrimSpace(translatedName)) == normalizedName {
 					return pokemon
 				}
 			}
+		}
+
+		// Try DbSymbol (for cases where translations are not found or user uses the internal symbol)
+		if strings.ToLower(pokemon.dbSymbol) == normalizedName {
+			return pokemon
+		}
+
+		// Try ID as string
+		if strconv.FormatInt(int64(pokemon.id), 10) == normalizedName {
+			return pokemon
 		}
 	}
 	return nil

@@ -105,14 +105,6 @@ func Load(folder string) (*Store, error) {
 		store.AddPokemon(*pokemon)
 	}
 
-	pokemonNameTranslationsPath := path.Join(translationFolder, "100000.csv")
-	store.pokemonNameTranslations = ImportTranslationsOrEmpty(pokemonNameTranslationsPath)
-
-	// Form translations
-	pokemonFormNameTranslationsPath := path.Join(translationFolder, "100067.csv")
-	formTranslations := ImportTranslationsOrEmpty(pokemonFormNameTranslationsPath)
-	store.pokemonNameTranslations = append(store.pokemonNameTranslations, formTranslations...)
-
 	return store, nil
 }
 
@@ -127,6 +119,14 @@ func (s *Store) AddPokemon(pokemon Pokemon) *Pokemon {
 
 	s.pokemonList = slices.Insert(s.pokemonList, insertIndex, pokemon)
 	s.pokemonBySymbol[pokemon.DbSymbol()] = &pokemon
+
+	formIt := iter2.Values(pokemon.Forms())
+	translationIt := iter2.Map(func(form PokemonForm) Translation {
+		return form.name
+	}, formIt)
+
+	s.pokemonNameTranslations = append(s.pokemonNameTranslations, slices.Collect(translationIt)...)
+
 	slog.Info("Adding pokemon", "symbol", pokemon.DbSymbol())
 	return &pokemon
 }

@@ -258,6 +258,12 @@ func (b *PokemonFormBuilder) CustomProperties(props map[string]any) *PokemonForm
 	return b
 }
 
+// Resources sets the resources of the PokemonForm.
+func (b *PokemonFormBuilder) Resources(resources PokemonResources) *PokemonFormBuilder {
+	b.form.resources = resources
+	return b
+}
+
 // Build returns a copy of the built PokemonForm.
 func (b *PokemonFormBuilder) Build() *PokemonForm {
 	_copy := *b.form

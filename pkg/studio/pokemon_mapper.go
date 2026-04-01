@@ -60,6 +60,7 @@ func (m *PokemonMapper) MapFormDescriptorToPokemonForm(desc FormDescriptor) *Pok
 		Evolutions(m.MapEvolutions(desc.Evolutions)).
 		ItemHeld(m.MapItemHelds(desc.ItemHeld)).
 		CustomProperties(make(map[string]any)).
+		Resources(m.MapPokemonResources(desc.Resources)).
 		Build()
 
 	if desc.Type2 != nil && *desc.Type2 != "" && *desc.Type2 != UndefType {
@@ -130,4 +131,31 @@ func (m *PokemonMapper) MapItemHelds(itemHelds []ItemHeldDescriptor) []*ItemHeld
 		}
 	}
 	return mapped
+}
+
+// MapPokemonResources maps Pokemon resources descriptors to Pokemon resources.
+func (m *PokemonMapper) MapPokemonResources(resources PokemonResourcesDescriptor) PokemonResources {
+	return PokemonResources{
+		Icon:            resources.Icon,
+		IconF:           resources.IconF,
+		IconShiny:       resources.IconShiny,
+		IconShinyF:      resources.IconShinyF,
+		Front:           resources.Front,
+		FrontF:          resources.FrontF,
+		FrontShiny:      resources.FrontShiny,
+		FrontShinyF:     resources.FrontShinyF,
+		Back:            resources.Back,
+		BackF:           resources.BackF,
+		BackShiny:       resources.BackShiny,
+		BackShinyF:      resources.BackShinyF,
+		Footprint:       resources.Footprint,
+		Character:       resources.Character,
+		CharacterF:      resources.CharacterF,
+		CharacterShiny:  resources.CharacterShiny,
+		CharacterShinyF: resources.CharacterShinyF,
+		Cry:             resources.Cry,
+		HasFemale:       resources.HasFemale,
+		Egg:             resources.Egg,
+		IconEgg:         resources.IconEgg,
+	}
 }

@@ -104,11 +104,10 @@ func Load(folder string) (*Store, error) {
 		store.AddPokemon(*pokemon)
 	}
 
-	// Load pokemon name translations for FindPokemonByName fallback
 	pokemonNameTranslationsPath := path.Join(translationFolder, "100000.csv")
 	store.pokemonNameTranslations = ImportTranslationsOrEmpty(pokemonNameTranslationsPath)
 
-	// Add form name translations as well
+	// Form translations
 	pokemonFormNameTranslationsPath := path.Join(translationFolder, "100067.csv")
 	formTranslations := ImportTranslationsOrEmpty(pokemonFormNameTranslationsPath)
 	store.pokemonNameTranslations = append(store.pokemonNameTranslations, formTranslations...)

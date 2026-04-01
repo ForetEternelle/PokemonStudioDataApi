@@ -120,6 +120,7 @@ type PokemonForm struct {
 	name             Translation
 	description      Translation
 	customProperties map[string]any
+	resources        PokemonResources
 }
 
 // Form returns the form number of the PokemonForm.
@@ -270,6 +271,11 @@ func (f *PokemonForm) CustomProperties() map[string]any {
 	return f.customProperties
 }
 
+// Resources returns the resources of the PokemonForm.
+func (f *PokemonForm) Resources() PokemonResources {
+	return f.resources
+}
+
 // Evolutions returns an iterator over the evolutions of the PokemonForm.
 func (f *PokemonForm) Evolutions() iter.Seq[Evolution] {
 	return func(yield func(Evolution) bool) {
@@ -365,7 +371,6 @@ func (f *PokemonForm) BreedGroup(i int) (string, bool) {
 	return f.breedGroups[i], true
 }
 
-
 // Evolution represents an evolution from one Pokemon to another.
 type Evolution struct {
 	DbSymbol   string
@@ -384,15 +389,40 @@ type ItemHeld struct {
 	Chance   int32
 }
 
+// PokemonResources represents resources for a Pokemon form.
+type PokemonResources struct {
+	Icon            string
+	IconF           string
+	IconShiny       string
+	IconShinyF      string
+	Front           string
+	FrontF          string
+	FrontShiny      string
+	FrontShinyF     string
+	Back            string
+	BackF           string
+	BackShiny       string
+	BackShinyF      string
+	Footprint       string
+	Character       string
+	CharacterF      string
+	CharacterShiny  string
+	CharacterShinyF string
+	Cry             string
+	HasFemale       bool
+	Egg             string
+	IconEgg         string
+}
+
 // MaxHp calculates the maximum possible HP value for a given base HP.
 func MaxHp(base int32) int32 {
-	res := float64(base*2+204)
+	res := float64(base*2 + 204)
 	return int32(res)
 }
 
 // MinHp calculates the minimum possible HP value for a given base HP.
 func MinHp(base int32) int32 {
-	res := float64(base*2+10)
+	res := float64(base*2 + 10)
 	return int32(res)
 }
 

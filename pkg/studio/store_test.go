@@ -16,8 +16,8 @@ func TestLoad(t *testing.T) {
 	pokemonIter := store.FindAllPokemon()
 	pokemonCount := len(slices.Collect(pokemonIter))
 
-	if pokemonCount != 6 {
-		t.Error("Import should have 6 pokemon, has", pokemonCount)
+	if pokemonCount != 8 {
+		t.Error("Import should have 8 pokemon, has", pokemonCount)
 	}
 
 	typesIter := store.FindAllTypes()
@@ -125,5 +125,38 @@ func TestFindAllPokemonWithFilters(t *testing.T) {
 
 	if len(resultSlice) != 2 {
 		t.Error("Expected 2 pokemon after filter, got", len(resultSlice))
+	}
+}
+
+func TestFindPokemonByName_RealData(t *testing.T) {
+	store, err := Load(DataFolder)
+	if err != nil {
+		t.Fatal("Import should succeed", err)
+	}
+
+	// Test direct match (DbSymbol or mapped name)
+	p1 := store.FindPokemonByName("abomasnow")
+	if p1 == nil {
+		t.Error("Should find abomasnow by name (symbol)")
+	}
+
+	// Test fallback via CSV (Blizzaroi is French name for Abomasnow in CSV)
+	p2 := store.FindPokemonByName("Blizzaroi")
+	if p2 == nil {
+		t.Error("Should find abomasnow by name (French CSV fallback)")
+	} else if p2.DbSymbol() != "abomasnow" {
+		t.Errorf("Expected abomasnow, got %s", p2.DbSymbol())
+	}
+
+	// Test case insensitivity
+	p3 := store.FindPokemonByName("blizzaroi")
+	if p3 == nil {
+		t.Error("Should find abomasnow by name (lowercase French CSV fallback)")
+	}
+
+	// Test with spaces
+	p4 := store.FindPokemonByName("  Blizzaroi  ")
+	if p4 == nil {
+		t.Error("Should find abomasnow by name (French CSV fallback with spaces)")
 	}
 }

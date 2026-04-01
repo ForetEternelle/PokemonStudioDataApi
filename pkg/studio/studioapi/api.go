@@ -15,77 +15,76 @@ import (
 	"net/http"
 )
 
-
-
 // AbilitiesAPIRouter defines the required methods for binding the api requests to a responses for the AbilitiesAPI
 // The AbilitiesAPIRouter implementation should parse necessary information from the http request,
 // pass the data to a AbilitiesAPIServicer to perform the required actions, then write the service results to the http response.
-type AbilitiesAPIRouter interface { 
+type AbilitiesAPIRouter interface {
 	GetAbilities(http.ResponseWriter, *http.Request)
 	GetAbilityDetails(http.ResponseWriter, *http.Request)
 }
+
 // MovesAPIRouter defines the required methods for binding the api requests to a responses for the MovesAPI
 // The MovesAPIRouter implementation should parse necessary information from the http request,
 // pass the data to a MovesAPIServicer to perform the required actions, then write the service results to the http response.
-type MovesAPIRouter interface { 
+type MovesAPIRouter interface {
 	GetMove(http.ResponseWriter, *http.Request)
 	GetMoveDetails(http.ResponseWriter, *http.Request)
 }
+
 // PokemonAPIRouter defines the required methods for binding the api requests to a responses for the PokemonAPI
 // The PokemonAPIRouter implementation should parse necessary information from the http request,
 // pass the data to a PokemonAPIServicer to perform the required actions, then write the service results to the http response.
-type PokemonAPIRouter interface { 
+type PokemonAPIRouter interface {
 	GetFormsByPokemon(http.ResponseWriter, *http.Request)
 	GetPokemon(http.ResponseWriter, *http.Request)
 	GetPokemonDetails(http.ResponseWriter, *http.Request)
+	GetPokemonDetailsByName(http.ResponseWriter, *http.Request)
 	GetPokemonForm(http.ResponseWriter, *http.Request)
 }
+
 // TypesAPIRouter defines the required methods for binding the api requests to a responses for the TypesAPI
 // The TypesAPIRouter implementation should parse necessary information from the http request,
 // pass the data to a TypesAPIServicer to perform the required actions, then write the service results to the http response.
-type TypesAPIRouter interface { 
+type TypesAPIRouter interface {
 	GetTypeDetails(http.ResponseWriter, *http.Request)
 	GetTypes(http.ResponseWriter, *http.Request)
 }
-
 
 // AbilitiesAPIServicer defines the api actions for the AbilitiesAPI service
 // This interface intended to stay up to date with the openapi yaml used to generate it,
 // while the service implementation can be ignored with the .openapi-generator-ignore file
 // and updated with the logic required for the API.
-type AbilitiesAPIServicer interface { 
+type AbilitiesAPIServicer interface {
 	GetAbilities(context.Context, string) (ImplResponse, error)
 	GetAbilityDetails(context.Context, string, string) (ImplResponse, error)
 }
-
 
 // MovesAPIServicer defines the api actions for the MovesAPI service
 // This interface intended to stay up to date with the openapi yaml used to generate it,
 // while the service implementation can be ignored with the .openapi-generator-ignore file
 // and updated with the logic required for the API.
-type MovesAPIServicer interface { 
+type MovesAPIServicer interface {
 	GetMove(context.Context, string, string) (ImplResponse, error)
 	GetMoveDetails(context.Context, string, string) (ImplResponse, error)
 }
-
 
 // PokemonAPIServicer defines the api actions for the PokemonAPI service
 // This interface intended to stay up to date with the openapi yaml used to generate it,
 // while the service implementation can be ignored with the .openapi-generator-ignore file
 // and updated with the logic required for the API.
-type PokemonAPIServicer interface { 
+type PokemonAPIServicer interface {
 	GetFormsByPokemon(context.Context, string, string) (ImplResponse, error)
 	GetPokemon(context.Context, int32, int32, string) (ImplResponse, error)
 	GetPokemonDetails(context.Context, string, string) (ImplResponse, error)
+	GetPokemonDetailsByName(context.Context, string, string) (ImplResponse, error)
 	GetPokemonForm(context.Context, string, int32, string) (ImplResponse, error)
 }
-
 
 // TypesAPIServicer defines the api actions for the TypesAPI service
 // This interface intended to stay up to date with the openapi yaml used to generate it,
 // while the service implementation can be ignored with the .openapi-generator-ignore file
 // and updated with the logic required for the API.
-type TypesAPIServicer interface { 
+type TypesAPIServicer interface {
 	GetTypeDetails(context.Context, string, string) (ImplResponse, error)
 	GetTypes(context.Context, string) (ImplResponse, error)
 }

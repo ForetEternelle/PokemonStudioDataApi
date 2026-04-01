@@ -7,11 +7,11 @@ type ExperienceTypeDescriptor int32
 type BreedGroupDescriptor int32
 
 const (
-	ExperienceErraticNum     ExperienceTypeDescriptor = 0
-	ExperienceFastNum        ExperienceTypeDescriptor = 1
-	ExperienceMediumFastNum  ExperienceTypeDescriptor = 2
-	ExperienceMediumSlowNum  ExperienceTypeDescriptor = 3
-	ExperienceSlowNum        ExperienceTypeDescriptor = 4
+	ExperienceFastNum        ExperienceTypeDescriptor = 0
+	ExperienceMediumFastNum  ExperienceTypeDescriptor = 1
+	ExperienceMediumSlowNum  ExperienceTypeDescriptor = 2
+	ExperienceSlowNum        ExperienceTypeDescriptor = 3
+	ExperienceErraticNum     ExperienceTypeDescriptor = 4
 	ExperienceFluctuatingNum ExperienceTypeDescriptor = 5
 )
 

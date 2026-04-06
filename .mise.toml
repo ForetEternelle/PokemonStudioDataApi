@@ -10,7 +10,7 @@ LOG_LEVEL = "DEBUG"
 [tasks]
 install = { run = "./scripts/install.sh", run_windows = "./scripts/install.bat", sources = ["go.mod", "package.json"] }
 clean = { run = "./scripts/clean.sh", run_windows = "./scripts/clean.bat" }
-build = { run = "./scripts/build.sh", run_windows = "./scripts/build.bat", sources = ["**/*.go"], outputs = ["build/ForeEternelleDataApi"], hide = true }
+build = { run = "./scripts/build.sh", run_windows = "./scripts/build.bat", sources = ["**/*.go"], outputs = ["build/bin"], hide = true }
 test = { run = "./scripts/test.sh", run_windows = "./scripts/test.bat"}
 
 [tasks.dev]

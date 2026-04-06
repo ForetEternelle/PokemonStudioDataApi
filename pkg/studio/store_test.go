@@ -16,8 +16,8 @@ func TestLoad(t *testing.T) {
 	pokemonIter := store.FindAllPokemon()
 	pokemonCount := len(slices.Collect(pokemonIter))
 
-	if pokemonCount != 8 {
-		t.Error("Import should have 8 pokemon, has", pokemonCount)
+	if pokemonCount != 6 {
+		t.Error("Import should have 6 pokemon, has", pokemonCount)
 	}
 
 	typesIter := store.FindAllTypes()

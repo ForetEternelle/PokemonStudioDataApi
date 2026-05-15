@@ -1,0 +1,10 @@
+size:
+  in: query
+  name: size
+  required: false
+  schema:
+    type: integer
+    default: 20
+    maximum: 100
+  description: The size of the scroll
+

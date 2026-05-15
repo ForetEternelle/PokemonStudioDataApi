@@ -109,37 +109,28 @@ func (c *PokemonAPIController) GetFormsByPokemon(w http.ResponseWriter, r *http.
 	_ = EncodeJSONResponse(result.Body, &result.Code, w)
 }
 
-// GetPokemon - Get a page of pokemon
+// GetPokemon - Get a list of pokemon
 func (c *PokemonAPIController) GetPokemon(w http.ResponseWriter, r *http.Request) {
 	query, err := parseQuery(r.URL.RawQuery)
 	if err != nil {
 		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
 		return
 	}
-	var pageParam int32
-	if query.Has("page") {
-		param, err := parseNumericParameter[int32](
-			query.Get("page"),
-			WithParse[int32](parseInt32),
-			WithMinimum[int32](0),
-		)
-		if err != nil {
-			c.errorHandler(w, r, &ParsingError{Param: "page", Err: err}, nil)
-			return
-		}
+	var langParam string
+	if query.Has("lang") {
+		param := query.Get("lang")
 
-		pageParam = param
+		langParam = param
 	} else {
-		var param int32 = 0
-		pageParam = param
+		param := "en"
+		langParam = param
 	}
 	var sizeParam int32
 	if query.Has("size") {
 		param, err := parseNumericParameter[int32](
 			query.Get("size"),
 			WithParse[int32](parseInt32),
-			WithMinimum[int32](1),
-			WithMaximum[int32](50),
+			WithMaximum[int32](100),
 		)
 		if err != nil {
 			c.errorHandler(w, r, &ParsingError{Param: "size", Err: err}, nil)
@@ -151,16 +142,60 @@ func (c *PokemonAPIController) GetPokemon(w http.ResponseWriter, r *http.Request
 		var param int32 = 20
 		sizeParam = param
 	}
-	var langParam string
-	if query.Has("lang") {
-		param := query.Get("lang")
+	var lastIdParam *int32
+	if query.Has("lastId") {
+		param, err := parseNumericParameter[int32](
+			query.Get("lastId"),
+			WithParse[int32](parseInt32),
+			WithMinimum[int32](1),
+		)
+		if err != nil {
+			c.errorHandler(w, r, &ParsingError{Param: "lastId", Err: err}, nil)
+			return
+		}
 
-		langParam = param
+		lastIdParam = &param
 	} else {
-		param := "en"
-		langParam = param
 	}
-	result, err := c.service.GetPokemon(r.Context(), pageParam, sizeParam, langParam)
+	var lastFormParam *int32
+	if query.Has("lastForm") {
+		param, err := parseNumericParameter[int32](
+			query.Get("lastForm"),
+			WithParse[int32](parseInt32),
+			WithMinimum[int32](0),
+		)
+		if err != nil {
+			c.errorHandler(w, r, &ParsingError{Param: "lastForm", Err: err}, nil)
+			return
+		}
+
+		lastFormParam = &param
+	} else {
+	}
+	var mainFormsOnlyParam bool
+	if query.Has("mainFormsOnly") {
+		param, err := parseBoolParameter(
+			query.Get("mainFormsOnly"),
+			WithParse[bool](parseBool),
+		)
+		if err != nil {
+			c.errorHandler(w, r, &ParsingError{Param: "mainFormsOnly", Err: err}, nil)
+			return
+		}
+
+		mainFormsOnlyParam = param
+	} else {
+		var param bool = true
+		mainFormsOnlyParam = param
+	}
+	var queryParam *string
+	if query.Has("query") {
+		param := query.Get("query")
+
+		queryParam = &param
+	} else {
+	}
+	result, err := c.service.GetPokemon(r.Context(), langParam, sizeParam, lastIdParam, lastFormParam, mainFormsOnlyParam, queryParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

@@ -59,14 +59,3 @@ func First[V any](it iter.Seq[V]) (V, bool) {
 	var zero V
 	return zero, false
 }
-
-func Peek[V any](it iter.Seq[V], peek func(V)) iter.Seq[V] {
-	return func(yield func(V) bool) {
-		for item := range it {
-			peek(item)
-			if !yield(item) {
-				break
-			}
-		}
-	}
-}

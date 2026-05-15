@@ -5,7 +5,7 @@ import (
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/pkmn"
 )
 
-type AccessPolicy struct {
+type PokemonFilterPolicy struct {
 	PokemonFilter iter2.FilterFunc[pkmn.Pokemon]
 	FormFilter    iter2.FilterFunc[pkmn.PokemonForm]
 	TypeFilter    iter2.FilterFunc[pkmn.PokemonType]
@@ -13,45 +13,60 @@ type AccessPolicy struct {
 	MoveFilter    iter2.FilterFunc[pkmn.Move]
 }
 
-type AccessPolicyOption func(*AccessPolicy)
+type PokemonFilterPolicyOption func(*PokemonFilterPolicy)
 
-var WithPokemonPolicy = func(filter iter2.FilterFunc[pkmn.Pokemon]) AccessPolicyOption {
-	return func(p *AccessPolicy) {
+var WithPokemonFilter = func(filter iter2.FilterFunc[pkmn.Pokemon]) PokemonFilterPolicyOption {
+	return func(p *PokemonFilterPolicy) {
 		p.PokemonFilter = filter
 	}
 }
 
-var WithFormPolicy = func(filters ...iter2.FilterFunc[pkmn.PokemonForm]) AccessPolicyOption {
-	return func(p *AccessPolicy) {
+var WithFormFilter = func(filters ...iter2.FilterFunc[pkmn.PokemonForm]) PokemonFilterPolicyOption {
+	return func(p *PokemonFilterPolicy) {
 		p.FormFilter = iter2.And(filters...)
 	}
 }
 
-var WithTypePolicy = func(filters ...iter2.FilterFunc[pkmn.PokemonType]) AccessPolicyOption {
-	return func(p *AccessPolicy) {
+var WithTypeFilter = func(filters ...iter2.FilterFunc[pkmn.PokemonType]) PokemonFilterPolicyOption {
+	return func(p *PokemonFilterPolicy) {
 		p.TypeFilter = iter2.And(filters...)
 	}
 }
 
-var WithAbilityPolicy = func(filters ...iter2.FilterFunc[pkmn.Ability]) AccessPolicyOption {
-	return func(p *AccessPolicy) {
+var WithAbilityFilter = func(filters ...iter2.FilterFunc[pkmn.Ability]) PokemonFilterPolicyOption {
+	return func(p *PokemonFilterPolicy) {
 		p.AbilityFilter = iter2.And(filters...)
 	}
 }
 
-var WithMovePolicy = func(filters ...iter2.FilterFunc[pkmn.Move]) AccessPolicyOption {
-	return func(p *AccessPolicy) {
+var WithMoveFilter = func(filters ...iter2.FilterFunc[pkmn.Move]) PokemonFilterPolicyOption {
+	return func(p *PokemonFilterPolicy) {
 		p.MoveFilter = iter2.And(filters...)
 	}
 }
 
-func NewAccessPolicy(opts ...AccessPolicyOption) *AccessPolicy {
-	p := &AccessPolicy{
+func NewPokemonFilterPolicy(opts ...PokemonFilterPolicyOption) *PokemonFilterPolicy {
+	p := &PokemonFilterPolicy{
 		PokemonFilter: iter2.True[pkmn.Pokemon],
 		FormFilter:    iter2.True[pkmn.PokemonForm],
 		TypeFilter:    iter2.True[pkmn.PokemonType],
 		AbilityFilter: iter2.True[pkmn.Ability],
 		MoveFilter:    iter2.True[pkmn.Move],
+	}
+
+	for _, opt := range opts {
+		opt(p)
+	}
+	return p
+}
+
+func FromPokemonFilterPolicy(policy PokemonFilterPolicy, opts ...PokemonFilterPolicyOption) *PokemonFilterPolicy {
+	p := &PokemonFilterPolicy{
+		PokemonFilter: policy.PokemonFilter,
+		FormFilter:    policy.FormFilter,
+		TypeFilter:    policy.TypeFilter,
+		AbilityFilter: policy.AbilityFilter,
+		MoveFilter:    policy.MoveFilter,
 	}
 
 	for _, opt := range opts {

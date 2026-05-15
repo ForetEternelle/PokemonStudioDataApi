@@ -1,5 +1,7 @@
 package pkmn
 
+import "slices"
+
 // PokemonBuilder builds Pokemon entities.
 type PokemonBuilder struct {
 	pokemon *Pokemon
@@ -26,11 +28,12 @@ func (b *PokemonBuilder) DbSymbol(dbSymbol string) *PokemonBuilder {
 
 // Forms sets the forms of the Pokemon.
 func (b *PokemonBuilder) Forms(forms []PokemonForm) *PokemonBuilder {
-	fm := make(map[int32]PokemonForm, len(forms))
-	for i := range forms {
-		fm[forms[i].form] = forms[i]
-	}
-	b.pokemon.forms = fm
+	copy := slices.Clone(forms)
+	slices.SortFunc(copy, func(a, b PokemonForm) int {
+		return int(a.form - b.form)
+	})
+	b.pokemon.forms = copy
+	
 	return b
 }
 

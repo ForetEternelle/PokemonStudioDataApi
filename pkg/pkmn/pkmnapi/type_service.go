@@ -12,13 +12,13 @@ import (
 type TypeService struct {
 	store               *pkmn.Store
 	typeMapper          *TypeMapper
-	accessPolicyFactory func(context.Context) *AccessPolicy
+	accessPolicyFactory func(context.Context) *PokemonFilterPolicy
 }
 
 func NewTypeService(
 	store *pkmn.Store,
 	typeMapper *TypeMapper,
-	accessPolicyFactory func(context.Context) *AccessPolicy,
+	accessPolicyFactory func(context.Context) *PokemonFilterPolicy,
 ) TypesAPIServicer {
 	return &TypeService{
 		store:               store,
@@ -31,7 +31,7 @@ func (s TypeService) GetTypes(requestCtx context.Context, lang string) (ImplResp
 	policy := s.accessPolicyFactory(requestCtx)
 	typesIter := s.store.FindAllTypes(policy.TypeFilter)
 	mappedIter := iter2.Map(typesIter, func(t pkmn.PokemonType) TypePartial {
-		return *s.typeMapper.ToTypePartial(t, lang, policy)
+		return *s.typeMapper.ToTypePartial(t, lang, *policy)
 	})
 	return ImplResponse{Code: 200, Body: slices.Collect(mappedIter)}, nil
 }
@@ -42,5 +42,5 @@ func (s TypeService) GetTypeDetails(requestCtx context.Context, symbol string, l
 	if t == nil {
 		return ImplResponse{Code: 200, Body: nil}, nil
 	}
-	return ImplResponse{Code: 200, Body: s.typeMapper.ToTypeDetail(*t, lang, policy)}, nil
+	return ImplResponse{Code: 200, Body: s.typeMapper.ToTypeDetail(*t, lang, *policy)}, nil
 }

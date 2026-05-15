@@ -27,12 +27,12 @@ func NewPokemonMapper(
 	}
 }
 
-func (m PokemonMapper) PokemonToThumbnail(p pkmn.Pokemon, lang string, policy *AccessPolicy) *PokemonThumbnail {
+func (m PokemonMapper) PokemonToThumbnail(p pkmn.Pokemon, formId int32, lang string, policy PokemonFilterPolicy) *PokemonThumbnail {
 	slog.Debug("Mapping pokemon to thumbnail", "lang", lang)
 
-	mainForm, okMainForm := p.Form(0)
+	form, okForm := p.Form(formId)
 
-	if !okMainForm {
+	if !okForm {
 		return nil
 	}
 
@@ -40,11 +40,11 @@ func (m PokemonMapper) PokemonToThumbnail(p pkmn.Pokemon, lang string, policy *A
 		Symbol: p.DbSymbol(),
 		Number: p.ID(),
 		Image:  p.DbSymbol(),
-		Type1:  m.typeMapper.ToTypePartial(mainForm.Type1(), lang, policy),
-		Name:   mainForm.Name(lang),
+		Type1:  m.typeMapper.ToTypePartial(form.Type1(), lang, policy),
+		Name:   form.Name(lang),
 	}
 
-	var type2, okType2 = mainForm.Type2()
+	var type2, okType2 = form.Type2()
 	if okType2 {
 		thumbnail.Type2 = m.typeMapper.ToTypePartial(type2, lang, policy)
 	}
@@ -52,13 +52,13 @@ func (m PokemonMapper) PokemonToThumbnail(p pkmn.Pokemon, lang string, policy *A
 	return thumbnail
 }
 
-func (m PokemonMapper) PokemonToDetail(p pkmn.Pokemon, lang string, policy *AccessPolicy) *PokemonDetails {
+func (m PokemonMapper) PokemonToDetail(p pkmn.Pokemon, lang string, policy PokemonFilterPolicy) *PokemonDetails {
 	slog.Debug("Mapping pokemon to details", "pokemon", p.DbSymbol(), "lang", lang)
 
 	var mainForm pkmn.PokemonForm
 	hasForm := false
 	formFilter := iter2.And(policy.FormFilter)
-	for _, form := range p.Forms() {
+	for form := range p.Forms() {
 		if formFilter(form) {
 			mainForm = form
 			hasForm = true
@@ -77,7 +77,7 @@ func (m PokemonMapper) PokemonToDetail(p pkmn.Pokemon, lang string, policy *Acce
 	}
 }
 
-func (m PokemonMapper) FormToPokemonFormDetails(f pkmn.PokemonForm, lang string, policy *AccessPolicy) *FormDetails {
+func (m PokemonMapper) FormToPokemonFormDetails(f pkmn.PokemonForm, lang string, policy PokemonFilterPolicy) *FormDetails {
 	slog.Debug("Mapping pokemon form to form details", "form", f.Form(), "lang", lang)
 
 	abilityIt := f.Abilities()
@@ -134,7 +134,7 @@ func (m PokemonMapper) FormToPokemonFormDetails(f pkmn.PokemonForm, lang string,
 	}
 }
 
-func (m PokemonMapper) FormToPokemonFormPartial(f pkmn.PokemonForm, lang string, policy *AccessPolicy) *FormPartial {
+func (m PokemonMapper) FormToPokemonFormPartial(f pkmn.PokemonForm, lang string, policy PokemonFilterPolicy) *FormPartial {
 	slog.Debug("Mapping pokemon form to form partial", "form", f.Form(), "lang", lang)
 
 	partialType1 := m.typeMapper.ToTypePartial(f.Type1(), lang, policy)

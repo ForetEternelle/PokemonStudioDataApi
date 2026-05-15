@@ -8,7 +8,7 @@ servers:
   - url: "http://localhost:8000/"
 paths:
   /pokemon:
-    $ref: "paths/pokemon/pokemonPage.yml"
+    $ref: "paths/pokemon/pokemonList.yml"
   /pokemon/{symbol}:
     $ref: "paths/pokemon/pokemonDetails.yml"
   /pokemon/name/{name}:

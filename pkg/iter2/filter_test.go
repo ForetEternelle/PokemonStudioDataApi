@@ -90,3 +90,20 @@ func TestFalse(t *testing.T) {
 		t.Error("False should always return false")
 	}
 }
+
+func TestFirst(t *testing.T) {
+	data := []int{1, 2, 3}
+	it := slices.Values(data)
+	v, ok := First(it)
+	if !ok || v != 1 {
+		t.Errorf("expected (1, true), got (%d, %t)", v, ok)
+	}
+}
+
+func TestFirstEmpty(t *testing.T) {
+	it := slices.Values([]int{})
+	v, ok := First(it)
+	if ok || v != 0 {
+		t.Errorf("expected (0, false), got (%d, %t)", v, ok)
+	}
+}

@@ -19,7 +19,7 @@ func NewMoveMapper(typeMapper *TypeMapper) *MoveMapper {
 // ToMoveDetail map a move to a move details transfer object
 // move the move to map
 // lang the language expected
-func (m MoveMapper) ToMoveDetail(move pkmn.Move, lang string, policy *AccessPolicy) MoveDetails {
+func (m MoveMapper) ToMoveDetail(move pkmn.Move, lang string, policy PokemonFilterPolicy) MoveDetails {
 	slog.Debug("Mapping move to details", "move", move.DbSymbol(), "lang", lang)
 
 	details := MoveDetails{
@@ -112,7 +112,7 @@ func (m MoveMapper) ToMoveDetail(move pkmn.Move, lang string, policy *AccessPoli
 // ToMovePartial map a move to a move partial transfer object
 // move the move to map
 // lang the language expected
-func (m MoveMapper) ToMovePartial(move pkmn.Move, lang string, policy *AccessPolicy) MovePartial {
+func (m MoveMapper) ToMovePartial(move pkmn.Move, lang string, policy PokemonFilterPolicy) MovePartial {
 	slog.Debug("Mapping move to partial", "move", move.DbSymbol(), "lang", lang)
 	partial := MovePartial{
 		Symbol:   move.DbSymbol(),

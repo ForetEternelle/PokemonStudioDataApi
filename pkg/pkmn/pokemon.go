@@ -40,7 +40,7 @@ type ExperienceType string
 type Pokemon struct {
 	id               int32
 	dbSymbol         string
-	forms            map[int32]PokemonForm
+	forms            []PokemonForm
 	customProperties map[string]any
 }
 
@@ -55,10 +55,10 @@ func (p *Pokemon) DbSymbol() string {
 }
 
 // Forms returns an iterator over all forms of the Pokemon.
-func (p *Pokemon) Forms() iter.Seq2[int32, PokemonForm] {
-	return func(yield func(int32, PokemonForm) bool) {
-		for k, v := range p.forms {
-			if !yield(k, v) {
+func (p *Pokemon) Forms() iter.Seq[PokemonForm] {
+	return func(yield func(PokemonForm) bool) {
+		for _, f := range p.forms {
+			if !yield(f) {
 				return
 			}
 		}
@@ -67,8 +67,12 @@ func (p *Pokemon) Forms() iter.Seq2[int32, PokemonForm] {
 
 // Form returns a specific form of the Pokemon by its form number.
 func (p *Pokemon) Form(form int32) (PokemonForm, bool) {
-	f, ok := p.forms[form]
-	return f, ok
+	for _, f := range p.forms {
+		if f.form == form {
+			return f, true
+		}
+	}
+	return PokemonForm{}, false
 }
 
 // CustomProperties returns the custom properties of the Pokemon.
@@ -77,7 +81,7 @@ func (p *Pokemon) CustomProperties() map[string]any {
 }
 
 // ComparePokemonId compares two Pokemon by their ID.
-func ComparePokemonId(p1, p2 *Pokemon) int {
+func ComparePokemonId(p1, p2 Pokemon) int {
 	if p1.id >= p2.id {
 		return 1
 	}
@@ -437,3 +441,4 @@ func MinStat(base int32) int32 {
 	res := 0.9 * float64(base*2+5)
 	return int32(res)
 }
+

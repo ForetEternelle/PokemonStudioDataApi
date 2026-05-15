@@ -12,13 +12,13 @@ import (
 type AbilityService struct {
 	store               *pkmn.Store
 	abilityMapper       *AbilityMapper
-	accessPolicyFactory func(context.Context) *AccessPolicy
+	accessPolicyFactory func(context.Context) *PokemonFilterPolicy
 }
 
 func NewAbilityService(
 	store *pkmn.Store,
 	abilityMapper *AbilityMapper,
-	accessPolicyFactory func(context.Context) *AccessPolicy,
+	accessPolicyFactory func(context.Context) *PokemonFilterPolicy,
 ) AbilitiesAPIServicer {
 	return &AbilityService{
 		store:               store,

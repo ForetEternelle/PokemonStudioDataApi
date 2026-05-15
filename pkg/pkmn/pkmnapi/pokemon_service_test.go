@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/pagination"
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/pkmn"
 	. "github.com/ForetEternelle/PokemonStudioDataApi/pkg/pkmn/pkmnapispec"
+	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/scroll"
 )
 
 func setupPokemonService() (*pkmn.Store, PokemonAPIServicer) {
@@ -76,8 +76,8 @@ func setupPokemonService() (*pkmn.Store, PokemonAPIServicer) {
 	abilityMapper := NewAbilityMapper()
 	pokemonMapper := NewPokemonMapper(typeMapper, abilityMapper, store)
 
-	accessPolicyFactory := func(ctx context.Context) *AccessPolicy {
-		return NewAccessPolicy()
+	accessPolicyFactory := func(ctx context.Context) *PokemonFilterPolicy {
+		return NewPokemonFilterPolicy()
 	}
 
 	service := NewPokemonService(store, pokemonMapper, accessPolicyFactory)
@@ -122,7 +122,7 @@ func TestPokemonService_GetPokemonDetails_NotFound(t *testing.T) {
 func TestPokemonService_GetPokemon(t *testing.T) {
 	_, service := setupPokemonService()
 
-	resp, err := service.GetPokemon(context.Background(), 0, 10, "en")
+	resp, err := service.GetPokemon(context.Background(), "en", 20, nil, nil, true, nil )
 	if err != nil {
 		t.Error("Expected no error, got", err)
 	}
@@ -130,54 +130,15 @@ func TestPokemonService_GetPokemon(t *testing.T) {
 		t.Error("Expected status 200, got", resp.Code)
 	}
 
-	page := resp.Body.(pagination.Page[*PokemonThumbnail])
-	if page.Content == nil {
+	scroll := resp.Body.(scroll.Scroll[*PokemonThumbnail])
+	if scroll.Content == nil {
 		t.Error("Expected non-nil content")
 	}
-	if len(page.Content) != 3 {
-		t.Error("Expected 3 pokemon, got", len(page.Content))
+	if len(scroll.Content) != 3 {
+		t.Error("Expected 3 pokemon, got", len(scroll.Content))
 	}
 }
 
-func TestPokemonService_GetPokemon_Pagination(t *testing.T) {
-	store := pkmn.NewStore()
-	normalType := pkmn.NewTypeBuilder().DbSymbol("normal").Build()
-	store.AddType(*normalType)
-
-	for i := 1; i <= 15; i++ {
-		form := pkmn.NewPokemonFormBuilder().
-			Form(0).
-			Type1(normalType).
-			Name(pkmn.Translation{"en": "Pokemon"}).
-			Build()
-		pokemon := pkmn.NewPokemonBuilder().
-			ID(int32(i)).
-			DbSymbol("pokemon_" + string(rune(i))).
-			Forms([]pkmn.PokemonForm{*form}).
-			Build()
-		store.AddPokemon(*pokemon)
-	}
-
-	typeMapper := NewTypeMapper()
-	abilityMapper := NewAbilityMapper()
-	pokemonMapper := NewPokemonMapper(typeMapper, abilityMapper, store)
-
-	accessPolicyFactory := func(ctx context.Context) *AccessPolicy {
-		return NewAccessPolicy()
-	}
-
-	service := NewPokemonService(store, pokemonMapper, accessPolicyFactory)
-
-	resp, _ := service.GetPokemon(context.Background(), 0, 5, "en")
-	page := resp.Body.(pagination.Page[*PokemonThumbnail])
-
-	if len(page.Content) != 5 {
-		t.Error("Expected 5 items per page, got", len(page.Content))
-	}
-	if page.Total != 15 {
-		t.Error("Expected total 15, got", page.Total)
-	}
-}
 
 func TestPokemonService_GetPokemonForm(t *testing.T) {
 	_, service := setupPokemonService()

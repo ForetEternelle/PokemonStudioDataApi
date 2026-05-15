@@ -13,7 +13,7 @@ func TestFilter(t *testing.T) {
 		return n > 3
 	}
 
-	res := slices.Collect(Filter(moreThan3, it))
+	res := 	slices.Collect(Filter(it, moreThan3))
 	if len(res) != 2 {
 		t.Error("Res lenght should be 2")
 	}
@@ -33,7 +33,7 @@ func TestOr(t *testing.T) {
 
 	data := []int{1, 2, 3, 4, 5, 6}
 	it := slices.Values(data)
-	res := slices.Collect(Filter(or, it))
+	res := 	slices.Collect(Filter(it, or))
 
 	if len(res) != 4 {
 		t.Errorf("expected 4, got %d", len(res))
@@ -44,7 +44,7 @@ func TestOrEmpty(t *testing.T) {
 	or := Or[int]()
 	data := []int{1, 2, 3}
 	it := slices.Values(data)
-	res := slices.Collect(Filter(or, it))
+	res := 	slices.Collect(Filter(it, or))
 
 	if len(res) != 3 {
 		t.Errorf("expected 3, got %d", len(res))
@@ -58,7 +58,7 @@ func TestAnd(t *testing.T) {
 
 	data := []int{1, 2, 3, 4, 5, 6}
 	it := slices.Values(data)
-	res := slices.Collect(Filter(and, it))
+	res := 	slices.Collect(Filter(it, and))
 
 	if len(res) != 2 {
 		t.Errorf("expected 2, got %d", len(res))
@@ -72,7 +72,7 @@ func TestAndEmpty(t *testing.T) {
 	and := And[int]()
 	data := []int{1, 2, 3}
 	it := slices.Values(data)
-	res := slices.Collect(Filter(and, it))
+	res := 	slices.Collect(Filter(it, and))
 
 	if len(res) != 3 {
 		t.Errorf("expected 3, got %d", len(res))

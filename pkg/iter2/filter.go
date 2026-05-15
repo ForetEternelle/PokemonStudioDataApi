@@ -4,7 +4,7 @@ import "iter"
 
 type FilterFunc[T any] func(T) bool
 
-func Filter[T any](filter FilterFunc[T], it iter.Seq[T]) iter.Seq[T] {
+func Filter[T any](it iter.Seq[T], filter FilterFunc[T]) iter.Seq[T] {
 	return func(yield func(T) bool) {
 		for item := range it {
 			if filter(item) {
@@ -60,7 +60,7 @@ func First[V any](it iter.Seq[V]) (V, bool) {
 	return zero, false
 }
 
-func Peek[V any](peek func(V), it iter.Seq[V]) iter.Seq[V] {
+func Peek[V any](it iter.Seq[V], peek func(V)) iter.Seq[V] {
 	return func(yield func(V) bool) {
 		for item := range it {
 			peek(item)

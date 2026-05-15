@@ -29,9 +29,9 @@ func NewTypeService(
 func (s TypeService) GetTypes(requestCtx context.Context, lang string) (ImplResponse, error) {
 	policy := s.accessPolicyFactory(requestCtx)
 	typesIter := s.store.FindAllTypes(policy.TypeFilter)
-	mappedIter := iter2.Map(func(t studio.PokemonType) TypePartial {
+	mappedIter := iter2.Map(typesIter, func(t studio.PokemonType) TypePartial {
 		return *s.typeMapper.ToTypePartial(t, lang, policy)
-	}, typesIter)
+	})
 	return ImplResponse{Code: 200, Body: slices.Collect(mappedIter)}, nil
 }
 

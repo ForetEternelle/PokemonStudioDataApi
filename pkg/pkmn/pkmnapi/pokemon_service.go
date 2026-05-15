@@ -59,9 +59,9 @@ func (s PokemonService) GetPokemon(requestCtx context.Context, page int32, pageS
 	pkmnIter := s.store.FindAllPokemon(policy.PokemonFilter)
 	pkmnPage := pagination.Collect(pkmnIter, pr)
 
-	thumbnailsIter := iter2.Map(func(pkmn studio.Pokemon) *PokemonThumbnail {
+	thumbnailsIter := iter2.Map(slices.Values(pkmnPage.Content), func(pkmn studio.Pokemon) *PokemonThumbnail {
 		return s.pokemonMapper.PokemonToThumbnail(pkmn, lang, policy)
-	}, slices.Values(pkmnPage.Content))
+	})
 
 	return ImplResponse{Code: 200, Body: pagination.NewPage(pr.Page, pr.Size, slices.Collect(thumbnailsIter), pkmnPage.Total)}, nil
 }
@@ -75,9 +75,9 @@ func (s PokemonService) GetFormsByPokemon(requestCtx context.Context, symbol str
 	}
 
 	formsIter := iter2.Values(pkmn.Forms())
-	formPartialsIter := iter2.Map(func(form studio.PokemonForm) *FormPartial {
+	formPartialsIter := iter2.Map(formsIter, func(form studio.PokemonForm) *FormPartial {
 		return s.pokemonMapper.FormToPokemonFormPartial(form, lang, policy)
-	}, formsIter)
+	})
 
 	return ImplResponse{Code: 200, Body: slices.Collect(formPartialsIter)}, nil
 }

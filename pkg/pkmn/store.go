@@ -121,9 +121,9 @@ func (s *Store) AddPokemon(pokemon Pokemon) *Pokemon {
 	s.pokemonBySymbol[pokemon.DbSymbol()] = &pokemon
 
 	formIt := iter2.Values(pokemon.Forms())
-	translationIt := iter2.Map(func(form PokemonForm) Translation {
+	translationIt := iter2.Map(formIt, func(form PokemonForm) Translation {
 		return form.name
-	}, formIt)
+	})
 
 	s.pokemonNameTranslations = append(s.pokemonNameTranslations, slices.Collect(translationIt)...)
 
@@ -154,7 +154,7 @@ func (s *Store) AddMove(move Move) *Move {
 
 func (s *Store) FindAllPokemon(filters ...iter2.FilterFunc[Pokemon]) iter.Seq[Pokemon] {
 	it := slices.Values(s.pokemonList)
-	return iter2.Filter(iter2.And(filters...), it)
+	return iter2.Filter(it, iter2.And(filters...))
 }
 
 func (s *Store) FindPokemonBySymbol(symbol string, filters ...iter2.FilterFunc[Pokemon]) *Pokemon {
@@ -174,7 +174,7 @@ func (s *Store) FindPokemonByName(name string, filters ...iter2.FilterFunc[Pokem
 	normalizedName := strings.ToLower(strings.TrimSpace(name))
 
 	pokemonIter := s.FindAllPokemon(filters...)
-	found, foundOk := iter2.First(iter2.Filter(func(p Pokemon) bool {
+	found, foundOk := iter2.First(iter2.Filter(pokemonIter, func(p Pokemon) bool {
 		// Check symbol
 		if strings.ToLower(p.DbSymbol()) == normalizedName {
 			return true
@@ -201,7 +201,7 @@ func (s *Store) FindPokemonByName(name string, filters ...iter2.FilterFunc[Pokem
 		}
 
 		return false
-	}, pokemonIter))
+	}))
 
 	if foundOk {
 		return s.pokemonBySymbol[found.DbSymbol()]
@@ -212,7 +212,7 @@ func (s *Store) FindPokemonByName(name string, filters ...iter2.FilterFunc[Pokem
 
 func (s *Store) FindAllTypes(filters ...iter2.FilterFunc[PokemonType]) iter.Seq[PokemonType] {
 	it := slices.Values(s.types)
-	return iter2.Filter(iter2.And(filters...), it)
+	return iter2.Filter(it, iter2.And(filters...))
 }
 
 func (s *Store) FindTypeBySymbol(symbol string, filters ...iter2.FilterFunc[PokemonType]) *PokemonType {
@@ -235,14 +235,14 @@ func (s *Store) Resistances(type1, type2 string, filters ...iter2.FilterFunc[Pok
 		return pt.DamageToTypes(type1, type2)
 	})
 
-	return iter2.Map2(func(pt PokemonType, res float32) (string, float32) {
+	return iter2.Map2(ptResIT, func(pt PokemonType, res float32) (string, float32) {
 		return pt.DbSymbol(), res
-	}, ptResIT)
+	})
 }
 
 func (s *Store) FindAllAbilities(filters ...iter2.FilterFunc[Ability]) iter.Seq[Ability] {
 	it := slices.Values(s.abilities)
-	return iter2.Filter(iter2.And(filters...), it)
+	return iter2.Filter(it, iter2.And(filters...))
 }
 
 func (s *Store) FindAbilityBySymbol(symbol string, filters ...iter2.FilterFunc[Ability]) *Ability {
@@ -260,7 +260,7 @@ func (s *Store) FindAbilityBySymbol(symbol string, filters ...iter2.FilterFunc[A
 
 func (s *Store) FindAllMoves(filters ...iter2.FilterFunc[Move]) iter.Seq[Move] {
 	it := slices.Values(s.moves)
-	return iter2.Filter(iter2.And(filters...), it)
+	return iter2.Filter(it, iter2.And(filters...))
 }
 
 func (s *Store) FindMoveBySymbol(symbol string, filters ...iter2.FilterFunc[Move]) *Move {

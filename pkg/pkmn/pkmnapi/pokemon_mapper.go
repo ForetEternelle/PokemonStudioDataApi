@@ -80,11 +80,11 @@ func (m PokemonMapper) FormToPokemonFormDetails(f studio.PokemonForm, lang strin
 	slog.Debug("Mapping pokemon form to form details", "form", f.Form(), "lang", lang)
 
 	abilityIt := f.Abilities()
-	abilityIt = iter2.Filter(policy.AbilityFilter, abilityIt)
+	abilityIt = iter2.Filter(abilityIt, policy.AbilityFilter)
 
-	abilityPartialIt := iter2.Map(func(a studio.Ability) AbilityPartial {
+	abilityPartialIt := iter2.Map(abilityIt, func(a studio.Ability) AbilityPartial {
 		return m.abilityMapper.ToAbilityPartial(a, lang)
-	}, abilityIt)
+	})
 
 	partialType1 := m.typeMapper.ToTypePartial(f.Type1(), lang, policy)
 	var partialType2 *TypePartial

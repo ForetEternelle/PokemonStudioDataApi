@@ -8,21 +8,21 @@ import (
 
 func TestPokemonToThumbnail(t *testing.T) {
 	lang := "test"
-	normalType := studio.NewTypeBuilder().DbSymbol("normal").Build()
-	form := studio.NewPokemonFormBuilder().
+	normalType := pkmn.NewTypeBuilder().DbSymbol("normal").Build()
+	form := pkmn.NewPokemonFormBuilder().
 		Form(0).
 		Type1(normalType).
-		Name(studio.Translation{lang: "testName"}).
+		Name(pkmn.Translation{lang: "testName"}).
 		Build()
-	pokemon := studio.NewPokemonBuilder().
+	pokemon := pkmn.NewPokemonBuilder().
 		ID(1).
 		DbSymbol("test").
-		Forms(map[int32]studio.PokemonForm{0: *form}).
+		Forms(map[int32]pkmn.PokemonForm{0: *form}).
 		Build()
 
 	typeMapper := NewTypeMapper()
 	abilityMapper := NewAbilityMapper()
-	store := studio.NewStore()
+	store := pkmn.NewStore()
 	pokemonMapper := NewPokemonMapper(typeMapper, abilityMapper, store)
 
 	policy := NewAccessPolicy()
@@ -44,25 +44,25 @@ func TestPokemonToThumbnail(t *testing.T) {
 
 func TestPokemonToDetail(t *testing.T) {
 	lang := "test"
-	normalType := studio.NewTypeBuilder().DbSymbol("normal").Build()
+	normalType := pkmn.NewTypeBuilder().DbSymbol("normal").Build()
 
-	form := studio.NewPokemonFormBuilder().
+	form := pkmn.NewPokemonFormBuilder().
 		Form(0).
 		Type1(normalType).
 		BaseHp(100).
 		BaseAtk(50).
-		Name(studio.Translation{lang: "testName"}).
-		Description(studio.Translation{lang: "testDesc"}).
+		Name(pkmn.Translation{lang: "testName"}).
+		Description(pkmn.Translation{lang: "testDesc"}).
 		Build()
-	pokemon := studio.NewPokemonBuilder().
+	pokemon := pkmn.NewPokemonBuilder().
 		ID(1).
 		DbSymbol("test").
-		Forms(map[int32]studio.PokemonForm{0: *form}).
+		Forms(map[int32]pkmn.PokemonForm{0: *form}).
 		Build()
 
 	typeMapper := NewTypeMapper()
 	abilityMapper := NewAbilityMapper()
-	store := studio.NewStore()
+	store := pkmn.NewStore()
 	store.AddType(*normalType)
 	pokemonMapper := NewPokemonMapper(typeMapper, abilityMapper, store)
 

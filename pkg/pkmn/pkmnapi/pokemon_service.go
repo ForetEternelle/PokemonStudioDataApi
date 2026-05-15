@@ -10,13 +10,13 @@ import (
 )
 
 type PokemonService struct {
-	store               *studio.Store
+	store               *pkmn.Store
 	pokemonMapper       *PokemonMapper
 	accessPolicyFactory func(context.Context) *AccessPolicy
 }
 
 func NewPokemonService(
-	store *studio.Store,
+	store *pkmn.Store,
 	pokemonMapper *PokemonMapper,
 	accessPolicyFactory func(context.Context) *AccessPolicy,
 ) PokemonAPIServicer {
@@ -59,8 +59,8 @@ func (s PokemonService) GetPokemon(requestCtx context.Context, page int32, pageS
 	pkmnIter := s.store.FindAllPokemon(policy.PokemonFilter)
 	pkmnPage := pagination.Collect(pkmnIter, pr)
 
-	thumbnailsIter := iter2.Map(slices.Values(pkmnPage.Content), func(pkmn studio.Pokemon) *PokemonThumbnail {
-		return s.pokemonMapper.PokemonToThumbnail(pkmn, lang, policy)
+	thumbnailsIter := iter2.Map(slices.Values(pkmnPage.Content), func(poke pkmn.Pokemon) *PokemonThumbnail {
+		return s.pokemonMapper.PokemonToThumbnail(poke, lang, policy)
 	})
 
 	return ImplResponse{Code: 200, Body: pagination.NewPage(pr.Page, pr.Size, slices.Collect(thumbnailsIter), pkmnPage.Total)}, nil
@@ -68,14 +68,14 @@ func (s PokemonService) GetPokemon(requestCtx context.Context, page int32, pageS
 
 func (s PokemonService) GetFormsByPokemon(requestCtx context.Context, symbol string, lang string) (ImplResponse, error) {
 	policy := s.accessPolicyFactory(requestCtx)
-	pkmn := s.store.FindPokemonBySymbol(symbol, policy.PokemonFilter)
+	poke := s.store.FindPokemonBySymbol(symbol, policy.PokemonFilter)
 
-	if pkmn == nil {
+	if poke == nil {
 		return ImplResponse{Code: 404, Body: nil}, nil
 	}
 
-	formsIter := iter2.Values(pkmn.Forms())
-	formPartialsIter := iter2.Map(formsIter, func(form studio.PokemonForm) *FormPartial {
+	formsIter := iter2.Values(poke.Forms())
+	formPartialsIter := iter2.Map(formsIter, func(form pkmn.PokemonForm) *FormPartial {
 		return s.pokemonMapper.FormToPokemonFormPartial(form, lang, policy)
 	})
 

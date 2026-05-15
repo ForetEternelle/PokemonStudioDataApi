@@ -1,18 +1,20 @@
 package studio
 
+import "github.com/ForetEternelle/PokemonStudioDataApi/pkg/pkmn"
+
 // TypeMapper maps Type descriptors to PokemonType entities.
 type TypeMapper struct {
-	store *Store
+	store *pkmn.Store
 }
 
 // NewTypeMapper creates a new TypeMapper.
-func NewTypeMapper(store *Store) *TypeMapper {
+func NewTypeMapper(store *pkmn.Store) *TypeMapper {
 	return &TypeMapper{store: store}
 }
 
 // MapPokemonTypeDescriptorToPokemonType maps a PokemonTypeDescriptor to a PokemonType.
-func (m *TypeMapper) MapPokemonTypeDescriptorToPokemonType(desc PokemonTypeDescriptor) *PokemonType {
-	pokemonType := NewTypeBuilder().
+func (m *TypeMapper) MapPokemonTypeDescriptorToPokemonType(desc PokemonTypeDescriptor) *pkmn.PokemonType {
+	pokemonType := pkmn.NewTypeBuilder().
 		DbSymbol(desc.DbSymbol).
 		Color(desc.Color).
 		TextId(desc.TextId).

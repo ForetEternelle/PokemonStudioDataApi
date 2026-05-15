@@ -7,13 +7,13 @@ import (
 )
 
 type MoveService struct {
-	store               *studio.Store
+	store               *pkmn.Store
 	moveMapper          *MoveMapper
 	accessPolicyFactory func(context.Context) *AccessPolicy
 }
 
 func NewMoveService(
-	store *studio.Store,
+	store *pkmn.Store,
 	moveMapper *MoveMapper,
 	accessPolicyFactory func(context.Context) *AccessPolicy,
 ) MovesAPIServicer {

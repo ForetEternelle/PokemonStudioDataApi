@@ -1,4 +1,4 @@
-package studio
+package pkmn
 
 // AbilityBuilder builds Ability entities.
 type AbilityBuilder struct {

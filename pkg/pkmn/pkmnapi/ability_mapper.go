@@ -7,7 +7,7 @@ import (
 )
 
 type AbilityMapper struct {
-	store *studio.Store
+	store *pkmn.Store
 }
 
 // NewAbilityMapper Create a new ability mapper
@@ -19,7 +19,7 @@ func NewAbilityMapper() *AbilityMapper {
 // ToAbilityDetail map an ability to an ability details transfer object
 // ability the ability to map
 // lang the language expected
-func (m AbilityMapper) ToAbilityDetail(ability studio.Ability, lang string) AbilityDetails {
+func (m AbilityMapper) ToAbilityDetail(ability pkmn.Ability, lang string) AbilityDetails {
 	slog.Debug("Mapping ability to details", "ability", ability.DbSymbol(), "lang", lang)
 	return AbilityDetails{
 		Symbol:      ability.DbSymbol(),
@@ -31,7 +31,7 @@ func (m AbilityMapper) ToAbilityDetail(ability studio.Ability, lang string) Abil
 // ToAbilityPartial map an ability to an ability partial transfer object
 // ability the ability to map
 // lang the language expected
-func (m AbilityMapper) ToAbilityPartial(ability studio.Ability, lang string) AbilityPartial {
+func (m AbilityMapper) ToAbilityPartial(ability pkmn.Ability, lang string) AbilityPartial {
 	slog.Debug("Mapping ability to partial", "ability", ability.DbSymbol(), "lang", lang)
 	return AbilityPartial{
 		Symbol:      ability.DbSymbol(),

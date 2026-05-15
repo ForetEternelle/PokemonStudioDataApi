@@ -1,4 +1,4 @@
-package studio
+package pkmn
 
 import (
 	"testing"
@@ -20,54 +20,6 @@ func TestComparePokemonId(t *testing.T) {
 	}
 }
 
-func TestNewPokemonMapper(t *testing.T) {
-	store := NewStore()
-	mapper := NewPokemonMapper(store)
-
-	if mapper == nil {
-		t.Error("NewPokemonMapper should return non-nil mapper")
-	}
-	if mapper.store != store {
-		t.Error("NewPokemonMapper should set store correctly")
-	}
-}
-
-func TestNewTypeMapper(t *testing.T) {
-	store := NewStore()
-	mapper := NewTypeMapper(store)
-
-	if mapper == nil {
-		t.Error("NewTypeMapper should return non-nil mapper")
-	}
-	if mapper.store != store {
-		t.Error("NewTypeMapper should set store correctly")
-	}
-}
-
-func TestNewAbilityMapper(t *testing.T) {
-	store := NewStore()
-	mapper := NewAbilityMapper(store)
-
-	if mapper == nil {
-		t.Error("NewAbilityMapper should return non-nil mapper")
-	}
-	if mapper.store != store {
-		t.Error("NewAbilityMapper should set store correctly")
-	}
-}
-
-func TestNewMoveMapper(t *testing.T) {
-	store := NewStore()
-	mapper := NewMoveMapper(store)
-
-	if mapper == nil {
-		t.Error("NewMoveMapper should return non-nil mapper")
-	}
-	if mapper.store != store {
-		t.Error("NewMoveMapper should set store correctly")
-	}
-}
-
 func TestMaxHp(t *testing.T) {
 	expect := int32(386)
 	result := MaxHp(91)
@@ -76,7 +28,7 @@ func TestMaxHp(t *testing.T) {
 	}
 }
 
-func TextMinHp(t *testing.T) {
+func TestMinHp(t *testing.T) {
 	expect := int32(292)
 	result := MinHp(91)
 	if result != expect {

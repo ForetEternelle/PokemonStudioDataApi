@@ -10,11 +10,11 @@ import (
 type GetRouterOption func(*GetRouterConfig)
 
 type GetRouterConfig struct {
-	store               *studio.Store
+	store               *pkmn.Store
 	accessPolicyFactory func(context.Context) *AccessPolicy
 }
 
-var WithStore = func(store *studio.Store) GetRouterOption {
+var WithStore = func(store *pkmn.Store) GetRouterOption {
 	return func(config *GetRouterConfig) {
 		config.store = store
 	}
@@ -34,7 +34,7 @@ func GetRouter(opts ...GetRouterOption) (chi.Router, error) {
 	}
 
 	if config.store == nil {
-		config.store = studio.NewStore()
+		config.store = pkmn.NewStore()
 	}
 
 	if config.accessPolicyFactory == nil {

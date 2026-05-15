@@ -1,5 +1,7 @@
 package studio
 
+import "github.com/ForetEternelle/PokemonStudioDataApi/pkg/pkmn"
+
 // ExperienceTypeDescriptor is a numeric descriptor for experience types.
 type ExperienceTypeDescriptor int32
 
@@ -35,31 +37,31 @@ const (
 
 // ExperienceTypeMap maps experience type descriptors to strings.
 var ExperienceTypeMap = map[ExperienceTypeDescriptor]string{
-	ExperienceErraticNum:     ExperienceErratic,
-	ExperienceFastNum:        ExperienceFast,
-	ExperienceMediumFastNum:  ExperienceMediumFast,
-	ExperienceMediumSlowNum:  ExperienceMediumSlow,
-	ExperienceSlowNum:        ExperienceSlow,
-	ExperienceFluctuatingNum: ExperienceFluctuating,
+	ExperienceErraticNum:     pkmn.ExperienceErratic,
+	ExperienceFastNum:        pkmn.ExperienceFast,
+	ExperienceMediumFastNum:  pkmn.ExperienceMediumFast,
+	ExperienceMediumSlowNum:  pkmn.ExperienceMediumSlow,
+	ExperienceSlowNum:        pkmn.ExperienceSlow,
+	ExperienceFluctuatingNum: pkmn.ExperienceFluctuating,
 }
 
 // BreedMap maps breed group descriptors to strings.
 var BreedMap = map[BreedGroupDescriptor]string{
-	BreedMonsterNum:      BreedMonster,
-	BreedWater1Num:       BreedWater1,
-	BreedBugNum:          BreedBug,
-	BreedFlyingNum:       BreedFlying,
-	BreedFieldNum:        BreedField,
-	BreedFairyNum:        BreedFairy,
-	BreedGrassNum:        BreedGrass,
-	BreedHumanNum:        BreedHuman,
-	BreedWater3Num:       BreedWater3,
-	BreedMineralNum:      BreedMineral,
-	BreedAmorphousNum:    BreedAmorphous,
-	BreedWater2Num:       BreedWater2,
-	BreedDittoNum:        BreedDitto,
-	BreedDragonNum:       BreedDragon,
-	BreedUndiscoveredNum: BreedUndiscovered,
+	BreedMonsterNum:      pkmn.BreedMonster,
+	BreedWater1Num:       pkmn.BreedWater1,
+	BreedBugNum:          pkmn.BreedBug,
+	BreedFlyingNum:       pkmn.BreedFlying,
+	BreedFieldNum:        pkmn.BreedField,
+	BreedFairyNum:        pkmn.BreedFairy,
+	BreedGrassNum:        pkmn.BreedGrass,
+	BreedHumanNum:        pkmn.BreedHuman,
+	BreedWater3Num:       pkmn.BreedWater3,
+	BreedMineralNum:      pkmn.BreedMineral,
+	BreedAmorphousNum:    pkmn.BreedAmorphous,
+	BreedWater2Num:       pkmn.BreedWater2,
+	BreedDittoNum:        pkmn.BreedDitto,
+	BreedDragonNum:       pkmn.BreedDragon,
+	BreedUndiscoveredNum: pkmn.BreedUndiscovered,
 }
 
 // PokemonDescriptor is the JSON descriptor for a Pokemon.
@@ -67,8 +69,8 @@ type PokemonDescriptor struct {
 	ID          int32            `json:"id"`
 	DbSymbol    string           `json:"dbSymbol"`
 	Forms       []FormDescriptor `json:"forms"`
-	Name        Translation
-	Description Translation
+	Name        pkmn.Translation
+	Description pkmn.Translation
 }
 
 // FormDescriptor is the JSON descriptor for a Pokemon form.
@@ -105,8 +107,8 @@ type FormDescriptor struct {
 	FrontOffsetY   int32                      `json:"frontOffsetY"`
 	FormTextId     FormTextIdDescriptor       `json:"formTextId"`
 	Resources      PokemonResourcesDescriptor `json:"resources"`
-	Name           Translation
-	Description    Translation
+	Name           pkmn.Translation
+	Description    pkmn.Translation
 }
 
 // EvolutionDescriptor is the JSON descriptor for an evolution.

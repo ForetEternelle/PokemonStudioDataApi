@@ -1,4 +1,4 @@
-package studio
+package pkmn
 
 // MoveBuilder builds Move entities.
 type MoveBuilder struct {

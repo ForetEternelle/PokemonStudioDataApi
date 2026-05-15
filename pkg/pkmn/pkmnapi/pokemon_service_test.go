@@ -8,66 +8,66 @@ import (
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/pkmn"
 )
 
-func setupPokemonService() (*studio.Store, PokemonAPIServicer) {
-	store := studio.NewStore()
-	normalType := studio.NewTypeBuilder().DbSymbol("normal").Name(studio.Translation{"en": "Normal"}).Build()
-	electricType := studio.NewTypeBuilder().DbSymbol("electric").Name(studio.Translation{"en": "Electric"}).Build()
+func setupPokemonService() (*pkmn.Store, PokemonAPIServicer) {
+	store := pkmn.NewStore()
+	normalType := pkmn.NewTypeBuilder().DbSymbol("normal").Name(pkmn.Translation{"en": "Normal"}).Build()
+	electricType := pkmn.NewTypeBuilder().DbSymbol("electric").Name(pkmn.Translation{"en": "Electric"}).Build()
 	store.AddType(*normalType)
 	store.AddType(*electricType)
 
-	form0 := studio.NewPokemonFormBuilder().
+	form0 := pkmn.NewPokemonFormBuilder().
 		Form(0).
 		Type1(electricType).
 		BaseHp(35).
 		BaseAtk(55).
 		BaseSpd(90).
-		Name(studio.Translation{"en": "Pikachu", "fr": "PikachuFR"}).
-		Description(studio.Translation{"en": "Electric mouse"}).
+		Name(pkmn.Translation{"en": "Pikachu", "fr": "PikachuFR"}).
+		Description(pkmn.Translation{"en": "Electric mouse"}).
 		Build()
-	form1 := studio.NewPokemonFormBuilder().
+	form1 := pkmn.NewPokemonFormBuilder().
 		Form(1).
 		Type1(electricType).
-		Name(studio.Translation{"en": "Pikachu"}).
-		Description(studio.Translation{"en": "Electric mouse"}).
+		Name(pkmn.Translation{"en": "Pikachu"}).
+		Description(pkmn.Translation{"en": "Electric mouse"}).
 		BaseHp(20).
 		BaseAtk(40).
 		Build()
-	pikachu := studio.NewPokemonBuilder().
+	pikachu := pkmn.NewPokemonBuilder().
 		ID(25).
 		DbSymbol("pikachu").
-		Forms(map[int32]studio.PokemonForm{0: *form0, 1: *form1}).
+		Forms(map[int32]pkmn.PokemonForm{0: *form0, 1: *form1}).
 		Build()
 	store.AddPokemon(*pikachu)
 
-	bulbasaurForm := studio.NewPokemonFormBuilder().
+	bulbasaurForm := pkmn.NewPokemonFormBuilder().
 		Form(0).
-		Name(studio.Translation{"en": "Bulbasaur"}).
-		Description(studio.Translation{"en": "Grass starter"}).
+		Name(pkmn.Translation{"en": "Bulbasaur"}).
+		Description(pkmn.Translation{"en": "Grass starter"}).
 		Type1(normalType).
 		BaseHp(45).
 		BaseAtk(49).
-		Name(studio.Translation{"en": "Bulbasaur"}).
-		Description(studio.Translation{"en": "Grass starter"}).
+		Name(pkmn.Translation{"en": "Bulbasaur"}).
+		Description(pkmn.Translation{"en": "Grass starter"}).
 		Build()
-	bulbasaur := studio.NewPokemonBuilder().
+	bulbasaur := pkmn.NewPokemonBuilder().
 		ID(1).
 		DbSymbol("bulbasaur").
-		Forms(map[int32]studio.PokemonForm{0: *bulbasaurForm}).
+		Forms(map[int32]pkmn.PokemonForm{0: *bulbasaurForm}).
 		Build()
 	store.AddPokemon(*bulbasaur)
 
-	smettleForm := studio.NewPokemonFormBuilder().
+	smettleForm := pkmn.NewPokemonFormBuilder().
 		Form(0).
-		Name(studio.Translation{"en": "Smettle", "fr": "Malortie"}).
-		Description(studio.Translation{"en": "Smettle is a mischievous Pokémon.", "fr": "Malortie est un Pokémon malicieux."}).
+		Name(pkmn.Translation{"en": "Smettle", "fr": "Malortie"}).
+		Description(pkmn.Translation{"en": "Smettle is a mischievous Pokémon.", "fr": "Malortie est un Pokémon malicieux."}).
 		Type1(normalType).
 		BaseHp(45).
 		BaseAtk(49).
 		Build()
-	smettle := studio.NewPokemonBuilder().
+	smettle := pkmn.NewPokemonBuilder().
 		ID(724).
 		DbSymbol("smettle").
-		Forms(map[int32]studio.PokemonForm{0: *smettleForm}).
+		Forms(map[int32]pkmn.PokemonForm{0: *smettleForm}).
 		Build()
 	store.AddPokemon(*smettle)
 
@@ -139,20 +139,20 @@ func TestPokemonService_GetPokemon(t *testing.T) {
 }
 
 func TestPokemonService_GetPokemon_Pagination(t *testing.T) {
-	store := studio.NewStore()
-	normalType := studio.NewTypeBuilder().DbSymbol("normal").Build()
+	store := pkmn.NewStore()
+	normalType := pkmn.NewTypeBuilder().DbSymbol("normal").Build()
 	store.AddType(*normalType)
 
 	for i := 1; i <= 15; i++ {
-		form := studio.NewPokemonFormBuilder().
+		form := pkmn.NewPokemonFormBuilder().
 			Form(0).
 			Type1(normalType).
-			Name(studio.Translation{"en": "Pokemon"}).
+			Name(pkmn.Translation{"en": "Pokemon"}).
 			Build()
-		pokemon := studio.NewPokemonBuilder().
+		pokemon := pkmn.NewPokemonBuilder().
 			ID(int32(i)).
 			DbSymbol("pokemon_" + string(rune(i))).
-			Forms(map[int32]studio.PokemonForm{0: *form}).
+			Forms(map[int32]pkmn.PokemonForm{0: *form}).
 			Build()
 		store.AddPokemon(*pokemon)
 	}

@@ -25,8 +25,12 @@ func (b *PokemonBuilder) DbSymbol(dbSymbol string) *PokemonBuilder {
 }
 
 // Forms sets the forms of the Pokemon.
-func (b *PokemonBuilder) Forms(forms map[int32]PokemonForm) *PokemonBuilder {
-	b.pokemon.forms = forms
+func (b *PokemonBuilder) Forms(forms []PokemonForm) *PokemonBuilder {
+	fm := make(map[int32]PokemonForm, len(forms))
+	for i := range forms {
+		fm[forms[i].form] = forms[i]
+	}
+	b.pokemon.forms = fm
 	return b
 }
 

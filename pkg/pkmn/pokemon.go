@@ -422,7 +422,7 @@ func MaxHp(base int32) int32 {
 
 // MinHp calculates the minimum possible HP value for a given base HP.
 func MinHp(base int32) int32 {
-	res := float64(base*2 + 10)
+	res := float64(base*2 + 110)
 	return int32(res)
 }
 

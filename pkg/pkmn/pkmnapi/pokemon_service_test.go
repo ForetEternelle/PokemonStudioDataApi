@@ -35,7 +35,7 @@ func setupPokemonService() (*pkmn.Store, PokemonAPIServicer) {
 	pikachu := pkmn.NewPokemonBuilder().
 		ID(25).
 		DbSymbol("pikachu").
-		Forms(map[int32]pkmn.PokemonForm{0: *form0, 1: *form1}).
+		Forms([]pkmn.PokemonForm{*form0, *form1}).
 		Build()
 	store.AddPokemon(*pikachu)
 
@@ -52,7 +52,7 @@ func setupPokemonService() (*pkmn.Store, PokemonAPIServicer) {
 	bulbasaur := pkmn.NewPokemonBuilder().
 		ID(1).
 		DbSymbol("bulbasaur").
-		Forms(map[int32]pkmn.PokemonForm{0: *bulbasaurForm}).
+		Forms([]pkmn.PokemonForm{*bulbasaurForm}).
 		Build()
 	store.AddPokemon(*bulbasaur)
 
@@ -67,7 +67,7 @@ func setupPokemonService() (*pkmn.Store, PokemonAPIServicer) {
 	smettle := pkmn.NewPokemonBuilder().
 		ID(724).
 		DbSymbol("smettle").
-		Forms(map[int32]pkmn.PokemonForm{0: *smettleForm}).
+		Forms([]pkmn.PokemonForm{*smettleForm}).
 		Build()
 	store.AddPokemon(*smettle)
 
@@ -152,7 +152,7 @@ func TestPokemonService_GetPokemon_Pagination(t *testing.T) {
 		pokemon := pkmn.NewPokemonBuilder().
 			ID(int32(i)).
 			DbSymbol("pokemon_" + string(rune(i))).
-			Forms(map[int32]pkmn.PokemonForm{0: *form}).
+			Forms([]pkmn.PokemonForm{*form}).
 			Build()
 		store.AddPokemon(*pokemon)
 	}

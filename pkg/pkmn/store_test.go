@@ -109,10 +109,12 @@ func TestFindAllPokemonWithFilters(t *testing.T) {
 }
 
 func TestFindPokemonByName_RealData(t *testing.T) {
+	form := NewPokemonFormBuilder().
+		Form(0).
+		Name(Translation{"en": "Abomasnow", "fr": "Blizzaroi"}).
+		Build()
 	pokemonList := []Pokemon{
-		*NewPokemonBuilder().ID(1).DbSymbol("pikachu").Build(),
-		*NewPokemonBuilder().ID(2).DbSymbol("bulbasaur").Build(),
-		*NewPokemonBuilder().ID(3).DbSymbol("charmander").Build(),
+		*NewPokemonBuilder().ID(460).DbSymbol("abomasnow").Forms([]PokemonForm{*form}).Build(),
 	}
 	store := NewStore()
 

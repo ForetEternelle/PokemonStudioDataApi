@@ -10,6 +10,7 @@ import (
 	"path"
 
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/file"
+	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/pkmn"
 )
 
 const (
@@ -24,6 +25,59 @@ const (
 	moveDescriptionTranslationFile        = "100007.csv"
 )
 
+func Load(folder string) (*pkmn.Store, error) {
+	store := pkmn.NewStore()
+	translationFolder := path.Join(folder, pkmn.LanguageFolder)
+	studioFolder := path.Join(folder, pkmn.StudioFolder)
+
+	typeMapper := NewTypeMapper(store)
+	abilityMapper := NewAbilityMapper(store)
+	pokemonMapper := NewPokemonMapper(store)
+	moveMapper := NewMoveMapper(store)
+
+	typeIterator, err := ImportTypes(studioFolder, translationFolder)
+	if err != nil {
+		slog.Error("Failed to load pokemon types")
+		return nil, err
+	}
+	for descriptor := range typeIterator {
+		pokemonType := typeMapper.MapPokemonTypeDescriptorToPokemonType(*descriptor)
+		store.AddType(*pokemonType)
+	}
+
+	abilityIterator, err := ImportAbility(studioFolder, translationFolder)
+	if err != nil {
+		slog.Error("Failed to load abilities")
+		return nil, err
+	}
+	for descriptor := range abilityIterator {
+		ability := abilityMapper.MapAbilityDescriptorToAbility(*descriptor)
+		store.AddAbility(*ability)
+	}
+
+	moveIterator, err := ImportMoves(studioFolder, translationFolder)
+	if err != nil {
+		slog.Error("Failed to load moves")
+		return nil, err
+	}
+	for descriptor := range moveIterator {
+		move := moveMapper.MapMoveDescriptorToMove(*descriptor)
+		store.AddMove(*move)
+	}
+
+	pokemonIterator, err := ImportPokemon(studioFolder, translationFolder)
+	if err != nil {
+		slog.Error("Failed to load pokemon")
+		return nil, err
+	}
+	for descriptor := range pokemonIterator {
+		pokemon := pokemonMapper.MapPokemonDescriptorToPokemon(*descriptor)
+		store.AddPokemon(*pokemon)
+	}
+
+	return store, nil
+}
+
 func ImportAbility(studioFolder, translationFolder string) (iter.Seq[*AbilityDescriptor], error) {
 	abilityFolderPath := path.Join(studioFolder, "abilities/")
 	slog.Info("Importing ability folder", "path", abilityFolderPath)
@@ -37,14 +91,14 @@ func ImportAbility(studioFolder, translationFolder string) (iter.Seq[*AbilityDes
 	abilityTranslations, err := ImportTranslations(abilityNametranslationsPath)
 	if err != nil {
 		slog.Warn("Failed to import ability translations", "path", abilityNametranslationsPath, "error", err)
-		abilityTranslations = []Translation{}
+		abilityTranslations = []pkmn.Translation{}
 	}
 
 	abilityDescriptiontranslationsPath := path.Join(translationFolder, abilityDescriptionTranslationFile)
 	abilityDescTranslations, err := ImportTranslations(abilityDescriptiontranslationsPath)
 	if err != nil {
 		slog.Warn("Failed to import ability description translations", "path", abilityDescriptiontranslationsPath, "error", err)
-		abilityDescTranslations = []Translation{}
+		abilityDescTranslations = []pkmn.Translation{}
 	}
 
 	return func(yield func(*AbilityDescriptor) bool) {
@@ -142,7 +196,7 @@ func ImportTypes(studioFolder, translationFolder string) (iter.Seq[*PokemonTypeD
 	translations, err := ImportTranslations(translationsPath)
 	if err != nil {
 		slog.Warn("Failed to import type translations", "path", translationsPath, "error", err)
-		translations = []Translation{}
+		translations = []pkmn.Translation{}
 	}
 
 	return func(yield func(*PokemonTypeDescriptor) bool) {
@@ -180,14 +234,14 @@ func ImportMoves(studioFolder, translationFolder string) (iter.Seq[*MoveDescript
 	moveNameTranslations, err := ImportTranslations(moveNameTranslationsPath)
 	if err != nil {
 		slog.Warn("Failed to import move name translations", "path", moveNameTranslationsPath, "error", err)
-		moveNameTranslations = []Translation{}
+		moveNameTranslations = []pkmn.Translation{}
 	}
 
 	moveDescTranslationsPath := path.Join(translationFolder, moveDescriptionTranslationFile)
 	moveDescTranslations, err := ImportTranslations(moveDescTranslationsPath)
 	if err != nil {
 		slog.Warn("Failed to import move description translations", "path", moveDescTranslationsPath, "error", err)
-		moveDescTranslations = []Translation{}
+		moveDescTranslations = []pkmn.Translation{}
 	}
 
 	return func(yield func(*MoveDescriptor) bool) {
@@ -231,7 +285,7 @@ func UnmarshalPokemonDescriptor(pokemonContent []byte) (*PokemonDescriptor, erro
 
 	// Handle __undef__ values by converting them to nil
 	for i := range pokemonDescriptor.Forms {
-		if pokemonDescriptor.Forms[i].Type2 != nil && *pokemonDescriptor.Forms[i].Type2 == UndefType {
+		if pokemonDescriptor.Forms[i].Type2 != nil && *pokemonDescriptor.Forms[i].Type2 == pkmn.UndefType {
 			pokemonDescriptor.Forms[i].Type2 = nil
 		}
 	}
@@ -262,18 +316,18 @@ func UnmarshalMoveDescriptor(moveContent []byte) (*MoveDescriptor, error) {
 }
 
 // ImportTranslationsOrEmpty import translations from file, if it fails log the error and return an empty list
-func ImportTranslationsOrEmpty(path string) []Translation {
+func ImportTranslationsOrEmpty(path string) []pkmn.Translation {
 	translations, err := ImportTranslations(path)
 	if err != nil {
 		slog.Error("Failed to import translations", "path", path, "error", err)
-		return []Translation{}
+		return []pkmn.Translation{}
 	}
 	return translations
 }
 
 // ImportTranslations import translations from file
 // path the path of the file to import
-func ImportTranslations(path string) ([]Translation, error) {
+func ImportTranslations(path string) ([]pkmn.Translation, error) {
 	curPath, _ := os.Getwd()
 	slog.Info("Import translation file", "path", path, "currentPath", curPath)
 	file, err := os.OpenFile(path, os.O_RDONLY, 0)
@@ -294,7 +348,7 @@ func ImportTranslations(path string) ([]Translation, error) {
 		return nil, err
 	}
 
-	results := make([]Translation, 0)
+	results := make([]pkmn.Translation, 0)
 	for {
 		records, err := reader.Read()
 		if err == io.EOF {
@@ -305,7 +359,7 @@ func ImportTranslations(path string) ([]Translation, error) {
 			return nil, err
 		}
 
-		translationMap := make(Translation)
+		translationMap := make(pkmn.Translation)
 		for index := range len(records) {
 			translationMap[langs[index]] = records[index]
 		}
@@ -316,7 +370,7 @@ func ImportTranslations(path string) ([]Translation, error) {
 	return results, nil
 }
 
-func MapTranslation(textId int, translations []Translation) Translation {
+func MapTranslation(textId int, translations []pkmn.Translation) pkmn.Translation {
 	if textId >= 0 && textId < len(translations) {
 		translation := translations[textId]
 		return translation

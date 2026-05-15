@@ -2,26 +2,50 @@ package studio
 
 import (
 	"os"
+	"slices"
 	"testing"
+
+	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/pkmn"
 )
 
 const (
-	TypeInvalid = "../../test/test_resources/bug-invalid.json"
-	TypeValid   = "../../test/test_resources/valid-data/Studio/types/bug.json"
+	DataFolder = "../../../test/test_resources/valid-data"
+	TypeInvalid = "../../../test/test_resources/bug-invalid.json"
+	TypeValid   = "../../../test/test_resources/valid-data/Studio/types/bug.json"
 
-	PokemonInvalid = "../../test/test_resources/abra-invalid.json"
-	PokemonValid   = "../../test/test_resources/valid-data/Studio/pokemon/abra.json"
+	PokemonInvalid = "../../../test/test_resources/abra-invalid.json"
+	PokemonValid   = "../../../test/test_resources/valid-data/Studio/pokemon/abra.json"
 
-	AbilityInvalid = "../../test/test_resources/ability-invalid.json"
-	AbilityValid   = "../../test/test_resources/valid-data/Studio/abilities/adaptability.json"
+	AbilityInvalid = "../../../test/test_resources/ability-invalid.json"
+	AbilityValid   = "../../../test/test_resources/valid-data/Studio/abilities/adaptability.json"
 
-	MoveInvalid = "../../test/test_resources/move-invalid.json"
-	MoveValid   = "../../test/test_resources/valid-data/Studio/moves/blue_flare.json"
+	MoveInvalid = "../../../test/test_resources/move-invalid.json"
+	MoveValid   = "../../../test/test_resources/valid-data/Studio/moves/blue_flare.json"
 
 	InvalidPath        = "invalid/path"
-	TranslationInvalid = "../../test/test_resources/100003-invalid.csv"
-	TranslationValid   = "../../test/test_resources/valid-data/Text/Dialogs/100003.csv"
+	TranslationInvalid = "../../../test/test_resources/100003-invalid.csv"
+	TranslationValid   = "../../../test/test_resources/valid-data/Text/Dialogs/100003.csv"
 )
+
+func TestLoad(t *testing.T) {
+	store, err := Load(DataFolder)
+	if err != nil {
+		t.Fatal("Import should succeed", err)
+	}
+
+	pokemonIter := store.FindAllPokemon()
+	pokemonCount := len(slices.Collect(pokemonIter))
+
+	if pokemonCount != 6 {
+		t.Error("Import should have 6 pokemon, has", pokemonCount)
+	}
+
+	typesIter := store.FindAllTypes()
+	typesCount := len(slices.Collect(typesIter))
+	if typesCount != 18 {
+		t.Error("Import should have 18 types, has", typesCount)
+	}
+}
 
 func TestUnmarshalTypeDescriptor_Error(t *testing.T) {
 	content, err := os.ReadFile(TypeInvalid)
@@ -52,7 +76,7 @@ func TestMapPokemonTypeDescriptorToPokemonType_Ok(t *testing.T) {
 		Color:    "#FF0000",
 	}
 
-	store := NewStore()
+	store := pkmn.NewStore()
 	mapper := NewTypeMapper(store)
 	pokemonType := mapper.MapPokemonTypeDescriptorToPokemonType(*desc)
 
@@ -144,7 +168,7 @@ func TestUnmarshalMoveDescriptor_Error(t *testing.T) {
 }
 
 func TestMapTranslation_Valid(t *testing.T) {
-	translations := []Translation{
+	translations := []pkmn.Translation{
 		{"en": "first"},
 		{"en": "second"},
 	}

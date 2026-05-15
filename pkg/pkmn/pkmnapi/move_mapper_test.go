@@ -8,11 +8,11 @@ import (
 
 func TestMoveToDetail(t *testing.T) {
 	lang := "test"
-	fireType := studio.NewTypeBuilder().DbSymbol("fire").Build()
-	move := studio.NewMoveBuilder().
+	fireType := pkmn.NewTypeBuilder().DbSymbol("fire").Build()
+	move := pkmn.NewMoveBuilder().
 		DbSymbol("testDbSymbol").
-		Name(studio.Translation{lang: "testName"}).
-		Description(studio.Translation{lang: "testDescription"}).
+		Name(pkmn.Translation{lang: "testName"}).
+		Description(pkmn.Translation{lang: "testDescription"}).
 		Power(80).
 		Accuracy(100).
 		PP(15).
@@ -61,11 +61,11 @@ func TestMoveToDetail(t *testing.T) {
 
 func TestMoveToPartial(t *testing.T) {
 	lang := "test"
-	fireType := studio.NewTypeBuilder().DbSymbol("fire").Build()
-	move := studio.NewMoveBuilder().
+	fireType := pkmn.NewTypeBuilder().DbSymbol("fire").Build()
+	move := pkmn.NewMoveBuilder().
 		DbSymbol("testDbSymbol").
-		Name(studio.Translation{lang: "testName"}).
-		Description(studio.Translation{lang: "testDescription"}).
+		Name(pkmn.Translation{lang: "testName"}).
+		Description(pkmn.Translation{lang: "testDescription"}).
 		Power(80).
 		Accuracy(100).
 		PP(15).

@@ -8,8 +8,8 @@ import (
 	"time"
 
 	customMiddleware "github.com/ForetEternelle/PokemonStudioDataApi/pkg/middleware"
-	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/pkmn"
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/pkmn/pkmnapi"
+	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/pkmn/studio"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )

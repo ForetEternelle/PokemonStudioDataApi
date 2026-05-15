@@ -9,13 +9,13 @@ import (
 )
 
 type AbilityService struct {
-	store               *studio.Store
+	store               *pkmn.Store
 	abilityMapper       *AbilityMapper
 	accessPolicyFactory func(context.Context) *AccessPolicy
 }
 
 func NewAbilityService(
-	store *studio.Store,
+	store *pkmn.Store,
 	abilityMapper *AbilityMapper,
 	accessPolicyFactory func(context.Context) *AccessPolicy,
 ) AbilitiesAPIServicer {
@@ -29,7 +29,7 @@ func NewAbilityService(
 func (s AbilityService) GetAbilities(requestCtx context.Context, lang string) (ImplResponse, error) {
 	policy := s.accessPolicyFactory(requestCtx)
 	abilitiesIter := s.store.FindAllAbilities(policy.AbilityFilter)
-	mappedIter := iter2.Map(abilitiesIter, func(a studio.Ability) AbilityPartial {
+	mappedIter := iter2.Map(abilitiesIter, func(a pkmn.Ability) AbilityPartial {
 		return s.abilityMapper.ToAbilityPartial(a, lang)
 	})
 	return ImplResponse{Code: 200, Body: slices.Collect(mappedIter)}, nil

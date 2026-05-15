@@ -1,4 +1,4 @@
-package studio
+package pkmn
 
 // Ability represents a Pokemon ability.
 type Ability struct {

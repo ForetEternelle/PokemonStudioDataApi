@@ -1,4 +1,4 @@
-package studio
+package pkmn
 
 // MoveCategory represents a move category (Physical, Special, Status).
 type MoveCategory string

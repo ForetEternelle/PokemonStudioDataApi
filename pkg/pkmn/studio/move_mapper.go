@@ -1,167 +1,154 @@
 package studio
 
+import "github.com/ForetEternelle/PokemonStudioDataApi/pkg/pkmn"
+
 // MoveMapper handles mapping of Move descriptors using a store
 type MoveMapper struct {
-	store *Store
+	store *pkmn.Store
 }
 
 // NewMoveMapper creates a new MoveMapper with the given store
-func NewMoveMapper(store *Store) *MoveMapper {
+func NewMoveMapper(store *pkmn.Store) *MoveMapper {
 	return &MoveMapper{store: store}
 }
 
 // MapMoveDescriptorToMove converts a MoveDescriptor to a Move domain struct
-func (m *MoveMapper) MapMoveDescriptorToMove(desc MoveDescriptor) *Move {
-	moveObj := &Move{
-		id:           desc.Id,
-		dbSymbol:     desc.DbSymbol,
-		category:     MoveCategory(desc.Category),
-		power:        desc.Power,
-		accuracy:     desc.Accuracy,
-		pp:           desc.PP,
-		criticalRate: desc.MoveCriticalRate,
-		priority:     desc.Priority,
-		mapUse:       desc.MapUse,
-		name:         desc.Name,
-		description:  desc.Description,
-	}
-
-	// Resolve type reference
-	moveObj.moveType = m.store.FindTypeBySymbol(desc.Type)
-
-	// Map targeting
-	moveObj.targeting = m.mapTargeting(desc)
-
-	// Map execution
-	moveObj.execution = m.mapExecution(desc)
-
-	// Map mechanical tags
-	moveObj.mechanicalTags = m.mapMechanicalTags(desc)
-
-	// Map interactions
-	moveObj.interactions = m.mapInteractions(desc)
-
-	// Map secondary effects
-	moveObj.secondaryEffects = m.mapSecondaryEffects(desc)
+func (m *MoveMapper) MapMoveDescriptorToMove(desc MoveDescriptor) *pkmn.Move {
+	moveObj := pkmn.NewMoveBuilder().
+		ID(desc.Id).
+		DbSymbol(desc.DbSymbol).
+		Type(m.store.FindTypeBySymbol(desc.Type)).
+		Category(pkmn.MoveCategory(desc.Category)).
+		Power(desc.Power).
+		Accuracy(desc.Accuracy).
+		PP(desc.PP).
+		CriticalRate(desc.MoveCriticalRate).
+		Priority(desc.Priority).
+		MapUse(desc.MapUse).
+		Targeting(m.mapTargeting(desc)).
+		Execution(m.mapExecution(desc)).
+		MechanicalTags(m.mapMechanicalTags(desc)).
+		Interactions(m.mapInteractions(desc)).
+		SecondaryEffects(m.mapSecondaryEffects(desc)).
+		Name(desc.Name).
+		Description(desc.Description).
+		Build()
 
 	return moveObj
 }
 
-func (m *MoveMapper) mapTargeting(desc MoveDescriptor) MoveTargeting {
-	targeting := MoveTargeting{
-		AimedTarget: AimedTarget(desc.BattleEngineAimedTarget),
+func (m *MoveMapper) mapTargeting(desc MoveDescriptor) pkmn.MoveTargeting {
+	targeting := pkmn.MoveTargeting{
+		AimedTarget: pkmn.AimedTarget(desc.BattleEngineAimedTarget),
 	}
 
-	// Determine contact type from isDirect and isDistance flags
 	if desc.IsDirect {
-		targeting.ContactType = ContactTypeDirect
+		targeting.ContactType = pkmn.ContactTypeDirect
 	} else if desc.IsDistance {
-		targeting.ContactType = ContactTypeDistant
+		targeting.ContactType = pkmn.ContactTypeDistant
 	} else {
-		targeting.ContactType = ContactTypeNone
+		targeting.ContactType = pkmn.ContactTypeNone
 	}
 
 	return targeting
 }
 
-func (m *MoveMapper) mapExecution(desc MoveDescriptor) MoveExecution {
-	return MoveExecution{
-		Method:   ExecutionMethod(desc.BattleEngineMethod),
+func (m *MoveMapper) mapExecution(desc MoveDescriptor) pkmn.MoveExecution {
+	return pkmn.MoveExecution{
+		Method:   pkmn.ExecutionMethod(desc.BattleEngineMethod),
 		Charge:   desc.IsCharge,
 		Recharge: desc.IsRecharge,
 	}
 }
 
-func (m *MoveMapper) mapMechanicalTags(desc MoveDescriptor) []MoveMechanicalTag {
-	tags := make([]MoveMechanicalTag, 0)
+func (m *MoveMapper) mapMechanicalTags(desc MoveDescriptor) []pkmn.MoveMechanicalTag {
+	tags := make([]pkmn.MoveMechanicalTag, 0)
 
 	if desc.IsAuthentic {
-		tags = append(tags, MechanicalTagAuthentic)
+		tags = append(tags, pkmn.MechanicalTagAuthentic)
 	}
 	if desc.IsBallistics {
-		tags = append(tags, MechanicalTagBallistic)
+		tags = append(tags, pkmn.MechanicalTagBallistic)
 	}
 	if desc.IsBite {
-		tags = append(tags, MechanicalTagBite)
+		tags = append(tags, pkmn.MechanicalTagBite)
 	}
 	if desc.IsDance {
-		tags = append(tags, MechanicalTagDance)
+		tags = append(tags, pkmn.MechanicalTagDance)
 	}
 	if desc.IsPunch {
-		tags = append(tags, MechanicalTagPunch)
+		tags = append(tags, pkmn.MechanicalTagPunch)
 	}
 	if desc.IsSlicingAttack {
-		tags = append(tags, MechanicalTagSlice)
+		tags = append(tags, pkmn.MechanicalTagSlice)
 	}
 	if desc.IsSoundAttack {
-		tags = append(tags, MechanicalTagSound)
+		tags = append(tags, pkmn.MechanicalTagSound)
 	}
 	if desc.IsWind {
-		tags = append(tags, MechanicalTagWind)
+		tags = append(tags, pkmn.MechanicalTagWind)
 	}
 	if desc.IsPulse {
-		tags = append(tags, MechanicalTagPulse)
+		tags = append(tags, pkmn.MechanicalTagPulse)
 	}
 	if desc.IsPowder {
-		tags = append(tags, MechanicalTagPowder)
+		tags = append(tags, pkmn.MechanicalTagPowder)
 	}
 	if desc.IsMental {
-		tags = append(tags, MechanicalTagMental)
+		tags = append(tags, pkmn.MechanicalTagMental)
 	}
 
 	return tags
 }
 
-func (m *MoveMapper) mapInteractions(desc MoveDescriptor) []MoveInteraction {
-	interactions := make([]MoveInteraction, 0)
+func (m *MoveMapper) mapInteractions(desc MoveDescriptor) []pkmn.MoveInteraction {
+	interactions := make([]pkmn.MoveInteraction, 0)
 
 	if desc.IsBlocable {
-		interactions = append(interactions, InteractionBlocable)
+		interactions = append(interactions, pkmn.InteractionBlocable)
 	}
 	if desc.IsMirrorMove {
-		interactions = append(interactions, InteractionMirrorMove)
+		interactions = append(interactions, pkmn.InteractionMirrorMove)
 	}
 	if desc.IsSnatchable {
-		interactions = append(interactions, InteractionSnatchable)
+		interactions = append(interactions, pkmn.InteractionSnatchable)
 	}
 	if desc.IsMagicCoatAffected {
-		interactions = append(interactions, InteractionMagicCoatAffected)
+		interactions = append(interactions, pkmn.InteractionMagicCoatAffected)
 	}
 	if desc.IsKingRockUtility {
-		interactions = append(interactions, InteractionKingRockUtility)
+		interactions = append(interactions, pkmn.InteractionKingRockUtility)
 	}
 	if desc.IsGravity {
-		interactions = append(interactions, InteractionAffectedByGravity)
+		interactions = append(interactions, pkmn.InteractionAffectedByGravity)
 	}
 	if desc.IsNonSkyBattle {
-		interactions = append(interactions, InteractionNonSkyBattle)
+		interactions = append(interactions, pkmn.InteractionNonSkyBattle)
 	}
 
 	return interactions
 }
 
-func (m *MoveMapper) mapSecondaryEffects(desc MoveDescriptor) MoveSecondaryEffects {
-	effects := MoveSecondaryEffects{
+func (m *MoveMapper) mapSecondaryEffects(desc MoveDescriptor) pkmn.MoveSecondaryEffects {
+	effects := pkmn.MoveSecondaryEffects{
 		Chance: desc.EffectChance,
 	}
 
-	// Map status effects
 	if len(desc.MoveStatus) > 0 {
-		effects.StatusEffects = make([]MoveStatusEffect, len(desc.MoveStatus))
+		effects.StatusEffects = make([]pkmn.MoveStatusEffect, len(desc.MoveStatus))
 		for i, status := range desc.MoveStatus {
-			effects.StatusEffects[i] = MoveStatusEffect{
+			effects.StatusEffects[i] = pkmn.MoveStatusEffect{
 				Status:   status.Status,
 				LuckRate: status.LuckRate,
 			}
 		}
 	}
 
-	// Map stat stage changes
 	if len(desc.BattleStageMod) > 0 {
-		effects.StatStageChanges = make([]MoveStatStageChange, len(desc.BattleStageMod))
+		effects.StatStageChanges = make([]pkmn.MoveStatStageChange, len(desc.BattleStageMod))
 		for i, stageMod := range desc.BattleStageMod {
-			effects.StatStageChanges[i] = MoveStatStageChange{
-				BattleStage: BattleStage(stageMod.BattleStage),
+			effects.StatStageChanges[i] = pkmn.MoveStatStageChange{
+				BattleStage: pkmn.BattleStage(stageMod.BattleStage),
 				Modificator: stageMod.Modificator,
 			}
 		}

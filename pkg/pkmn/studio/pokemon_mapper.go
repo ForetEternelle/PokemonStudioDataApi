@@ -1,23 +1,25 @@
 package studio
 
+import "github.com/ForetEternelle/PokemonStudioDataApi/pkg/pkmn"
+
 // PokemonMapper maps Pokemon descriptors to Pokemon entities.
 type PokemonMapper struct {
-	store *Store
+	store *pkmn.Store
 }
 
 // NewPokemonMapper creates a new PokemonMapper.
-func NewPokemonMapper(store *Store) *PokemonMapper {
+func NewPokemonMapper(store *pkmn.Store) *PokemonMapper {
 	return &PokemonMapper{store: store}
 }
 
 // MapPokemonDescriptorToPokemon maps a PokemonDescriptor to a Pokemon.
-func (m *PokemonMapper) MapPokemonDescriptorToPokemon(desc PokemonDescriptor) *Pokemon {
-	forms := make(map[int32]PokemonForm, len(desc.Forms))
+func (m *PokemonMapper) MapPokemonDescriptorToPokemon(desc PokemonDescriptor) *pkmn.Pokemon {
+	forms := make(map[int32]pkmn.PokemonForm, len(desc.Forms))
 	for _, formDesc := range desc.Forms {
 		forms[formDesc.Form] = *m.MapFormDescriptorToPokemonForm(formDesc)
 	}
 
-	pokemon := NewPokemonBuilder().
+	pokemon := pkmn.NewPokemonBuilder().
 		ID(desc.ID).
 		DbSymbol(desc.DbSymbol).
 		Forms(forms).
@@ -27,10 +29,23 @@ func (m *PokemonMapper) MapPokemonDescriptorToPokemon(desc PokemonDescriptor) *P
 }
 
 // MapFormDescriptorToPokemonForm maps a FormDescriptor to a PokemonForm.
-func (m *PokemonMapper) MapFormDescriptorToPokemonForm(desc FormDescriptor) *PokemonForm {
-	form := NewPokemonFormBuilder().
+func (m *PokemonMapper) MapFormDescriptorToPokemonForm(desc FormDescriptor) *pkmn.PokemonForm {
+	var type2 *pkmn.PokemonType
+	if desc.Type2 != nil && *desc.Type2 != "" && *desc.Type2 != pkmn.UndefType {
+		type2 = m.store.FindTypeBySymbol(*desc.Type2)
+	}
+
+	abilities := make([]*pkmn.Ability, 0, len(desc.Abilities))
+	for _, abilitySymbol := range desc.Abilities {
+		if ability := m.store.FindAbilityBySymbol(abilitySymbol); ability != nil {
+			abilities = append(abilities, ability)
+		}
+	}
+
+	form := pkmn.NewPokemonFormBuilder().
 		Form(desc.Form).
 		Type1(m.store.FindTypeBySymbol(desc.Type1)).
+		Type2(type2).
 		Height(desc.Height).
 		Weight(desc.Weight).
 		BaseHp(desc.BaseHp).
@@ -61,19 +76,8 @@ func (m *PokemonMapper) MapFormDescriptorToPokemonForm(desc FormDescriptor) *Pok
 		ItemHeld(m.MapItemHelds(desc.ItemHeld)).
 		CustomProperties(make(map[string]any)).
 		Resources(m.MapPokemonResources(desc.Resources)).
+		Abilities(abilities).
 		Build()
-
-	if desc.Type2 != nil && *desc.Type2 != "" && *desc.Type2 != UndefType {
-		form.type2 = m.store.FindTypeBySymbol(*desc.Type2)
-	}
-
-	abilities := make([]*Ability, 0, len(desc.Abilities))
-	for _, abilitySymbol := range desc.Abilities {
-		if ability := m.store.FindAbilityBySymbol(abilitySymbol); ability != nil {
-			abilities = append(abilities, ability)
-		}
-	}
-	form.abilities = abilities
 
 	return form
 }
@@ -88,14 +92,14 @@ func (m *PokemonMapper) MapBreedGroups(breedGroupInts []int32) []string {
 }
 
 // MapEvolutions maps evolution descriptors to evolutions.
-func (m *PokemonMapper) MapEvolutions(evolutions []EvolutionDescriptor) []Evolution {
+func (m *PokemonMapper) MapEvolutions(evolutions []EvolutionDescriptor) []pkmn.Evolution {
 	if len(evolutions) == 0 {
 		return nil
 	}
 
-	mapped := make([]Evolution, len(evolutions))
+	mapped := make([]pkmn.Evolution, len(evolutions))
 	for i, evoDesc := range evolutions {
-		mapped[i] = Evolution{
+		mapped[i] = pkmn.Evolution{
 			DbSymbol:   evoDesc.DbSymbol,
 			Form:       evoDesc.Form,
 			Conditions: m.MapConditions(evoDesc.Conditions),
@@ -105,27 +109,27 @@ func (m *PokemonMapper) MapEvolutions(evolutions []EvolutionDescriptor) []Evolut
 }
 
 // MapConditions maps condition descriptors to conditions.
-func (m *PokemonMapper) MapConditions(conditions []ConditionDescriptor) []Condition {
+func (m *PokemonMapper) MapConditions(conditions []ConditionDescriptor) []pkmn.Condition {
 	if len(conditions) == 0 {
 		return nil
 	}
 
-	mapped := make([]Condition, len(conditions))
+	mapped := make([]pkmn.Condition, len(conditions))
 	for i, condDesc := range conditions {
-		mapped[i] = Condition{Type: condDesc.Type}
+		mapped[i] = pkmn.Condition{Type: condDesc.Type}
 	}
 	return mapped
 }
 
 // MapItemHelds maps item held descriptors to item held entities.
-func (m *PokemonMapper) MapItemHelds(itemHelds []ItemHeldDescriptor) []*ItemHeld {
+func (m *PokemonMapper) MapItemHelds(itemHelds []ItemHeldDescriptor) []*pkmn.ItemHeld {
 	if len(itemHelds) == 0 {
 		return nil
 	}
 
-	mapped := make([]*ItemHeld, len(itemHelds))
+	mapped := make([]*pkmn.ItemHeld, len(itemHelds))
 	for i, ihDesc := range itemHelds {
-		mapped[i] = &ItemHeld{
+		mapped[i] = &pkmn.ItemHeld{
 			DbSymbol: ihDesc.DbSymbol,
 			Chance:   ihDesc.Chance,
 		}
@@ -134,8 +138,8 @@ func (m *PokemonMapper) MapItemHelds(itemHelds []ItemHeldDescriptor) []*ItemHeld
 }
 
 // MapPokemonResources maps Pokemon resources descriptors to Pokemon resources.
-func (m *PokemonMapper) MapPokemonResources(resources PokemonResourcesDescriptor) PokemonResources {
-	return PokemonResources{
+func (m *PokemonMapper) MapPokemonResources(resources PokemonResourcesDescriptor) pkmn.PokemonResources {
+	return pkmn.PokemonResources{
 		Icon:            resources.Icon,
 		IconF:           resources.IconF,
 		IconShiny:       resources.IconShiny,

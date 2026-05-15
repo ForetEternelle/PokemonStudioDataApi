@@ -1,5 +1,7 @@
 package studio
 
+import "github.com/ForetEternelle/PokemonStudioDataApi/pkg/pkmn"
+
 // MoveDescriptor is the JSON descriptor for a Move.
 type MoveDescriptor struct {
 	Klass                   string                     `json:"klass"`
@@ -43,8 +45,8 @@ type MoveDescriptor struct {
 	EffectChance            int                        `json:"effectChance"`
 	IsSlicingAttack         bool                       `json:"isSlicingAttack"`
 	IsWind                  bool                       `json:"isWind"`
-	Name                    Translation
-	Description             Translation
+	Name        pkmn.Translation
+	Description pkmn.Translation
 }
 
 type BattleStageModDescriptor struct {

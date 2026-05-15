@@ -11,13 +11,13 @@ import (
 type PokemonMapper struct {
 	typeMapper    *TypeMapper
 	abilityMapper *AbilityMapper
-	store         *studio.Store
+	store         *pkmn.Store
 }
 
 func NewPokemonMapper(
 	typeMapper *TypeMapper,
 	abilityMapper *AbilityMapper,
-	store *studio.Store,
+	store *pkmn.Store,
 ) *PokemonMapper {
 	return &PokemonMapper{
 		typeMapper,
@@ -26,7 +26,7 @@ func NewPokemonMapper(
 	}
 }
 
-func (m PokemonMapper) PokemonToThumbnail(p studio.Pokemon, lang string, policy *AccessPolicy) *PokemonThumbnail {
+func (m PokemonMapper) PokemonToThumbnail(p pkmn.Pokemon, lang string, policy *AccessPolicy) *PokemonThumbnail {
 	slog.Debug("Mapping pokemon to thumbnail", "lang", lang)
 
 	mainForm, okMainForm := p.Form(0)
@@ -51,10 +51,10 @@ func (m PokemonMapper) PokemonToThumbnail(p studio.Pokemon, lang string, policy 
 	return thumbnail
 }
 
-func (m PokemonMapper) PokemonToDetail(p studio.Pokemon, lang string, policy *AccessPolicy) *PokemonDetails {
+func (m PokemonMapper) PokemonToDetail(p pkmn.Pokemon, lang string, policy *AccessPolicy) *PokemonDetails {
 	slog.Debug("Mapping pokemon to details", "pokemon", p.DbSymbol(), "lang", lang)
 
-	var mainForm studio.PokemonForm
+	var mainForm pkmn.PokemonForm
 	hasForm := false
 	formFilter := iter2.And(policy.FormFilter)
 	for _, form := range p.Forms() {
@@ -76,13 +76,13 @@ func (m PokemonMapper) PokemonToDetail(p studio.Pokemon, lang string, policy *Ac
 	}
 }
 
-func (m PokemonMapper) FormToPokemonFormDetails(f studio.PokemonForm, lang string, policy *AccessPolicy) *FormDetails {
+func (m PokemonMapper) FormToPokemonFormDetails(f pkmn.PokemonForm, lang string, policy *AccessPolicy) *FormDetails {
 	slog.Debug("Mapping pokemon form to form details", "form", f.Form(), "lang", lang)
 
 	abilityIt := f.Abilities()
 	abilityIt = iter2.Filter(abilityIt, policy.AbilityFilter)
 
-	abilityPartialIt := iter2.Map(abilityIt, func(a studio.Ability) AbilityPartial {
+	abilityPartialIt := iter2.Map(abilityIt, func(a pkmn.Ability) AbilityPartial {
 		return m.abilityMapper.ToAbilityPartial(a, lang)
 	})
 
@@ -133,7 +133,7 @@ func (m PokemonMapper) FormToPokemonFormDetails(f studio.PokemonForm, lang strin
 	}
 }
 
-func (m PokemonMapper) FormToPokemonFormPartial(f studio.PokemonForm, lang string, policy *AccessPolicy) *FormPartial {
+func (m PokemonMapper) FormToPokemonFormPartial(f pkmn.PokemonForm, lang string, policy *AccessPolicy) *FormPartial {
 	slog.Debug("Mapping pokemon form to form partial", "form", f.Form(), "lang", lang)
 
 	partialType1 := m.typeMapper.ToTypePartial(f.Type1(), lang, policy)

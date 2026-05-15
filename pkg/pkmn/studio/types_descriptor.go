@@ -1,12 +1,14 @@
 package studio
 
+import "github.com/ForetEternelle/PokemonStudioDataApi/pkg/pkmn"
+
 // PokemonTypeDescriptor is the JSON descriptor for a Pokemon type.
 type PokemonTypeDescriptor struct {
 	DbSymbol string                 `json:"dbSymbol"`
 	Color    string                 `json:"color"`
 	TextId   int                    `json:"textId"`
 	DamageTo []TypeDamageDescriptor `json:"damageTo"`
-	Name     Translation
+	Name     pkmn.Translation
 }
 
 // TypeDamageDescriptor is the JSON descriptor for a type damage relation.

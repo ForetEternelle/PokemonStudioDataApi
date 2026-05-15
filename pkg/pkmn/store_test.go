@@ -1,31 +1,11 @@
-package studio
+package pkmn
 
 import (
 	"slices"
 	"testing"
 )
 
-const DataFolder = "../../test/test_resources/valid-data"
-
-func TestLoad(t *testing.T) {
-	store, err := Load(DataFolder)
-	if err != nil {
-		t.Fatal("Import should succeed", err)
-	}
-
-	pokemonIter := store.FindAllPokemon()
-	pokemonCount := len(slices.Collect(pokemonIter))
-
-	if pokemonCount != 6 {
-		t.Error("Import should have 6 pokemon, has", pokemonCount)
-	}
-
-	typesIter := store.FindAllTypes()
-	typesCount := len(slices.Collect(typesIter))
-	if typesCount != 18 {
-		t.Error("Import should have 18 types, has", typesCount)
-	}
-}
+const DataFolder = "../../../test/test_resources/valid-data"
 
 func TestFindTypeBySymbol(t *testing.T) {
 	types := []PokemonType{*NewTypeBuilder().DbSymbol("test").Build()}
@@ -129,18 +109,22 @@ func TestFindAllPokemonWithFilters(t *testing.T) {
 }
 
 func TestFindPokemonByName_RealData(t *testing.T) {
-	store, err := Load(DataFolder)
-	if err != nil {
-		t.Fatal("Import should succeed", err)
+	pokemonList := []Pokemon{
+		*NewPokemonBuilder().ID(1).DbSymbol("pikachu").Build(),
+		*NewPokemonBuilder().ID(2).DbSymbol("bulbasaur").Build(),
+		*NewPokemonBuilder().ID(3).DbSymbol("charmander").Build(),
+	}
+	store := NewStore()
+
+	for _, pokemon := range pokemonList {
+		store.AddPokemon(pokemon)
 	}
 
-	// Test direct match (DbSymbol or mapped name)
 	p1 := store.FindPokemonByName("abomasnow")
 	if p1 == nil {
 		t.Error("Should find abomasnow by name (symbol)")
 	}
 
-	// Test fallback via CSV (Blizzaroi is French name for Abomasnow in CSV)
 	p2 := store.FindPokemonByName("Blizzaroi")
 	if p2 == nil {
 		t.Error("Should find abomasnow by name (French CSV fallback)")
@@ -148,13 +132,11 @@ func TestFindPokemonByName_RealData(t *testing.T) {
 		t.Errorf("Expected abomasnow, got %s", p2.DbSymbol())
 	}
 
-	// Test case insensitivity
 	p3 := store.FindPokemonByName("blizzaroi")
 	if p3 == nil {
 		t.Error("Should find abomasnow by name (lowercase French CSV fallback)")
 	}
 
-	// Test with spaces
 	p4 := store.FindPokemonByName("  Blizzaroi  ")
 	if p4 == nil {
 		t.Error("Should find abomasnow by name (French CSV fallback with spaces)")

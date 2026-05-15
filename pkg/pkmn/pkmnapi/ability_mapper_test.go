@@ -8,10 +8,10 @@ import (
 
 func TestToAbilityDetail(t *testing.T) {
 	lang := "test"
-	ability := studio.NewAbilityBuilder().
+	ability := pkmn.NewAbilityBuilder().
 		DbSymbol("testDbSymbol").
-		Name(studio.Translation{lang: "testName"}).
-		Description(studio.Translation{lang: "testDescription"}).
+		Name(pkmn.Translation{lang: "testName"}).
+		Description(pkmn.Translation{lang: "testDescription"}).
 		Build()
 
 	abilityMapper := NewAbilityMapper()
@@ -32,10 +32,10 @@ func TestToAbilityDetail(t *testing.T) {
 
 func TestToAbilityPartial(t *testing.T) {
 	lang := "test"
-	ability := studio.NewAbilityBuilder().
+	ability := pkmn.NewAbilityBuilder().
 		DbSymbol("testDbSymbol").
-		Name(studio.Translation{lang: "testName"}).
-		Description(studio.Translation{lang: "testDescription"}).
+		Name(pkmn.Translation{lang: "testName"}).
+		Description(pkmn.Translation{lang: "testDescription"}).
 		Build()
 
 	abilityMapper := NewAbilityMapper()

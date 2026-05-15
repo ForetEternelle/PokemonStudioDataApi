@@ -1,10 +1,9 @@
-package studio
+package pkmn
 
 import (
 	"iter"
 	"log/slog"
 	"maps"
-	"path"
 	"slices"
 	"strings"
 
@@ -53,59 +52,6 @@ func NewStore() *Store {
 		movesBySymbol:           movesBySymbol,
 		pokemonNameTranslations: []Translation{},
 	}
-}
-
-func Load(folder string) (*Store, error) {
-	store := NewStore()
-	translationFolder := path.Join(folder, LanguageFolder)
-	studioFolder := path.Join(folder, StudioFolder)
-
-	typeMapper := NewTypeMapper(store)
-	abilityMapper := NewAbilityMapper(store)
-	pokemonMapper := NewPokemonMapper(store)
-	moveMapper := NewMoveMapper(store)
-
-	typeIterator, err := ImportTypes(studioFolder, translationFolder)
-	if err != nil {
-		slog.Error("Failed to load pokemon types")
-		return nil, err
-	}
-	for descriptor := range typeIterator {
-		pokemonType := typeMapper.MapPokemonTypeDescriptorToPokemonType(*descriptor)
-		store.AddType(*pokemonType)
-	}
-
-	abilityIterator, err := ImportAbility(studioFolder, translationFolder)
-	if err != nil {
-		slog.Error("Failed to load abilities")
-		return nil, err
-	}
-	for descriptor := range abilityIterator {
-		ability := abilityMapper.MapAbilityDescriptorToAbility(*descriptor)
-		store.AddAbility(*ability)
-	}
-
-	moveIterator, err := ImportMoves(studioFolder, translationFolder)
-	if err != nil {
-		slog.Error("Failed to load moves")
-		return nil, err
-	}
-	for descriptor := range moveIterator {
-		move := moveMapper.MapMoveDescriptorToMove(*descriptor)
-		store.AddMove(*move)
-	}
-
-	pokemonIterator, err := ImportPokemon(studioFolder, translationFolder)
-	if err != nil {
-		slog.Error("Failed to load pokemon")
-		return nil, err
-	}
-	for descriptor := range pokemonIterator {
-		pokemon := pokemonMapper.MapPokemonDescriptorToPokemon(*descriptor)
-		store.AddPokemon(*pokemon)
-	}
-
-	return store, nil
 }
 
 func (s *Store) AddPokemon(pokemon Pokemon) *Pokemon {

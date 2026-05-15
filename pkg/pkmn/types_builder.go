@@ -1,4 +1,4 @@
-package studio
+package pkmn
 
 // TypeBuilder builds PokemonType entities.
 type TypeBuilder struct {

@@ -17,7 +17,7 @@ func TestPokemonToThumbnail(t *testing.T) {
 	pokemon := pkmn.NewPokemonBuilder().
 		ID(1).
 		DbSymbol("test").
-		Forms(map[int32]pkmn.PokemonForm{0: *form}).
+		Forms([]pkmn.PokemonForm{*form}).
 		Build()
 
 	typeMapper := NewTypeMapper()
@@ -57,7 +57,7 @@ func TestPokemonToDetail(t *testing.T) {
 	pokemon := pkmn.NewPokemonBuilder().
 		ID(1).
 		DbSymbol("test").
-		Forms(map[int32]pkmn.PokemonForm{0: *form}).
+		Forms([]pkmn.PokemonForm{*form}).
 		Build()
 
 	typeMapper := NewTypeMapper()

@@ -14,9 +14,9 @@ func NewPokemonMapper(store *pkmn.Store) *PokemonMapper {
 
 // MapPokemonDescriptorToPokemon maps a PokemonDescriptor to a Pokemon.
 func (m *PokemonMapper) MapPokemonDescriptorToPokemon(desc PokemonDescriptor) *pkmn.Pokemon {
-	forms := make(map[int32]pkmn.PokemonForm, len(desc.Forms))
-	for _, formDesc := range desc.Forms {
-		forms[formDesc.Form] = *m.MapFormDescriptorToPokemonForm(formDesc)
+	forms := make([]pkmn.PokemonForm, len(desc.Forms))
+	for i, formDesc := range desc.Forms {
+		forms[i] = *m.MapFormDescriptorToPokemonForm(formDesc)
 	}
 
 	pokemon := pkmn.NewPokemonBuilder().

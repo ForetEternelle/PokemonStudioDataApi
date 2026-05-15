@@ -9,13 +9,13 @@ func TestComparePokemonId(t *testing.T) {
 	p2 := NewPokemonBuilder().ID(2).Build()
 	p3 := NewPokemonBuilder().ID(1).Build()
 
-	if ComparePokemonId(p1, p2) != -1 {
+	if ComparePokemonId(*p1, *p2) != -1 {
 		t.Error("ComparePokemonId with p1:", p1.ID(), "and p2:", p2.ID(), "should return -1")
 	}
-	if ComparePokemonId(p2, p1) != 1 {
+	if ComparePokemonId(*p2, *p1) != 1 {
 		t.Error("ComparePokemonId with p2:", p2.ID(), "and p1:", p1.ID(), "should return 1")
 	}
-	if ComparePokemonId(p1, p3) != 1 {
+	if ComparePokemonId(*p1, *p3) != 1 {
 		t.Error("ComparePokemonId with p1:", p1.ID(), "and p3:", p3.ID(), "should return 1")
 	}
 }

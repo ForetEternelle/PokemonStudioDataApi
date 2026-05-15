@@ -10,13 +10,13 @@ import (
 type MoveService struct {
 	store               *pkmn.Store
 	moveMapper          *MoveMapper
-	accessPolicyFactory func(context.Context) *AccessPolicy
+	accessPolicyFactory func(context.Context) *PokemonFilterPolicy
 }
 
 func NewMoveService(
 	store *pkmn.Store,
 	moveMapper *MoveMapper,
-	accessPolicyFactory func(context.Context) *AccessPolicy,
+	accessPolicyFactory func(context.Context) *PokemonFilterPolicy,
 ) MovesAPIServicer {
 	return &MoveService{
 		store:               store,
@@ -31,7 +31,7 @@ func (s MoveService) GetMoveDetails(requestCtx context.Context, symbol string, l
 	if m == nil {
 		return ImplResponse{Code: 404, Body: nil}, nil
 	}
-	return ImplResponse{Code: 200, Body: s.moveMapper.ToMoveDetail(*m, lang, policy)}, nil
+	return ImplResponse{Code: 200, Body: s.moveMapper.ToMoveDetail(*m, lang, *policy)}, nil
 }
 
 func (s MoveService) GetMove(requestCtx context.Context, symbol string, lang string) (ImplResponse, error) {
@@ -40,5 +40,5 @@ func (s MoveService) GetMove(requestCtx context.Context, symbol string, lang str
 	if m == nil {
 		return ImplResponse{Code: 404, Body: nil}, nil
 	}
-	return ImplResponse{Code: 200, Body: s.moveMapper.ToMovePartial(*m, lang, policy)}, nil
+	return ImplResponse{Code: 200, Body: s.moveMapper.ToMovePartial(*m, lang, *policy)}, nil
 }

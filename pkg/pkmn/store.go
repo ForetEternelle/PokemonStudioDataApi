@@ -3,7 +3,7 @@ package pkmn
 import (
 	"iter"
 	"log/slog"
-	"maps"
+
 	"slices"
 	"strings"
 
@@ -66,7 +66,7 @@ func (s *Store) AddPokemon(pokemon Pokemon) *Pokemon {
 	s.pokemonList = slices.Insert(s.pokemonList, insertIndex, pokemon)
 	s.pokemonBySymbol[pokemon.DbSymbol()] = &pokemon
 
-	formIt := iter2.Values(pokemon.Forms())
+	formIt := pokemon.Forms()
 	translationIt := iter2.Map(formIt, func(form PokemonForm) Translation {
 		return form.name
 	})
@@ -91,16 +91,16 @@ func (s *Store) AddAbility(ability Ability) *Ability {
 	return &ability
 }
 
+func (s *Store) FindAllPokemon(filters ...iter2.FilterFunc[Pokemon]) iter.Seq[Pokemon] {
+	it := slices.Values(s.pokemonList)
+	return iter2.Filter(it, iter2.And(filters...))
+}
+
 func (s *Store) AddMove(move Move) *Move {
 	s.moves = append(s.moves, move)
 	s.movesBySymbol[move.DbSymbol()] = &move
 	slog.Info("Adding move", "symbol", move.DbSymbol())
 	return &move
-}
-
-func (s *Store) FindAllPokemon(filters ...iter2.FilterFunc[Pokemon]) iter.Seq[Pokemon] {
-	it := slices.Values(s.pokemonList)
-	return iter2.Filter(it, iter2.And(filters...))
 }
 
 func (s *Store) FindPokemonBySymbol(symbol string, filters ...iter2.FilterFunc[Pokemon]) *Pokemon {
@@ -127,8 +127,8 @@ func (s *Store) FindPokemonByName(name string, filters ...iter2.FilterFunc[Pokem
 		}
 
 		// Check all names in forms
-		for form := range iter2.Values(p.Forms()) {
-			for val := range maps.Values(form.name) {
+		for form := range p.Forms() {
+			for _, val := range form.name {
 				if strings.ToLower(strings.TrimSpace(val)) == normalizedName {
 					return true
 				}
@@ -139,7 +139,7 @@ func (s *Store) FindPokemonByName(name string, filters ...iter2.FilterFunc[Pokem
 		id := int(p.ID())
 		if id >= 0 && id < len(s.pokemonNameTranslations) {
 			translation := s.pokemonNameTranslations[id]
-			for val := range maps.Values(translation) {
+			for _, val := range translation {
 				if strings.ToLower(strings.TrimSpace(val)) == normalizedName {
 					return true
 				}

@@ -76,7 +76,7 @@ type MovesAPIServicer interface {
 // and updated with the logic required for the API.
 type PokemonAPIServicer interface { 
 	GetFormsByPokemon(context.Context, string, string) (ImplResponse, error)
-	GetPokemon(context.Context, int32, int32, string) (ImplResponse, error)
+	GetPokemon(context.Context, string, int32, *int32, *int32, bool, *string) (ImplResponse, error)
 	GetPokemonDetails(context.Context, string, string) (ImplResponse, error)
 	GetPokemonDetailsByName(context.Context, string, string) (ImplResponse, error)
 	GetPokemonForm(context.Context, string, int32, string) (ImplResponse, error)

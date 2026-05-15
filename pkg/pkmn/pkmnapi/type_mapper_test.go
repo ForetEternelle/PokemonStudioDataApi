@@ -18,8 +18,8 @@ func TestToTypeDetail(t *testing.T) {
 		Build()
 
 	typeMapper := NewTypeMapper()
-	policy := NewAccessPolicy()
-	typeDetail := typeMapper.ToTypeDetail(*pokemonType, lang, policy)
+	policy := NewPokemonFilterPolicy()
+	typeDetail := typeMapper.ToTypeDetail(*pokemonType, lang, *policy)
 
 	if typeDetail.Name != pokemonType.Name(lang) {
 		t.Error("Mapper should map name, expected", pokemonType.Name(lang), ", has", typeDetail.Name)
@@ -50,8 +50,8 @@ func TestToTypePartial(t *testing.T) {
 		Build()
 
 	typeMapper := NewTypeMapper()
-	policy := NewAccessPolicy()
-	typePartial := typeMapper.ToTypePartial(*pokemonType, lang, policy)
+	policy := NewPokemonFilterPolicy()
+	typePartial := typeMapper.ToTypePartial(*pokemonType, lang, *policy)
 
 	if typePartial.Name != pokemonType.Name(lang) {
 		t.Error("Mapper should map name, expected", pokemonType.Name(lang), ", has", typePartial.Name)

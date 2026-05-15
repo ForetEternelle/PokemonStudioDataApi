@@ -12,7 +12,7 @@ type GetRouterOption func(*GetRouterConfig)
 
 type GetRouterConfig struct {
 	store               *pkmn.Store
-	accessPolicyFactory func(context.Context) *AccessPolicy
+	accessPolicyFactory func(context.Context) *PokemonFilterPolicy
 }
 
 var WithStore = func(store *pkmn.Store) GetRouterOption {
@@ -21,7 +21,7 @@ var WithStore = func(store *pkmn.Store) GetRouterOption {
 	}
 }
 
-var WithAccessPolicyFactory = func(factory func(context.Context) *AccessPolicy) GetRouterOption {
+var WithAccessPolicyFactory = func(factory func(context.Context) *PokemonFilterPolicy) GetRouterOption {
 	return func(config *GetRouterConfig) {
 		config.accessPolicyFactory = factory
 	}
@@ -39,8 +39,8 @@ func GetRouter(opts ...GetRouterOption) (chi.Router, error) {
 	}
 
 	if config.accessPolicyFactory == nil {
-		config.accessPolicyFactory = func(ctx context.Context) *AccessPolicy {
-			return NewAccessPolicy()
+		config.accessPolicyFactory = func(ctx context.Context) *PokemonFilterPolicy {
+			return NewPokemonFilterPolicy()
 		}
 	}
 

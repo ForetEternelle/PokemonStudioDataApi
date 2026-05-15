@@ -1,0 +1,9 @@
+type: object
+description: A list of content
+properties:
+  content:
+    type: array
+    description: Contains the items of the list
+  hasMore:
+    description: True if there are elements left to fetch
+    type: boolean

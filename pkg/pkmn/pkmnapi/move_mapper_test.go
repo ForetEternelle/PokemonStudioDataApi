@@ -22,8 +22,8 @@ func TestMoveToDetail(t *testing.T) {
 
 	typeMapper := NewTypeMapper()
 	moveMapper := NewMoveMapper(typeMapper)
-	policy := NewAccessPolicy()
-	moveDetail := moveMapper.ToMoveDetail(*move, lang, policy)
+	policy := NewPokemonFilterPolicy()
+	moveDetail := moveMapper.ToMoveDetail(*move, lang, *policy)
 
 	if moveDetail.Name != move.Name(lang) {
 		t.Error("Mapper should map name, expected", move.Name(lang), ", has", moveDetail.Name)
@@ -75,8 +75,8 @@ func TestMoveToPartial(t *testing.T) {
 
 	typeMapper := NewTypeMapper()
 	moveMapper := NewMoveMapper(typeMapper)
-	policy := NewAccessPolicy()
-	movePartial := moveMapper.ToMovePartial(*move, lang, policy)
+	policy := NewPokemonFilterPolicy()
+	movePartial := moveMapper.ToMovePartial(*move, lang, *policy)
 
 	if movePartial.Name != move.Name(lang) {
 		t.Error("Mapper should map name, expected", move.Name(lang), ", has", movePartial.Name)

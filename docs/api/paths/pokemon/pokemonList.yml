@@ -1,22 +1,25 @@
 get:
   tags:
     - Pokemon
-  summary: Get a page of pokemon
-  description: This endpoint returns a page of pokemon, the pagination is based on the page and page size parameters.
+  summary: Get a list of pokemon
+  description: This endpoint returns a list of pokemon.
   operationId: getPokemon
   parameters:
-    - $ref: "../../parameters/page.yml"
-    - $ref: "../../parameters/pageSize.yml"
     - $ref: "../../parameters/lang.yml"
+    - $ref: "../../parameters/scroll.yml#/size"
+    - $ref: "../../parameters/pokemon-filter.yml#/lastId"
+    - $ref: "../../parameters/pokemon-filter.yml#/lastForm"
+    - $ref: "../../parameters/pokemon-filter.yml#/mainFormsOnly"
+    - $ref: "../../parameters/pokemon-filter.yml#/query"
   responses:
     "200":
       description: OK
       content:
         application/json:
           schema:
-            title: "PokemonPage"
+            title: "PokemonScroll"
             allOf:
-              - $ref: "../../schemas/Page.yml"
+              - $ref: "../../schemas/Scroll.yml"
               - type: object
                 properties:
                   content:

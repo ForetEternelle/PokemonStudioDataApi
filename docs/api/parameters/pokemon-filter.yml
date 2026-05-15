@@ -1,0 +1,39 @@
+query:
+  in: query
+  name: query
+  required: false
+  schema:
+    type: string
+    nullable: true
+  description: Search query to filter pokemon by name, number or symbol
+
+lastId:
+  in: query
+  name: lastId
+  required: false
+  schema:
+    type: integer
+    nullable: true
+    minimum: 1
+    format: int32
+  description: Start de search after this id. Used for scrolling.
+
+lastForm:
+  in: query
+  name: lastForm
+  required: false
+  schema:
+    type: integer
+    minimum: 0
+    nullable: true
+    format: int32
+  description: Start de search after this form. Used for scrolling.
+
+mainFormsOnly:
+  in: query
+  name: mainFormsOnly
+  required: false
+  schema:
+    type: boolean
+    default: true
+  description: Whether to only include main forms of pokemon (e.g. excluding mega evolutions, regional forms, etc.)

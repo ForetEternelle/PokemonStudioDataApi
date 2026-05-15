@@ -6,7 +6,7 @@ type MapFunc[T any, R any] func(T) R
 type MapFunc2[K, V, X, Y any] func(K, V) (X, Y)
 
 // Map applies a mapping function to each item in a Seq and returns a Seq of the results.
-func Map[T any, R any](fn MapFunc[T, R], it iter.Seq[T]) iter.Seq[R] {
+func Map[T any, R any](it iter.Seq[T], fn MapFunc[T, R]) iter.Seq[R] {
 	return func(yield func(R) bool) {
 		for item := range it {
 			if !yield(fn(item)) {
@@ -17,7 +17,7 @@ func Map[T any, R any](fn MapFunc[T, R], it iter.Seq[T]) iter.Seq[R] {
 }
 
 // Map2 applies a mapping function to each key-value pair in a Seq2 and returns a Seq2 of the results.
-func Map2[K, V, X, Y any](fn MapFunc2[K, V, X, Y], it iter.Seq2[K, V]) iter.Seq2[X, Y] {
+func Map2[K, V, X, Y any](it iter.Seq2[K, V], fn MapFunc2[K, V, X, Y]) iter.Seq2[X, Y] {
 	return func(yield func(X, Y) bool) {
 		for k, value := range it {
 			if !yield(fn(k, value)) {

@@ -116,7 +116,7 @@ Services are injected with dependencies (store, mappers, factories) for testabil
 
 ### Mapper Pattern
 
-Mappers transform domain entities to API response models. Located in `pkg/studio/studioapi/`:
+Mappers transform domain entities to API response models. Located in `pkg/studio/pkmnapi/`:
 
 ```go
 func (m PokemonMapper) PokemonToThumbnail(p studio.Pokemon, lang string, policy *AccessPolicy) *PokemonThumbnail

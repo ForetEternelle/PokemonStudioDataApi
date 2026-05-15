@@ -8,8 +8,8 @@
   "additionalProperties": {
     "onlyInterfaces": true,
     "outputAsLibrary": true,
-    "packageName": "studioapi",
+    "packageName": "pkmnapi",
     "router": "chi",
-    "sourceFolder": "pkg/studio/studioapi"
+    "sourceFolder": "pkg/pkmn/pkmnapi"
   }
 }

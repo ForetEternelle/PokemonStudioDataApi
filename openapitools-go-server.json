@@ -8,8 +8,8 @@
   "additionalProperties": {
     "onlyInterfaces": true,
     "outputAsLibrary": true,
-    "packageName": "pkmnapi",
+    "packageName": "pkmnapispec",
     "router": "chi",
-    "sourceFolder": "pkg/pkmn/pkmnapi"
+    "sourceFolder": "pkg/pkmn/pkmnapispec"
   }
 }

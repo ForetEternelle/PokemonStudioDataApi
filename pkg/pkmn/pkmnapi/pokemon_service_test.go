@@ -6,6 +6,7 @@ import (
 
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/pagination"
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/pkmn"
+	. "github.com/ForetEternelle/PokemonStudioDataApi/pkg/pkmn/pkmnapispec"
 )
 
 func setupPokemonService() (*pkmn.Store, PokemonAPIServicer) {

@@ -8,7 +8,7 @@
  * API version: 0.0.1
  */
 
-package pkmnapi
+package pkmnapispec
 
 import (
 	"net/http"
@@ -17,25 +17,25 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-// MovesAPIController binds http requests to an api service and writes the service results to the http response
-type MovesAPIController struct {
-	service MovesAPIServicer
+// TypesAPIController binds http requests to an api service and writes the service results to the http response
+type TypesAPIController struct {
+	service TypesAPIServicer
 	errorHandler ErrorHandler
 }
 
-// MovesAPIOption for how the controller is set up.
-type MovesAPIOption func(*MovesAPIController)
+// TypesAPIOption for how the controller is set up.
+type TypesAPIOption func(*TypesAPIController)
 
-// WithMovesAPIErrorHandler inject ErrorHandler into controller
-func WithMovesAPIErrorHandler(h ErrorHandler) MovesAPIOption {
-	return func(c *MovesAPIController) {
+// WithTypesAPIErrorHandler inject ErrorHandler into controller
+func WithTypesAPIErrorHandler(h ErrorHandler) TypesAPIOption {
+	return func(c *TypesAPIController) {
 		c.errorHandler = h
 	}
 }
 
-// NewMovesAPIController creates a default api controller
-func NewMovesAPIController(s MovesAPIServicer, opts ...MovesAPIOption) *MovesAPIController {
-	controller := &MovesAPIController{
+// NewTypesAPIController creates a default api controller
+func NewTypesAPIController(s TypesAPIServicer, opts ...TypesAPIOption) *TypesAPIController {
+	controller := &TypesAPIController{
 		service:      s,
 		errorHandler: DefaultErrorHandler,
 	}
@@ -47,24 +47,24 @@ func NewMovesAPIController(s MovesAPIServicer, opts ...MovesAPIOption) *MovesAPI
 	return controller
 }
 
-// Routes returns all the api routes for the MovesAPIController
-func (c *MovesAPIController) Routes() Routes {
+// Routes returns all the api routes for the TypesAPIController
+func (c *TypesAPIController) Routes() Routes {
 	return Routes{
-		"GetMove": Route{
+		"GetTypeDetails": Route{
 			strings.ToUpper("Get"),
-			"/moves/{symbol}",
-			c.GetMove,
+			"/types/{symbol}",
+			c.GetTypeDetails,
 		},
-		"GetMoveDetails": Route{
+		"GetTypes": Route{
 			strings.ToUpper("Get"),
-			"/moves/detail/{symbol}",
-			c.GetMoveDetails,
+			"/types",
+			c.GetTypes,
 		},
 	}
 }
 
-// GetMove - Get a move with it most important details
-func (c *MovesAPIController) GetMove(w http.ResponseWriter, r *http.Request) {
+// GetTypeDetails - Get a type details
+func (c *TypesAPIController) GetTypeDetails(w http.ResponseWriter, r *http.Request) {
 	query, err := parseQuery(r.URL.RawQuery)
 	if err != nil {
 		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
@@ -84,7 +84,7 @@ func (c *MovesAPIController) GetMove(w http.ResponseWriter, r *http.Request) {
 		param := "en"
 		langParam = param
 	}
-	result, err := c.service.GetMove(r.Context(), symbolParam, langParam)
+	result, err := c.service.GetTypeDetails(r.Context(), symbolParam, langParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)
@@ -94,16 +94,11 @@ func (c *MovesAPIController) GetMove(w http.ResponseWriter, r *http.Request) {
 	_ = EncodeJSONResponse(result.Body, &result.Code, w)
 }
 
-// GetMoveDetails - Get a move details
-func (c *MovesAPIController) GetMoveDetails(w http.ResponseWriter, r *http.Request) {
+// GetTypes - Get all types
+func (c *TypesAPIController) GetTypes(w http.ResponseWriter, r *http.Request) {
 	query, err := parseQuery(r.URL.RawQuery)
 	if err != nil {
 		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
-		return
-	}
-	symbolParam := chi.URLParam(r, "symbol")
-	if symbolParam == "" {
-		c.errorHandler(w, r, &RequiredError{"symbol"}, nil)
 		return
 	}
 	var langParam string
@@ -115,7 +110,7 @@ func (c *MovesAPIController) GetMoveDetails(w http.ResponseWriter, r *http.Reque
 		param := "en"
 		langParam = param
 	}
-	result, err := c.service.GetMoveDetails(r.Context(), symbolParam, langParam)
+	result, err := c.service.GetTypes(r.Context(), langParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

@@ -5,6 +5,7 @@ import (
 
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/pkmn"
 	"github.com/go-chi/chi/v5"
+	. "github.com/ForetEternelle/PokemonStudioDataApi/pkg/pkmn/pkmnapispec"
 )
 
 type GetRouterOption func(*GetRouterConfig)

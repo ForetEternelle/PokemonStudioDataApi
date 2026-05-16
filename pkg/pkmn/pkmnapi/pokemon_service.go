@@ -7,6 +7,7 @@ import (
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/iter2"
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/pagination"
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/pkmn"
+	. "github.com/ForetEternelle/PokemonStudioDataApi/pkg/pkmn/pkmnapispec"
 )
 
 type PokemonService struct {

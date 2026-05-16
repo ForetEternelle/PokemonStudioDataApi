@@ -4,6 +4,7 @@ import (
 	"log/slog"
 
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/pkmn"
+	. "github.com/ForetEternelle/PokemonStudioDataApi/pkg/pkmn/pkmnapispec"
 )
 
 type MoveMapper struct {

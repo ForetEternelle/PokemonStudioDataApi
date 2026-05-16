@@ -5,6 +5,7 @@ import (
 	"maps"
 
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/pkmn"
+	. "github.com/ForetEternelle/PokemonStudioDataApi/pkg/pkmn/pkmnapispec"
 )
 
 type TypeMapper struct {

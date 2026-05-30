@@ -25,6 +25,9 @@ type PokemonThumbnail struct {
 	// The number of the pokemon
 	Number int32 `json:"number,omitempty"`
 
+	// The form of the pokemon
+	Form int32 `json:"form,omitempty"`
+
 	// The image symbol of the pokemon
 	Image string `json:"image,omitempty"`
 

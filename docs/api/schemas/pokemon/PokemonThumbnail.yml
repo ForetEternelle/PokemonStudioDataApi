@@ -13,6 +13,10 @@ properties:
     type: integer
     description: The number of the pokemon
     example: 25
+  form:
+    type: integer
+    description: The form of the pokemon
+    example: 0
   image:
     type: string
     description: The image symbol of the pokemon

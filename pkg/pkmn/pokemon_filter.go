@@ -20,7 +20,7 @@ func NewPokemonQueryFilter(query string, langs ...string) iter2.FilterFunc[Pokem
 		}
 
 		idStr := strconv.Itoa(int(p.ID()))
-		if strings.Contains(idStr, queryUpper) {
+		if idStr == query {
 			return true
 		}
 

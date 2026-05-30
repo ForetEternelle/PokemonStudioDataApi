@@ -1,5 +1,9 @@
 type: object
 description: An object containing detailed data of a pokemon with its main form
+required:
+  - symbol
+  - number
+  - main_form
 properties:
   symbol:
     type: string

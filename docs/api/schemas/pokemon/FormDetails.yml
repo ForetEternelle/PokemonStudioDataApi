@@ -1,5 +1,33 @@
 type: object
 description: An object containing the data of a pokemon form (ev, iv, ...)
+required:
+  - name
+  - description
+  - height
+  - weight
+  - type1
+  - baseHp
+  - baseAtk
+  - baseDfe
+  - baseSpd
+  - baseAts
+  - baseDfs
+  - evHp
+  - evAtk
+  - evDfe
+  - evSpd
+  - evAts
+  - evDfs
+  - experienceType
+  - baseExperience
+  - baseLoyalty
+  - catchRate
+  - femaleRate
+  - breedGroups
+  - hatchSteps
+  - itemHeld
+  - abilities
+  - image
 properties:
     form:
         type: integer

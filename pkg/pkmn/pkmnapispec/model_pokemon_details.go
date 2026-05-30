@@ -17,16 +17,27 @@ package pkmnapispec
 type PokemonDetails struct {
 
 	// The symbol of the pokemon
-	Symbol string `json:"symbol,omitempty"`
+	Symbol string `json:"symbol"`
 
 	// The number of the pokemon
-	Number int32 `json:"number,omitempty"`
+	Number int32 `json:"number"`
 
-	MainForm FormDetails `json:"main_form,omitempty"`
+	MainForm FormDetails `json:"main_form"`
 }
 
 // AssertPokemonDetailsRequired checks if the required fields are not zero-ed
 func AssertPokemonDetailsRequired(obj PokemonDetails) error {
+	elements := map[string]interface{}{
+		"symbol": obj.Symbol,
+		"number": obj.Number,
+		"main_form": obj.MainForm,
+	}
+	for name, el := range elements {
+		if isZero := IsZeroValue(el); isZero {
+			return &RequiredError{Field: name}
+		}
+	}
+
 	if err := AssertFormDetailsRequired(obj.MainForm); err != nil {
 		return err
 	}

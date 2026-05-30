@@ -17,28 +17,43 @@ package pkmnapispec
 type MovePartial struct {
 
 	// The symbol of the pokemon move
-	Symbol string `json:"symbol,omitempty"`
+	Symbol string `json:"symbol"`
 
 	// The translated name of the pokemon move
-	Name string `json:"name,omitempty"`
+	Name string `json:"name"`
 
-	Type *TypePartial `json:"type,omitempty"`
+	Type *TypePartial `json:"type"`
 
 	// The category of the pokemon move
-	Category string `json:"category,omitempty"`
+	Category string `json:"category"`
 
 	// The PP of the pokemon move
-	Pp int32 `json:"pp,omitempty"`
+	Pp int32 `json:"pp"`
 
 	// The power of the pokemon move
-	Power int32 `json:"power,omitempty"`
+	Power int32 `json:"power"`
 
 	// The accuracy of the pokemon move
-	Accuracy int32 `json:"accuracy,omitempty"`
+	Accuracy int32 `json:"accuracy"`
 }
 
 // AssertMovePartialRequired checks if the required fields are not zero-ed
 func AssertMovePartialRequired(obj MovePartial) error {
+	elements := map[string]interface{}{
+		"symbol": obj.Symbol,
+		"name": obj.Name,
+		"type": obj.Type,
+		"category": obj.Category,
+		"pp": obj.Pp,
+		"power": obj.Power,
+		"accuracy": obj.Accuracy,
+	}
+	for name, el := range elements {
+		if isZero := IsZeroValue(el); isZero {
+			return &RequiredError{Field: name}
+		}
+	}
+
 	if obj.Type != nil {
 		if err := AssertTypePartialRequired(*obj.Type); err != nil {
 			return err

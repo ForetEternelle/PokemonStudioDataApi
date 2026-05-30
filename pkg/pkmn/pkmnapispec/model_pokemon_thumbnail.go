@@ -17,21 +17,21 @@ package pkmnapispec
 type PokemonThumbnail struct {
 
 	// The symbol of the pokemon
-	Symbol string `json:"symbol,omitempty"`
+	Symbol string `json:"symbol"`
 
 	// The translated name of the first pokemon's form
-	Name string `json:"name,omitempty"`
+	Name string `json:"name"`
 
 	// The number of the pokemon
-	Number int32 `json:"number,omitempty"`
+	Number int32 `json:"number"`
 
 	// The form of the pokemon
-	Form int32 `json:"form,omitempty"`
+	Form int32 `json:"form"`
 
 	// The image symbol of the pokemon
-	Image string `json:"image,omitempty"`
+	Image string `json:"image"`
 
-	Type1 *TypePartial `json:"type1,omitempty"`
+	Type1 *TypePartial `json:"type1"`
 
 	Type2 *TypePartial `json:"type2,omitempty"`
 
@@ -41,6 +41,20 @@ type PokemonThumbnail struct {
 
 // AssertPokemonThumbnailRequired checks if the required fields are not zero-ed
 func AssertPokemonThumbnailRequired(obj PokemonThumbnail) error {
+	elements := map[string]interface{}{
+		"symbol": obj.Symbol,
+		"name": obj.Name,
+		"number": obj.Number,
+		"form": obj.Form,
+		"image": obj.Image,
+		"type1": obj.Type1,
+	}
+	for name, el := range elements {
+		if isZero := IsZeroValue(el); isZero {
+			return &RequiredError{Field: name}
+		}
+	}
+
 	if obj.Type1 != nil {
 		if err := AssertTypePartialRequired(*obj.Type1); err != nil {
 			return err

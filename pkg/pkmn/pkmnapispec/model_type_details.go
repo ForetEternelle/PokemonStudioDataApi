@@ -17,20 +17,32 @@ package pkmnapispec
 type TypeDetails struct {
 
 	// The translated name of the pokemon type
-	Name string `json:"name,omitempty"`
+	Name string `json:"name"`
 
 	// The symbol of the pokemon type
-	Symbol string `json:"symbol,omitempty"`
+	Symbol string `json:"symbol"`
 
 	// The color of the pokemon type
-	Color string `json:"color,omitempty"`
+	Color string `json:"color"`
 
 	// The damage inflicted by this type
-	TypeDamage map[string]float32 `json:"typeDamage,omitempty"`
+	TypeDamage map[string]float32 `json:"typeDamage"`
 }
 
 // AssertTypeDetailsRequired checks if the required fields are not zero-ed
 func AssertTypeDetailsRequired(obj TypeDetails) error {
+	elements := map[string]interface{}{
+		"name": obj.Name,
+		"symbol": obj.Symbol,
+		"color": obj.Color,
+		"typeDamage": obj.TypeDamage,
+	}
+	for name, el := range elements {
+		if isZero := IsZeroValue(el); isZero {
+			return &RequiredError{Field: name}
+		}
+	}
+
 	return nil
 }
 

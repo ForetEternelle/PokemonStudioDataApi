@@ -1,5 +1,8 @@
 MoveTargeting:
   type: object
+  required:
+    - aimedTarget
+    - contactType
   properties:
     aimedTarget:
       type: string

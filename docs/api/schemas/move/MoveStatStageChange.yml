@@ -1,5 +1,8 @@
 MoveStatStageChange:
   type: object
+  required:
+    - battleStage
+    - modificator
   properties:
     battleStage:
       type: string

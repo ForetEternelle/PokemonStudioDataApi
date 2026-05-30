@@ -1,5 +1,13 @@
 type: object
 description: An object containing partial data of a pokemon move
+required:
+  - symbol
+  - name
+  - type
+  - category
+  - pp
+  - power
+  - accuracy
 properties:
 
   symbol:

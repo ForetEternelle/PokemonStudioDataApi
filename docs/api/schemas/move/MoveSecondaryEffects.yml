@@ -1,5 +1,9 @@
 MoveSecondaryEffects:
   type: object
+  required:
+    - chance
+    - statusEffects
+    - statStageChanges
   properties:
     chance:
       type: integer

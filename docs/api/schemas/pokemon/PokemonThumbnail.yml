@@ -1,5 +1,12 @@
 type: object
 description: An object containing base information to display a pokemon
+required:
+  - symbol
+  - name
+  - number
+  - form
+  - image
+  - type1
 properties:
   symbol:
     type: string

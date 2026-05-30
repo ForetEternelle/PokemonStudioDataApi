@@ -20,77 +20,77 @@ type FormDetails struct {
 	Form *int32 `json:"form,omitempty"`
 
 	// The translated name of the form
-	Name string `json:"name,omitempty"`
+	Name string `json:"name"`
 
 	// The translated description of the form
-	Description string `json:"description,omitempty"`
+	Description string `json:"description"`
 
 	// The height
-	Height float32 `json:"height,omitempty"`
+	Height float32 `json:"height"`
 
 	// The weight
-	Weight float32 `json:"weight,omitempty"`
+	Weight float32 `json:"weight"`
 
-	Type1 *TypePartial `json:"type1,omitempty"`
+	Type1 *TypePartial `json:"type1"`
 
 	Type2 *TypePartial `json:"type2,omitempty"`
 
 	// The base HP stat
-	BaseHp int32 `json:"baseHp,omitempty"`
+	BaseHp int32 `json:"baseHp"`
 
 	// The base attack stat
-	BaseAtk int32 `json:"baseAtk,omitempty"`
+	BaseAtk int32 `json:"baseAtk"`
 
 	// The base defense stat
-	BaseDfe int32 `json:"baseDfe,omitempty"`
+	BaseDfe int32 `json:"baseDfe"`
 
 	// The base speed stat
-	BaseSpd int32 `json:"baseSpd,omitempty"`
+	BaseSpd int32 `json:"baseSpd"`
 
 	// The base special attack stat
-	BaseAts int32 `json:"baseAts,omitempty"`
+	BaseAts int32 `json:"baseAts"`
 
 	// The base special defense stat
-	BaseDfs int32 `json:"baseDfs,omitempty"`
+	BaseDfs int32 `json:"baseDfs"`
 
 	// The HP EV given
-	EvHp int32 `json:"evHp,omitempty"`
+	EvHp int32 `json:"evHp"`
 
 	// The attack EV given
-	EvAtk int32 `json:"evAtk,omitempty"`
+	EvAtk int32 `json:"evAtk"`
 
 	// The defense EV given
-	EvDfe int32 `json:"evDfe,omitempty"`
+	EvDfe int32 `json:"evDfe"`
 
 	// The speed EV given
-	EvSpd int32 `json:"evSpd,omitempty"`
+	EvSpd int32 `json:"evSpd"`
 
 	// The special attack EV given
-	EvAts int32 `json:"evAts,omitempty"`
+	EvAts int32 `json:"evAts"`
 
 	// The special defense EV given
-	EvDfs int32 `json:"evDfs,omitempty"`
+	EvDfs int32 `json:"evDfs"`
 
 	// The experience type
-	ExperienceType string `json:"experienceType,omitempty"`
+	ExperienceType string `json:"experienceType"`
 
 	// The base experience
-	BaseExperience int32 `json:"baseExperience,omitempty"`
+	BaseExperience int32 `json:"baseExperience"`
 
 	// The base loyalty
-	BaseLoyalty int32 `json:"baseLoyalty,omitempty"`
+	BaseLoyalty int32 `json:"baseLoyalty"`
 
 	// The catch rate
-	CatchRate int32 `json:"catchRate,omitempty"`
+	CatchRate int32 `json:"catchRate"`
 
 	// The female rate
-	FemaleRate float32 `json:"femaleRate,omitempty"`
+	FemaleRate float32 `json:"femaleRate"`
 
 	// The breed groups
-	BreedGroups []string `json:"breedGroups,omitempty"`
+	BreedGroups []string `json:"breedGroups"`
 
 	// The number of steps before hatching
-	HatchSteps int32 `json:"hatchSteps,omitempty"`
+	HatchSteps int32 `json:"hatchSteps"`
 
 	// The symbol of the baby form
 	BabyDbSymbol *string `json:"babyDbSymbol,omitempty"`
@@ -99,17 +99,52 @@ type FormDetails struct {
 	BabyForm *int32 `json:"babyForm,omitempty"`
 
 	// The list of items held
-	ItemHeld []string `json:"itemHeld,omitempty"`
+	ItemHeld []string `json:"itemHeld"`
 
 	// The list of abilities
-	Abilities []AbilityPartial `json:"abilities,omitempty"`
+	Abilities []AbilityPartial `json:"abilities"`
 
 	// The image symbol of the form
-	Image string `json:"image,omitempty"`
+	Image string `json:"image"`
 }
 
 // AssertFormDetailsRequired checks if the required fields are not zero-ed
 func AssertFormDetailsRequired(obj FormDetails) error {
+	elements := map[string]interface{}{
+		"name": obj.Name,
+		"description": obj.Description,
+		"height": obj.Height,
+		"weight": obj.Weight,
+		"type1": obj.Type1,
+		"baseHp": obj.BaseHp,
+		"baseAtk": obj.BaseAtk,
+		"baseDfe": obj.BaseDfe,
+		"baseSpd": obj.BaseSpd,
+		"baseAts": obj.BaseAts,
+		"baseDfs": obj.BaseDfs,
+		"evHp": obj.EvHp,
+		"evAtk": obj.EvAtk,
+		"evDfe": obj.EvDfe,
+		"evSpd": obj.EvSpd,
+		"evAts": obj.EvAts,
+		"evDfs": obj.EvDfs,
+		"experienceType": obj.ExperienceType,
+		"baseExperience": obj.BaseExperience,
+		"baseLoyalty": obj.BaseLoyalty,
+		"catchRate": obj.CatchRate,
+		"femaleRate": obj.FemaleRate,
+		"breedGroups": obj.BreedGroups,
+		"hatchSteps": obj.HatchSteps,
+		"itemHeld": obj.ItemHeld,
+		"abilities": obj.Abilities,
+		"image": obj.Image,
+	}
+	for name, el := range elements {
+		if isZero := IsZeroValue(el); isZero {
+			return &RequiredError{Field: name}
+		}
+	}
+
 	if obj.Type1 != nil {
 		if err := AssertTypePartialRequired(*obj.Type1); err != nil {
 			return err

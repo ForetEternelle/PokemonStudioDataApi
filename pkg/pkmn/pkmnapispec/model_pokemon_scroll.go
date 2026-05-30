@@ -15,14 +15,24 @@ package pkmnapispec
 
 type PokemonScroll struct {
 
-	Content []PokemonThumbnail `json:"content,omitempty"`
+	Content []PokemonThumbnail `json:"content"`
 
 	// True if there are elements left to fetch
-	HasMore bool `json:"hasMore,omitempty"`
+	HasMore bool `json:"hasMore"`
 }
 
 // AssertPokemonScrollRequired checks if the required fields are not zero-ed
 func AssertPokemonScrollRequired(obj PokemonScroll) error {
+	elements := map[string]interface{}{
+		"content": obj.Content,
+		"hasMore": obj.HasMore,
+	}
+	for name, el := range elements {
+		if isZero := IsZeroValue(el); isZero {
+			return &RequiredError{Field: name}
+		}
+	}
+
 	for _, el := range obj.Content {
 		if err := AssertPokemonThumbnailRequired(el); err != nil {
 			return err

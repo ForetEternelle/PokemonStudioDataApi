@@ -17,14 +17,24 @@ package pkmnapispec
 type Scroll struct {
 
 	// Contains the items of the list
-	Content []string `json:"content,omitempty"`
+	Content []string `json:"content"`
 
 	// True if there are elements left to fetch
-	HasMore bool `json:"hasMore,omitempty"`
+	HasMore bool `json:"hasMore"`
 }
 
 // AssertScrollRequired checks if the required fields are not zero-ed
 func AssertScrollRequired(obj Scroll) error {
+	elements := map[string]interface{}{
+		"content": obj.Content,
+		"hasMore": obj.HasMore,
+	}
+	for name, el := range elements {
+		if isZero := IsZeroValue(el); isZero {
+			return &RequiredError{Field: name}
+		}
+	}
+
 	return nil
 }
 

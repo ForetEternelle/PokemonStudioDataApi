@@ -1,5 +1,9 @@
 MoveExecution:
   type: object
+  required:
+    - method
+    - charge
+    - recharge
   properties:
     method:
       type: string

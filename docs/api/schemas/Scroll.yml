@@ -1,5 +1,8 @@
 type: object
 description: A list of content
+required:
+  - content
+  - hasMore
 properties:
   content:
     type: array

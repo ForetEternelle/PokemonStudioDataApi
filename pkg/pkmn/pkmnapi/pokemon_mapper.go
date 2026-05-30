@@ -39,6 +39,7 @@ func (m PokemonMapper) PokemonToThumbnail(p pkmn.Pokemon, formId int32, lang str
 	thumbnail := &PokemonThumbnail{
 		Symbol: p.DbSymbol(),
 		Number: p.ID(),
+		Form: formId,
 		Image:  p.DbSymbol(),
 		Type1:  m.typeMapper.ToTypePartial(form.Type1(), lang, policy),
 		Name:   form.Name(lang),

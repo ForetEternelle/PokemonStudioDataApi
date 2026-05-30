@@ -1,5 +1,9 @@
 type: object
 description: An object containing detailed data of a pokemon ability
+required:
+  - symbol
+  - name
+  - description
 properties:
   symbol:
     type: string

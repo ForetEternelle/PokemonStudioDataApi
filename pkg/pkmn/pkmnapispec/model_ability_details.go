@@ -17,17 +17,28 @@ package pkmnapispec
 type AbilityDetails struct {
 
 	// The symbol of the pokemon ability
-	Symbol string `json:"symbol,omitempty"`
+	Symbol string `json:"symbol"`
 
 	// The translated name of the pokemon ability
-	Name string `json:"name,omitempty"`
+	Name string `json:"name"`
 
 	// The translated description of the pokemon ability
-	Description string `json:"description,omitempty"`
+	Description string `json:"description"`
 }
 
 // AssertAbilityDetailsRequired checks if the required fields are not zero-ed
 func AssertAbilityDetailsRequired(obj AbilityDetails) error {
+	elements := map[string]interface{}{
+		"symbol": obj.Symbol,
+		"name": obj.Name,
+		"description": obj.Description,
+	}
+	for name, el := range elements {
+		if isZero := IsZeroValue(el); isZero {
+			return &RequiredError{Field: name}
+		}
+	}
+
 	return nil
 }
 

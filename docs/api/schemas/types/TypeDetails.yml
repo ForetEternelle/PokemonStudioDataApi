@@ -1,5 +1,10 @@
 type: object
 description: An object containing detailed data of a pokemon type
+required:
+  - name
+  - symbol
+  - color
+  - typeDamage
 properties:
     name:
         type: string

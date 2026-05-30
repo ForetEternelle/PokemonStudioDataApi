@@ -1,5 +1,21 @@
 type: object
 description: Full definition of a battle move
+required:
+  - name
+  - description
+  - symbol
+  - type
+  - category
+  - power
+  - accuracy
+  - pp
+  - criticalRate
+  - priority
+  - targeting
+  - execution
+  - mechanicalTags
+  - interactions
+  - secondaryEffects
 properties:
 
   name:

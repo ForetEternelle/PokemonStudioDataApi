@@ -1,5 +1,8 @@
 MoveStatusEffect:
   type: object
+  required:
+    - status
+    - luckRate
   properties:
     status:
       type: string

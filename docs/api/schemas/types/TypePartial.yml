@@ -1,6 +1,10 @@
 type: object
 description: An object containing partial data of a pokemon type
 nullable: true
+required:
+  - name
+  - symbol
+  - color
 properties:
   name:
     type: string

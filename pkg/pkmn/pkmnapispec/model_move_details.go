@@ -17,47 +17,70 @@ package pkmnapispec
 type MoveDetails struct {
 
 	// The translated name of the move
-	Name string `json:"name,omitempty"`
+	Name string `json:"name"`
 
 	// The translated description of the move
-	Description string `json:"description,omitempty"`
+	Description string `json:"description"`
 
 	// The symbol of the move
-	Symbol string `json:"symbol,omitempty"`
+	Symbol string `json:"symbol"`
 
-	Type *TypePartial `json:"type,omitempty"`
+	Type *TypePartial `json:"type"`
 
 	// The category of the move
-	Category string `json:"category,omitempty"`
+	Category string `json:"category"`
 
 	// The power of the move
-	Power int32 `json:"power,omitempty"`
+	Power int32 `json:"power"`
 
 	// The accuracy of the move
-	Accuracy int32 `json:"accuracy,omitempty"`
+	Accuracy int32 `json:"accuracy"`
 
 	// The PP of the move
-	Pp int32 `json:"pp,omitempty"`
+	Pp int32 `json:"pp"`
 
 	// The critical hit rate of the move
-	CriticalRate int32 `json:"criticalRate,omitempty"`
+	CriticalRate int32 `json:"criticalRate"`
 
 	// The priority of the move
-	Priority int32 `json:"priority,omitempty"`
+	Priority int32 `json:"priority"`
 
-	Targeting map[string]interface{} `json:"targeting,omitempty"`
+	Targeting map[string]interface{} `json:"targeting"`
 
-	Execution map[string]interface{} `json:"execution,omitempty"`
+	Execution map[string]interface{} `json:"execution"`
 
-	MechanicalTags []map[string]interface{} `json:"mechanicalTags,omitempty"`
+	MechanicalTags []map[string]interface{} `json:"mechanicalTags"`
 
-	Interactions map[string]interface{} `json:"interactions,omitempty"`
+	Interactions map[string]interface{} `json:"interactions"`
 
-	SecondaryEffects map[string]interface{} `json:"secondaryEffects,omitempty"`
+	SecondaryEffects map[string]interface{} `json:"secondaryEffects"`
 }
 
 // AssertMoveDetailsRequired checks if the required fields are not zero-ed
 func AssertMoveDetailsRequired(obj MoveDetails) error {
+	elements := map[string]interface{}{
+		"name": obj.Name,
+		"description": obj.Description,
+		"symbol": obj.Symbol,
+		"type": obj.Type,
+		"category": obj.Category,
+		"power": obj.Power,
+		"accuracy": obj.Accuracy,
+		"pp": obj.Pp,
+		"criticalRate": obj.CriticalRate,
+		"priority": obj.Priority,
+		"targeting": obj.Targeting,
+		"execution": obj.Execution,
+		"mechanicalTags": obj.MechanicalTags,
+		"interactions": obj.Interactions,
+		"secondaryEffects": obj.SecondaryEffects,
+	}
+	for name, el := range elements {
+		if isZero := IsZeroValue(el); isZero {
+			return &RequiredError{Field: name}
+		}
+	}
+
 	if obj.Type != nil {
 		if err := AssertTypePartialRequired(*obj.Type); err != nil {
 			return err

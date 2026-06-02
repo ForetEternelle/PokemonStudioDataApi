@@ -115,7 +115,7 @@ func (b *MoveBuilder) SecondaryEffects(effects MoveSecondaryEffects) *MoveBuilde
 }
 
 // Build returns a copy of the built Move.
-func ( b *MoveBuilder) Build() *Move {
+func (b *MoveBuilder) Build() *Move {
 	_copy := *b.move
 	return &_copy
 }

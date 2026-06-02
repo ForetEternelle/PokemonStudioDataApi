@@ -17,7 +17,7 @@ func TestPokemonToThumbnail(t *testing.T) {
 	pokemon := pkmn.NewPokemonBuilder().
 		ID(1).
 		DbSymbol("test").
-		Forms([]pkmn.PokemonForm{*form}).
+		Forms([]*pkmn.PokemonForm{form}).
 		Build()
 
 	typeMapper := NewTypeMapper()
@@ -58,13 +58,13 @@ func TestPokemonToDetail(t *testing.T) {
 	pokemon := pkmn.NewPokemonBuilder().
 		ID(1).
 		DbSymbol("test").
-		Forms([]pkmn.PokemonForm{*form}).
+		Forms([]*pkmn.PokemonForm{form}).
 		Build()
 
 	typeMapper := NewTypeMapper()
 	abilityMapper := NewAbilityMapper()
 	store := pkmn.NewStore()
-	store.AddType(*normalType)
+	store.AddType(pkmn.AddTypeDto{DbSymbol: "normal"})
 	pokemonMapper := NewPokemonMapper(typeMapper, abilityMapper, store)
 
 	policy := NewPokemonFilterPolicy()

@@ -227,3 +227,5 @@ type MoveSecondaryEffects struct {
 	StatusEffects    []MoveStatusEffect
 	StatStageChanges []MoveStatStageChange
 }
+
+

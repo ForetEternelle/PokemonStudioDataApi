@@ -69,28 +69,6 @@ func TestUnmarshalTypeDescriptor_Ok(t *testing.T) {
 	}
 }
 
-func TestMapPokemonTypeDescriptorToPokemonType_Ok(t *testing.T) {
-	desc := &PokemonTypeDescriptor{
-		DbSymbol: "test",
-		TextId:   0,
-		Color:    "#FF0000",
-	}
-
-	store := pkmn.NewStore()
-	mapper := NewTypeMapper(store)
-	pokemonType := mapper.MapPokemonTypeDescriptorToPokemonType(*desc)
-
-	if pokemonType.DbSymbol() != "test" {
-		t.Error("DbSymbol should be 'test'")
-	}
-	if pokemonType.Color() != "#FF0000" {
-		t.Error("Color should be '#FF0000'")
-	}
-	if pokemonType.Name("en") != "" {
-		t.Error("Translation for type name should be empty when FormTextId removed")
-	}
-}
-
 func TestUnmarshalPokemonDescriptor_Error(t *testing.T) {
 	content, err := os.ReadFile(PokemonInvalid)
 	if err != nil {

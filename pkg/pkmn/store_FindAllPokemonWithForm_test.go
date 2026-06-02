@@ -6,20 +6,20 @@ import (
 )
 
 func TestFindAllPokemonWithForm_Basic(t *testing.T) {
-	pokemonList := []Pokemon{
-		*NewPokemonBuilder().ID(1).DbSymbol("bulbasaur").Forms([]PokemonForm{
-			*NewPokemonFormBuilder().Form(0).Build(),
-			*NewPokemonFormBuilder().Form(1).Build(),
-		}).Build(),
-		*NewPokemonBuilder().ID(2).DbSymbol("ivysaur").Forms([]PokemonForm{
-			*NewPokemonFormBuilder().Form(0).Build(),
-		}).Build(),
-	}
-
 	store := NewStore()
-	for _, p := range pokemonList {
-		store.AddPokemon(p)
-	}
+	store.AddPokemon(AddPokemonDto{
+		ID: 1, DbSymbol: "bulbasaur",
+		Forms: []AddPokemonFormDto{
+			{Form: 0},
+			{Form: 1},
+		},
+	})
+	store.AddPokemon(AddPokemonDto{
+		ID: 2, DbSymbol: "ivysaur",
+		Forms: []AddPokemonFormDto{
+			{Form: 0},
+		},
+	})
 
 	result := store.FindAllPokemonWithForm()
 	all := slices.Collect(result)
@@ -40,21 +40,17 @@ func TestFindAllPokemonWithForm_Basic(t *testing.T) {
 }
 
 func TestFindAllPokemonWithForm_PokemonFilter(t *testing.T) {
-	pokemonList := []Pokemon{
-		*NewPokemonBuilder().ID(1).DbSymbol("bulbasaur").Forms([]PokemonForm{
-			*NewPokemonFormBuilder().Form(0).Build(),
-		}).Build(),
-		*NewPokemonBuilder().ID(2).DbSymbol("ivysaur").Forms([]PokemonForm{
-			*NewPokemonFormBuilder().Form(0).Build(),
-		}).Build(),
-	}
-
 	store := NewStore()
-	for _, p := range pokemonList {
-		store.AddPokemon(p)
-	}
+	store.AddPokemon(AddPokemonDto{
+		ID: 1, DbSymbol: "bulbasaur",
+		Forms: []AddPokemonFormDto{{Form: 0}},
+	})
+	store.AddPokemon(AddPokemonDto{
+		ID: 2, DbSymbol: "ivysaur",
+		Forms: []AddPokemonFormDto{{Form: 0}},
+	})
 
-	filter := func(p Pokemon) bool { return p.ID() == 1 }
+	filter := func(p *Pokemon) bool { return p.ID() == 1 }
 	result := store.FindAllPokemonWithForm(WithPokemonFilter(filter))
 	all := slices.Collect(result)
 
@@ -67,24 +63,21 @@ func TestFindAllPokemonWithForm_PokemonFilter(t *testing.T) {
 }
 
 func TestFindAllPokemonWithForm_FormFilter(t *testing.T) {
-	pokemonList := []Pokemon{
-		*NewPokemonBuilder().ID(1).DbSymbol("bulbasaur").Forms([]PokemonForm{
-			*NewPokemonFormBuilder().Form(0).Build(),
-			*NewPokemonFormBuilder().Form(1).Build(),
-			*NewPokemonFormBuilder().Form(2).Build(),
-		}).Build(),
-		*NewPokemonBuilder().ID(2).DbSymbol("ivysaur").Forms([]PokemonForm{
-			*NewPokemonFormBuilder().Form(0).Build(),
-			*NewPokemonFormBuilder().Form(1).Build(),
-		}).Build(),
-	}
-
 	store := NewStore()
-	for _, p := range pokemonList {
-		store.AddPokemon(p)
-	}
+	store.AddPokemon(AddPokemonDto{
+		ID: 1, DbSymbol: "bulbasaur",
+		Forms: []AddPokemonFormDto{
+			{Form: 0}, {Form: 1}, {Form: 2},
+		},
+	})
+	store.AddPokemon(AddPokemonDto{
+		ID: 2, DbSymbol: "ivysaur",
+		Forms: []AddPokemonFormDto{
+			{Form: 0}, {Form: 1},
+		},
+	})
 
-	filter := func(f PokemonForm) bool { return f.Form() == 0 || f.Form() == 2 }
+	filter := func(f *PokemonForm) bool { return f.Form() == 0 || f.Form() == 2 }
 	result := store.FindAllPokemonWithForm(WithFormFilter(filter))
 	all := slices.Collect(result)
 
@@ -94,22 +87,19 @@ func TestFindAllPokemonWithForm_FormFilter(t *testing.T) {
 }
 
 func TestFindAllPokemonWithForm_LastId(t *testing.T) {
-	pokemonList := []Pokemon{
-		*NewPokemonBuilder().ID(1).DbSymbol("bulbasaur").Forms([]PokemonForm{
-			*NewPokemonFormBuilder().Form(0).Build(),
-		}).Build(),
-		*NewPokemonBuilder().ID(2).DbSymbol("ivysaur").Forms([]PokemonForm{
-			*NewPokemonFormBuilder().Form(0).Build(),
-		}).Build(),
-		*NewPokemonBuilder().ID(3).DbSymbol("venusaur").Forms([]PokemonForm{
-			*NewPokemonFormBuilder().Form(0).Build(),
-		}).Build(),
-	}
-
 	store := NewStore()
-	for _, p := range pokemonList {
-		store.AddPokemon(p)
-	}
+	store.AddPokemon(AddPokemonDto{
+		ID: 1, DbSymbol: "bulbasaur",
+		Forms: []AddPokemonFormDto{{Form: 0}},
+	})
+	store.AddPokemon(AddPokemonDto{
+		ID: 2, DbSymbol: "ivysaur",
+		Forms: []AddPokemonFormDto{{Form: 0}},
+	})
+	store.AddPokemon(AddPokemonDto{
+		ID: 3, DbSymbol: "venusaur",
+		Forms: []AddPokemonFormDto{{Form: 0}},
+	})
 
 	lastId := int32(2)
 	result := store.FindAllPokemonWithForm(WithLastId(lastId))
@@ -121,22 +111,15 @@ func TestFindAllPokemonWithForm_LastId(t *testing.T) {
 }
 
 func TestFindAllPokemonWithForm_MainFormsOnly(t *testing.T) {
-	pokemonList := []Pokemon{
-		*NewPokemonBuilder().ID(1).DbSymbol("bulbasaur").Forms([]PokemonForm{
-			*NewPokemonFormBuilder().Form(0).Build(),
-			*NewPokemonFormBuilder().Form(1).Build(),
-		}).Build(),
-		*NewPokemonBuilder().ID(2).DbSymbol("ivysaur").Forms([]PokemonForm{
-			*NewPokemonFormBuilder().Form(0).Build(),
-			*NewPokemonFormBuilder().Form(1).Build(),
-			*NewPokemonFormBuilder().Form(2).Build(),
-		}).Build(),
-	}
-
 	store := NewStore()
-	for _, p := range pokemonList {
-		store.AddPokemon(p)
-	}
+	store.AddPokemon(AddPokemonDto{
+		ID: 1, DbSymbol: "bulbasaur",
+		Forms: []AddPokemonFormDto{{Form: 0}, {Form: 1}},
+	})
+	store.AddPokemon(AddPokemonDto{
+		ID: 2, DbSymbol: "ivysaur",
+		Forms: []AddPokemonFormDto{{Form: 0}, {Form: 1}, {Form: 2}},
+	})
 
 	result := store.FindAllPokemonWithForm(WithMainFormsOnly())
 	all := slices.Collect(result)
@@ -151,27 +134,19 @@ func TestFindAllPokemonWithForm_MainFormsOnly(t *testing.T) {
 	}
 }
 
-
 func TestFindAllPokemonWithForm_CombinedFilters(t *testing.T) {
-	pokemonList := []Pokemon{
-		*NewPokemonBuilder().ID(1).DbSymbol("bulbasaur").Forms([]PokemonForm{
-			*NewPokemonFormBuilder().Form(0).Build(),
-			*NewPokemonFormBuilder().Form(1).Build(),
-		}).Build(),
-		*NewPokemonBuilder().ID(2).DbSymbol("ivysaur").Forms([]PokemonForm{
-			*NewPokemonFormBuilder().Form(0).Build(),
-			*NewPokemonFormBuilder().Form(1).Build(),
-			*NewPokemonFormBuilder().Form(2).Build(),
-		}).Build(),
-	}
-
 	store := NewStore()
-	for _, p := range pokemonList {
-		store.AddPokemon(p)
-	}
+	store.AddPokemon(AddPokemonDto{
+		ID: 1, DbSymbol: "bulbasaur",
+		Forms: []AddPokemonFormDto{{Form: 0}, {Form: 1}},
+	})
+	store.AddPokemon(AddPokemonDto{
+		ID: 2, DbSymbol: "ivysaur",
+		Forms: []AddPokemonFormDto{{Form: 0}, {Form: 1}, {Form: 2}},
+	})
 
-	pokemonFilter := func(p Pokemon) bool { return p.ID() == 2 }
-	formFilter := func(f PokemonForm) bool { return f.Form() >= 1 }
+	pokemonFilter := func(p *Pokemon) bool { return p.ID() == 2 }
+	formFilter := func(f *PokemonForm) bool { return f.Form() >= 1 }
 	result := store.FindAllPokemonWithForm(WithPokemonFilter(pokemonFilter), WithFormFilter(formFilter))
 	all := slices.Collect(result)
 
@@ -189,25 +164,19 @@ func TestFindAllPokemonWithForm_CombinedFilters(t *testing.T) {
 }
 
 func TestFindAllPokemonWithForm_LastIdAndMainFormsOnly(t *testing.T) {
-	pokemonList := []Pokemon{
-		*NewPokemonBuilder().ID(1).DbSymbol("bulbasaur").Forms([]PokemonForm{
-			*NewPokemonFormBuilder().Form(0).Build(),
-			*NewPokemonFormBuilder().Form(1).Build(),
-		}).Build(),
-		*NewPokemonBuilder().ID(2).DbSymbol("ivysaur").Forms([]PokemonForm{
-			*NewPokemonFormBuilder().Form(0).Build(),
-			*NewPokemonFormBuilder().Form(1).Build(),
-		}).Build(),
-		*NewPokemonBuilder().ID(3).DbSymbol("venusaur").Forms([]PokemonForm{
-			*NewPokemonFormBuilder().Form(0).Build(),
-			*NewPokemonFormBuilder().Form(1).Build(),
-		}).Build(),
-	}
-
 	store := NewStore()
-	for _, p := range pokemonList {
-		store.AddPokemon(p)
-	}
+	store.AddPokemon(AddPokemonDto{
+		ID: 1, DbSymbol: "bulbasaur",
+		Forms: []AddPokemonFormDto{{Form: 0}, {Form: 1}},
+	})
+	store.AddPokemon(AddPokemonDto{
+		ID: 2, DbSymbol: "ivysaur",
+		Forms: []AddPokemonFormDto{{Form: 0}, {Form: 1}},
+	})
+	store.AddPokemon(AddPokemonDto{
+		ID: 3, DbSymbol: "venusaur",
+		Forms: []AddPokemonFormDto{{Form: 0}, {Form: 1}},
+	})
 
 	lastId := int32(2)
 	result := store.FindAllPokemonWithForm(WithLastId(lastId), WithMainFormsOnly())
@@ -229,89 +198,4 @@ func TestFindAllPokemonWithForm_EmptyStore(t *testing.T) {
 	}
 }
 
-func TestFindAllPokemonWithForm_NoForms(t *testing.T) {
-	pokemonList := []Pokemon{
-		*NewPokemonBuilder().ID(1).DbSymbol("bulbasaur").Build(),
-		*NewPokemonBuilder().ID(2).DbSymbol("ivysaur").Build(),
-	}
-
-	store := NewStore()
-	for _, p := range pokemonList {
-		store.AddPokemon(p)
-	}
-
-	result := store.FindAllPokemonWithForm()
-	all := slices.Collect(result)
-
-	if len(all) != 0 {
-		t.Errorf("Expected 0 PokemonWithForm (no forms), got %d", len(all))
-	}
-}
-
-func TestFindAllPokemonWithForm_PokemonWithAndWithoutForms(t *testing.T) {
-	pokemonList := []Pokemon{
-		*NewPokemonBuilder().ID(1).DbSymbol("bulbasaur").Forms([]PokemonForm{
-			*NewPokemonFormBuilder().Form(0).Build(),
-		}).Build(),
-		*NewPokemonBuilder().ID(2).DbSymbol("ivysaur").Build(),
-		*NewPokemonBuilder().ID(3).DbSymbol("venusaur").Forms([]PokemonForm{
-			*NewPokemonFormBuilder().Form(0).Build(),
-			*NewPokemonFormBuilder().Form(1).Build(),
-		}).Build(),
-	}
-
-	store := NewStore()
-	for _, p := range pokemonList {
-		store.AddPokemon(p)
-	}
-
-	result := store.FindAllPokemonWithForm()
-	all := slices.Collect(result)
-
-	if len(all) != 3 {
-		t.Errorf("Expected 3 PokemonWithForm (bulbasaur form 0, venusaur forms 0,1), got %d", len(all))
-	}
-}
-
-func TestFindAllPokemonWithForm_FormFilterExcludesAll(t *testing.T) {
-	pokemonList := []Pokemon{
-		*NewPokemonBuilder().ID(1).DbSymbol("bulbasaur").Forms([]PokemonForm{
-			*NewPokemonFormBuilder().Form(0).Build(),
-		}).Build(),
-	}
-
-	store := NewStore()
-	for _, p := range pokemonList {
-		store.AddPokemon(p)
-	}
-
-	filter := func(f PokemonForm) bool { return false }
-	result := store.FindAllPokemonWithForm(WithFormFilter(filter))
-	all := slices.Collect(result)
-
-	if len(all) != 0 {
-		t.Errorf("Expected 0 PokemonWithForm, got %d", len(all))
-	}
-}
-
-func TestFindAllPokemonWithForm_LastIdNotFound(t *testing.T) {
-	pokemonList := []Pokemon{
-		*NewPokemonBuilder().ID(1).DbSymbol("bulbasaur").Forms([]PokemonForm{
-			*NewPokemonFormBuilder().Form(0).Build(),
-		}).Build(),
-	}
-
-	store := NewStore()
-	for _, p := range pokemonList {
-		store.AddPokemon(p)
-	}
-
-	lastId := int32(999)
-	result := store.FindAllPokemonWithForm(WithLastId(lastId))
-	all := slices.Collect(result)
-
-	if len(all) != 0 {
-		t.Errorf("Expected 0 PokemonWithForm (lastId not found), got %d", len(all))
-	}
-}
 

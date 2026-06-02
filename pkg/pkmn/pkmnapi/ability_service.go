@@ -30,8 +30,8 @@ func NewAbilityService(
 func (s AbilityService) GetAbilities(requestCtx context.Context, lang string) (ImplResponse, error) {
 	policy := s.accessPolicyFactory(requestCtx)
 	abilitiesIter := s.store.FindAllAbilities(policy.AbilityFilter)
-	mappedIter := iter2.Map(abilitiesIter, func(a pkmn.Ability) AbilityPartial {
-		return s.abilityMapper.ToAbilityPartial(a, lang)
+	mappedIter := iter2.Map(abilitiesIter, func(a *pkmn.Ability) AbilityPartial {
+		return s.abilityMapper.ToAbilityPartial(*a, lang)
 	})
 	return ImplResponse{Code: 200, Body: slices.Collect(mappedIter)}, nil
 }

@@ -6,40 +6,40 @@ import (
 )
 
 type PokemonFilterPolicy struct {
-	PokemonFilter iter2.FilterFunc[pkmn.Pokemon]
-	FormFilter    iter2.FilterFunc[pkmn.PokemonForm]
-	TypeFilter    iter2.FilterFunc[pkmn.PokemonType]
-	AbilityFilter iter2.FilterFunc[pkmn.Ability]
-	MoveFilter    iter2.FilterFunc[pkmn.Move]
+	PokemonFilter iter2.FilterFunc[*pkmn.Pokemon]
+	FormFilter    iter2.FilterFunc[*pkmn.PokemonForm]
+	TypeFilter    iter2.FilterFunc[*pkmn.PokemonType]
+	AbilityFilter iter2.FilterFunc[*pkmn.Ability]
+	MoveFilter    iter2.FilterFunc[*pkmn.Move]
 }
 
 type PokemonFilterPolicyOption func(*PokemonFilterPolicy)
 
-var WithPokemonFilter = func(filter iter2.FilterFunc[pkmn.Pokemon]) PokemonFilterPolicyOption {
+var WithPokemonFilter = func(filter iter2.FilterFunc[*pkmn.Pokemon]) PokemonFilterPolicyOption {
 	return func(p *PokemonFilterPolicy) {
 		p.PokemonFilter = filter
 	}
 }
 
-var WithFormFilter = func(filters ...iter2.FilterFunc[pkmn.PokemonForm]) PokemonFilterPolicyOption {
+var WithFormFilter = func(filters ...iter2.FilterFunc[*pkmn.PokemonForm]) PokemonFilterPolicyOption {
 	return func(p *PokemonFilterPolicy) {
 		p.FormFilter = iter2.And(filters...)
 	}
 }
 
-var WithTypeFilter = func(filters ...iter2.FilterFunc[pkmn.PokemonType]) PokemonFilterPolicyOption {
+var WithTypeFilter = func(filters ...iter2.FilterFunc[*pkmn.PokemonType]) PokemonFilterPolicyOption {
 	return func(p *PokemonFilterPolicy) {
 		p.TypeFilter = iter2.And(filters...)
 	}
 }
 
-var WithAbilityFilter = func(filters ...iter2.FilterFunc[pkmn.Ability]) PokemonFilterPolicyOption {
+var WithAbilityFilter = func(filters ...iter2.FilterFunc[*pkmn.Ability]) PokemonFilterPolicyOption {
 	return func(p *PokemonFilterPolicy) {
 		p.AbilityFilter = iter2.And(filters...)
 	}
 }
 
-var WithMoveFilter = func(filters ...iter2.FilterFunc[pkmn.Move]) PokemonFilterPolicyOption {
+var WithMoveFilter = func(filters ...iter2.FilterFunc[*pkmn.Move]) PokemonFilterPolicyOption {
 	return func(p *PokemonFilterPolicy) {
 		p.MoveFilter = iter2.And(filters...)
 	}
@@ -47,11 +47,11 @@ var WithMoveFilter = func(filters ...iter2.FilterFunc[pkmn.Move]) PokemonFilterP
 
 func NewPokemonFilterPolicy(opts ...PokemonFilterPolicyOption) *PokemonFilterPolicy {
 	p := &PokemonFilterPolicy{
-		PokemonFilter: iter2.True[pkmn.Pokemon],
-		FormFilter:    iter2.True[pkmn.PokemonForm],
-		TypeFilter:    iter2.True[pkmn.PokemonType],
-		AbilityFilter: iter2.True[pkmn.Ability],
-		MoveFilter:    iter2.True[pkmn.Move],
+		PokemonFilter: iter2.True[*pkmn.Pokemon],
+		FormFilter: iter2.True[*pkmn.PokemonForm],
+		TypeFilter:    iter2.True[*pkmn.PokemonType],
+		AbilityFilter: iter2.True[*pkmn.Ability],
+		MoveFilter:    iter2.True[*pkmn.Move],
 	}
 
 	for _, opt := range opts {

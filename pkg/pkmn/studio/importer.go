@@ -30,19 +30,19 @@ func Load(folder string) (*pkmn.Store, error) {
 	translationFolder := path.Join(folder, pkmn.LanguageFolder)
 	studioFolder := path.Join(folder, pkmn.StudioFolder)
 
-	typeMapper := NewTypeMapper(store)
-	abilityMapper := NewAbilityMapper(store)
-	pokemonMapper := NewPokemonMapper(store)
-	moveMapper := NewMoveMapper(store)
-
 	typeIterator, err := ImportTypes(studioFolder, translationFolder)
 	if err != nil {
 		slog.Error("Failed to load pokemon types")
 		return nil, err
 	}
 	for descriptor := range typeIterator {
-		pokemonType := typeMapper.MapPokemonTypeDescriptorToPokemonType(*descriptor)
-		store.AddType(*pokemonType)
+		store.AddType(pkmn.AddTypeDto{
+			DbSymbol: descriptor.DbSymbol,
+			Color:    descriptor.Color,
+			TextId:   descriptor.TextId,
+			Name:     descriptor.Name,
+			DamageTo: mapTypeDamages(descriptor.DamageTo),
+		})
 	}
 
 	abilityIterator, err := ImportAbility(studioFolder, translationFolder)
@@ -51,8 +51,13 @@ func Load(folder string) (*pkmn.Store, error) {
 		return nil, err
 	}
 	for descriptor := range abilityIterator {
-		ability := abilityMapper.MapAbilityDescriptorToAbility(*descriptor)
-		store.AddAbility(*ability)
+		store.AddAbility(pkmn.AddAbilityDto{
+			DbSymbol:    descriptor.DbSymbol,
+			Id:          descriptor.Id,
+			TextId:      descriptor.TextID,
+			Name:        descriptor.Name,
+			Description: descriptor.Description,
+		})
 	}
 
 	moveIterator, err := ImportMoves(studioFolder, translationFolder)
@@ -61,8 +66,25 @@ func Load(folder string) (*pkmn.Store, error) {
 		return nil, err
 	}
 	for descriptor := range moveIterator {
-		move := moveMapper.MapMoveDescriptorToMove(*descriptor)
-		store.AddMove(*move)
+		store.AddMove(pkmn.AddMoveDto{
+			Id:               descriptor.Id,
+			DbSymbol:         descriptor.DbSymbol,
+			Type:             descriptor.Type,
+			Category:         pkmn.MoveCategory(descriptor.Category),
+			Power:            descriptor.Power,
+			Accuracy:         descriptor.Accuracy,
+			PP:               descriptor.PP,
+			CriticalRate:     descriptor.MoveCriticalRate,
+			Priority:         descriptor.Priority,
+			MapUse:           descriptor.MapUse,
+			Targeting:        mapTargeting(*descriptor),
+			Execution:        mapExecution(*descriptor),
+			MechanicalTags:   mapMechanicalTags(*descriptor),
+			Interactions:     mapInteractions(*descriptor),
+			SecondaryEffects: mapSecondaryEffects(*descriptor),
+			Name:             descriptor.Name,
+			Description:      descriptor.Description,
+		})
 	}
 
 	pokemonIterator, err := ImportPokemon(studioFolder, translationFolder)
@@ -71,11 +93,262 @@ func Load(folder string) (*pkmn.Store, error) {
 		return nil, err
 	}
 	for descriptor := range pokemonIterator {
-		pokemon := pokemonMapper.MapPokemonDescriptorToPokemon(*descriptor)
-		store.AddPokemon(*pokemon)
+		forms := make([]pkmn.AddPokemonFormDto, len(descriptor.Forms))
+		for i, f := range descriptor.Forms {
+			abilities := make([]string, len(f.Abilities))
+			copy(abilities, f.Abilities)
+
+			forms[i] = pkmn.AddPokemonFormDto{
+				Form:             f.Form,
+				Type1:            f.Type1,
+				Type2:            f.Type2,
+				Height:           f.Height,
+				Weight:           f.Weight,
+				BaseHp:           f.BaseHp,
+				BaseAtk:          f.BaseAtk,
+				BaseDfe:          f.BaseDfe,
+				BaseSpd:          f.BaseSpd,
+				BaseAts:          f.BaseAts,
+				BaseDfs:          f.BaseDfs,
+				EvHp:             f.EvHp,
+				EvAtk:            f.EvAtk,
+				EvDfe:            f.EvDfe,
+				EvSpd:            f.EvSpd,
+				EvAts:            f.EvAts,
+				EvDfs:            f.EvDfs,
+				Evolutions:       mapEvolutions(f.Evolutions),
+				ExperienceType:   ExperienceTypeMap[f.ExperienceType],
+				BaseExperience:   f.BaseExperience,
+				BaseLoyalty:      f.BaseLoyalty,
+				CatchRate:        f.CatchRate,
+				FemaleRate:       f.FemaleRate,
+				BreedGroups:      mapBreedGroups(f.BreedGroups),
+				HatchSteps:       f.HatchSteps,
+				BabyDbSymbol:     f.BabyDbSymbol,
+				BabyForm:         f.BabyForm,
+				ItemHeld:         mapItemHelds(f.ItemHeld),
+				Abilities:        abilities,
+				FrontOffsetY:     f.FrontOffsetY,
+				Name:             f.Name,
+				Description:      f.Description,
+				CustomProperties: make(map[string]any),
+				Resources:        mapPokemonResources(f.Resources),
+			}
+		}
+
+		store.AddPokemon(pkmn.AddPokemonDto{
+			ID:       descriptor.ID,
+			DbSymbol: descriptor.DbSymbol,
+			Forms:    forms,
+		})
 	}
 
 	return store, nil
+}
+
+func mapTypeDamages(damages []TypeDamageDescriptor) map[string]float32 {
+	mapped := make(map[string]float32, len(damages))
+	for _, tdDesc := range damages {
+		mapped[tdDesc.DefensiveType] = tdDesc.Factor
+	}
+	return mapped
+}
+
+func mapBreedGroups(breedGroupInts []int32) []string {
+	breedGroups := make([]string, len(breedGroupInts))
+	for i, bgInt := range breedGroupInts {
+		breedGroups[i] = BreedMap[BreedGroupDescriptor(bgInt)]
+	}
+	return breedGroups
+}
+
+func mapEvolutions(evolutions []EvolutionDescriptor) []pkmn.Evolution {
+	if len(evolutions) == 0 {
+		return nil
+	}
+
+	mapped := make([]pkmn.Evolution, len(evolutions))
+	for i, evoDesc := range evolutions {
+		mapped[i] = pkmn.Evolution{
+			DbSymbol:   evoDesc.DbSymbol,
+			Form:       evoDesc.Form,
+			Conditions: mapConditions(evoDesc.Conditions),
+		}
+	}
+	return mapped
+}
+
+func mapConditions(conditions []ConditionDescriptor) []pkmn.Condition {
+	if len(conditions) == 0 {
+		return nil
+	}
+
+	mapped := make([]pkmn.Condition, len(conditions))
+	for i, condDesc := range conditions {
+		mapped[i] = pkmn.Condition{Type: condDesc.Type}
+	}
+	return mapped
+}
+
+func mapItemHelds(itemHelds []ItemHeldDescriptor) []*pkmn.ItemHeld {
+	if len(itemHelds) == 0 {
+		return nil
+	}
+
+	mapped := make([]*pkmn.ItemHeld, len(itemHelds))
+	for i, ihDesc := range itemHelds {
+		mapped[i] = &pkmn.ItemHeld{
+			DbSymbol: ihDesc.DbSymbol,
+			Chance:   ihDesc.Chance,
+		}
+	}
+	return mapped
+}
+
+func mapPokemonResources(resources PokemonResourcesDescriptor) pkmn.PokemonResources {
+	return pkmn.PokemonResources{
+		Icon:            resources.Icon,
+		IconF:           resources.IconF,
+		IconShiny:       resources.IconShiny,
+		IconShinyF:      resources.IconShinyF,
+		Front:           resources.Front,
+		FrontF:          resources.FrontF,
+		FrontShiny:      resources.FrontShiny,
+		FrontShinyF:     resources.FrontShinyF,
+		Back:            resources.Back,
+		BackF:           resources.BackF,
+		BackShiny:       resources.BackShiny,
+		BackShinyF:      resources.BackShinyF,
+		Footprint:       resources.Footprint,
+		Character:       resources.Character,
+		CharacterF:      resources.CharacterF,
+		CharacterShiny:  resources.CharacterShiny,
+		CharacterShinyF: resources.CharacterShinyF,
+		Cry:             resources.Cry,
+		HasFemale:       resources.HasFemale,
+		Egg:             resources.Egg,
+		IconEgg:         resources.IconEgg,
+	}
+}
+
+func mapTargeting(desc MoveDescriptor) pkmn.MoveTargeting {
+	targeting := pkmn.MoveTargeting{
+		AimedTarget: pkmn.AimedTarget(desc.BattleEngineAimedTarget),
+	}
+
+	if desc.IsDirect {
+		targeting.ContactType = pkmn.ContactTypeDirect
+	} else if desc.IsDistance {
+		targeting.ContactType = pkmn.ContactTypeDistant
+	} else {
+		targeting.ContactType = pkmn.ContactTypeNone
+	}
+
+	return targeting
+}
+
+func mapExecution(desc MoveDescriptor) pkmn.MoveExecution {
+	return pkmn.MoveExecution{
+		Method:   pkmn.ExecutionMethod(desc.BattleEngineMethod),
+		Charge:   desc.IsCharge,
+		Recharge: desc.IsRecharge,
+	}
+}
+
+func mapMechanicalTags(desc MoveDescriptor) []pkmn.MoveMechanicalTag {
+	tags := make([]pkmn.MoveMechanicalTag, 0)
+
+	if desc.IsAuthentic {
+		tags = append(tags, pkmn.MechanicalTagAuthentic)
+	}
+	if desc.IsBallistics {
+		tags = append(tags, pkmn.MechanicalTagBallistic)
+	}
+	if desc.IsBite {
+		tags = append(tags, pkmn.MechanicalTagBite)
+	}
+	if desc.IsDance {
+		tags = append(tags, pkmn.MechanicalTagDance)
+	}
+	if desc.IsPunch {
+		tags = append(tags, pkmn.MechanicalTagPunch)
+	}
+	if desc.IsSlicingAttack {
+		tags = append(tags, pkmn.MechanicalTagSlice)
+	}
+	if desc.IsSoundAttack {
+		tags = append(tags, pkmn.MechanicalTagSound)
+	}
+	if desc.IsWind {
+		tags = append(tags, pkmn.MechanicalTagWind)
+	}
+	if desc.IsPulse {
+		tags = append(tags, pkmn.MechanicalTagPulse)
+	}
+	if desc.IsPowder {
+		tags = append(tags, pkmn.MechanicalTagPowder)
+	}
+	if desc.IsMental {
+		tags = append(tags, pkmn.MechanicalTagMental)
+	}
+
+	return tags
+}
+
+func mapInteractions(desc MoveDescriptor) []pkmn.MoveInteraction {
+	interactions := make([]pkmn.MoveInteraction, 0)
+
+	if desc.IsBlocable {
+		interactions = append(interactions, pkmn.InteractionBlocable)
+	}
+	if desc.IsMirrorMove {
+		interactions = append(interactions, pkmn.InteractionMirrorMove)
+	}
+	if desc.IsSnatchable {
+		interactions = append(interactions, pkmn.InteractionSnatchable)
+	}
+	if desc.IsMagicCoatAffected {
+		interactions = append(interactions, pkmn.InteractionMagicCoatAffected)
+	}
+	if desc.IsKingRockUtility {
+		interactions = append(interactions, pkmn.InteractionKingRockUtility)
+	}
+	if desc.IsGravity {
+		interactions = append(interactions, pkmn.InteractionAffectedByGravity)
+	}
+	if desc.IsNonSkyBattle {
+		interactions = append(interactions, pkmn.InteractionNonSkyBattle)
+	}
+
+	return interactions
+}
+
+func mapSecondaryEffects(desc MoveDescriptor) pkmn.MoveSecondaryEffects {
+	effects := pkmn.MoveSecondaryEffects{
+		Chance: desc.EffectChance,
+	}
+
+	if len(desc.MoveStatus) > 0 {
+		effects.StatusEffects = make([]pkmn.MoveStatusEffect, len(desc.MoveStatus))
+		for i, status := range desc.MoveStatus {
+			effects.StatusEffects[i] = pkmn.MoveStatusEffect{
+				Status:   status.Status,
+				LuckRate: status.LuckRate,
+			}
+		}
+	}
+
+	if len(desc.BattleStageMod) > 0 {
+		effects.StatStageChanges = make([]pkmn.MoveStatStageChange, len(desc.BattleStageMod))
+		for i, stageMod := range desc.BattleStageMod {
+			effects.StatStageChanges[i] = pkmn.MoveStatStageChange{
+				BattleStage: pkmn.BattleStage(stageMod.BattleStage),
+				Modificator: stageMod.Modificator,
+			}
+		}
+	}
+
+	return effects
 }
 
 func ImportAbility(studioFolder, translationFolder string) (iter.Seq[*AbilityDescriptor], error) {

@@ -9,13 +9,13 @@ import (
 )
 
 type PokemonWithForm struct {
-	Pokemon Pokemon
+	Pokemon *Pokemon
 	FormId  int32
 }
 
 type findAllWithFormOptions struct {
-	PokemonFilter iter2.FilterFunc[Pokemon]
-	FormFilter    iter2.FilterFunc[PokemonForm]
+	PokemonFilter iter2.FilterFunc[*Pokemon]
+	FormFilter    iter2.FilterFunc[*PokemonForm]
 	LastId        *int32
 	LastForm      *int32
 	MainFormOnly  bool
@@ -24,8 +24,8 @@ type FindAllPokemonWithFormOption func(*findAllWithFormOptions)
 
 func newFindAllWithFormOptions(opts ...FindAllPokemonWithFormOption) *findAllWithFormOptions {
 	res := &findAllWithFormOptions{
-		PokemonFilter: iter2.True[Pokemon],
-		FormFilter:    iter2.True[PokemonForm],
+		PokemonFilter: iter2.True[*Pokemon],
+		FormFilter:    iter2.True[*PokemonForm],
 		MainFormOnly:  false,
 	}
 
@@ -35,13 +35,13 @@ func newFindAllWithFormOptions(opts ...FindAllPokemonWithFormOption) *findAllWit
 	return res
 }
 
-var WithPokemonFilter = func(filter iter2.FilterFunc[Pokemon]) func(*findAllWithFormOptions) {
+var WithPokemonFilter = func(filter iter2.FilterFunc[*Pokemon]) func(*findAllWithFormOptions) {
 	return func(opts *findAllWithFormOptions) {
 		opts.PokemonFilter = filter
 	}
 }
 
-var WithFormFilter = func(filter iter2.FilterFunc[PokemonForm]) func(*findAllWithFormOptions) {
+var WithFormFilter = func(filter iter2.FilterFunc[*PokemonForm]) func(*findAllWithFormOptions) {
 	return func(opts *findAllWithFormOptions) {
 		opts.FormFilter = filter
 	}
@@ -71,7 +71,7 @@ func (s *Store) FindAllPokemonWithForm(opts ...FindAllPokemonWithFormOption) ite
 	startAt := 0
 	if options.LastId != nil {
 		var ok bool
-		startAt, ok = slices.BinarySearchFunc(s.pokemonList, *options.LastId, func(p Pokemon, id int32) int {
+		startAt, ok = slices.BinarySearchFunc(s.pokemonList, *options.LastId, func(p *Pokemon, id int32) int {
 			return int(p.ID()) - int(id)
 		})
 		if ok {
@@ -80,11 +80,11 @@ func (s *Store) FindAllPokemonWithForm(opts ...FindAllPokemonWithFormOption) ite
 		}
 	}
 
-	it := slices.Values(s.pokemonList[startAt:])
-	it = iter2.Filter(it, options.PokemonFilter)
-
 	return func(yield func(PokemonWithForm) bool) {
-		for pokemon := range it {
+		for _, pokemon := range s.pokemonList[startAt:] {
+			if !options.PokemonFilter(pokemon) {
+				continue
+			}
 
 			if options.MainFormOnly {
 				if !yield(PokemonWithForm{

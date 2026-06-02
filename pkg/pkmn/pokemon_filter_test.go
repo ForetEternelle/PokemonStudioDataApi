@@ -6,8 +6,8 @@ import (
 
 func TestNewPokemonQueryFilter(t *testing.T) {
 	pwf := PokemonWithForm{
-		Pokemon: *NewPokemonBuilder().ID(25).DbSymbol("pikachu").Forms([]PokemonForm{
-			*NewPokemonFormBuilder().Form(0).Name(Translation{"en": "Pikachu", "fr": "Pikachu", "de": "Pikachu"}).Build(),
+		Pokemon: NewPokemonBuilder().ID(25).DbSymbol("pikachu").Forms([]*PokemonForm{
+			NewPokemonFormBuilder().Form(0).Name(Translation{"en": "Pikachu", "fr": "Pikachu", "de": "Pikachu"}).Build(),
 		}).Build(),
 		FormId: 0,
 	}

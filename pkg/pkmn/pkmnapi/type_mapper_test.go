@@ -12,9 +12,7 @@ func TestToTypeDetail(t *testing.T) {
 		DbSymbol("testDbSymbol").
 		Color("testColor").
 		Name(pkmn.Translation{lang: "testName"}).
-		DamageTo(map[string]float32{
-			"defType2": 0.5,
-		}).
+		DamageTo(map[string]float32{"defType2": 0.5}).
 		Build()
 
 	typeMapper := NewTypeMapper()

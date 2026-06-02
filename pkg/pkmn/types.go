@@ -59,3 +59,5 @@ func (t *PokemonType) DamageToTypes(type1, type2 string) float32 {
 	}
 	return res
 }
+
+

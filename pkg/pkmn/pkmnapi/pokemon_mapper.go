@@ -61,7 +61,7 @@ func (m PokemonMapper) PokemonToDetail(p pkmn.Pokemon, lang string, policy Pokem
 	formFilter := iter2.And(policy.FormFilter)
 	for form := range p.Forms() {
 		if formFilter(form) {
-			mainForm = form
+			mainForm = *form
 			hasForm = true
 			break
 		}
@@ -84,8 +84,8 @@ func (m PokemonMapper) FormToPokemonFormDetails(f pkmn.PokemonForm, lang string,
 	abilityIt := f.Abilities()
 	abilityIt = iter2.Filter(abilityIt, policy.AbilityFilter)
 
-	abilityPartialIt := iter2.Map(abilityIt, func(a pkmn.Ability) AbilityPartial {
-		return m.abilityMapper.ToAbilityPartial(a, lang)
+	abilityPartialIt := iter2.Map(abilityIt, func(a *pkmn.Ability) AbilityPartial {
+		return m.abilityMapper.ToAbilityPartial(*a, lang)
 	})
 
 	partialType1 := m.typeMapper.ToTypePartial(f.Type1(), lang, policy)

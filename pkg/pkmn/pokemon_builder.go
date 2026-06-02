@@ -27,13 +27,13 @@ func (b *PokemonBuilder) DbSymbol(dbSymbol string) *PokemonBuilder {
 }
 
 // Forms sets the forms of the Pokemon.
-func (b *PokemonBuilder) Forms(forms []PokemonForm) *PokemonBuilder {
+func (b *PokemonBuilder) Forms(forms []*PokemonForm) *PokemonBuilder {
 	copy := slices.Clone(forms)
-	slices.SortFunc(copy, func(a, b PokemonForm) int {
+	slices.SortFunc(copy, func(a, b *PokemonForm) int {
 		return int(a.form - b.form)
 	})
 	b.pokemon.forms = copy
-	
+
 	return b
 }
 

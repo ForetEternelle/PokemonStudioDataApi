@@ -33,3 +33,5 @@ func (a Ability) Name(lang string) string {
 func (a Ability) Description(lang string) string {
 	return a.description[lang]
 }
+
+

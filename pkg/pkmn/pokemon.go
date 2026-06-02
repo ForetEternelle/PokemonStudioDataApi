@@ -40,7 +40,7 @@ type ExperienceType string
 type Pokemon struct {
 	id               int32
 	dbSymbol         string
-	forms            []PokemonForm
+	forms            []*PokemonForm
 	customProperties map[string]any
 }
 
@@ -55,8 +55,8 @@ func (p *Pokemon) DbSymbol() string {
 }
 
 // Forms returns an iterator over all forms of the Pokemon.
-func (p *Pokemon) Forms() iter.Seq[PokemonForm] {
-	return func(yield func(PokemonForm) bool) {
+func (p *Pokemon) Forms() iter.Seq[*PokemonForm] {
+	return func(yield func(*PokemonForm) bool) {
 		for _, f := range p.forms {
 			if !yield(f) {
 				return
@@ -66,13 +66,13 @@ func (p *Pokemon) Forms() iter.Seq[PokemonForm] {
 }
 
 // Form returns a specific form of the Pokemon by its form number.
-func (p *Pokemon) Form(form int32) (PokemonForm, bool) {
+func (p *Pokemon) Form(form int32) (*PokemonForm, bool) {
 	for _, f := range p.forms {
 		if f.form == form {
 			return f, true
 		}
 	}
-	return PokemonForm{}, false
+	return nil, false
 }
 
 // CustomProperties returns the custom properties of the Pokemon.
@@ -319,10 +319,10 @@ func (f *PokemonForm) Item(i int) (*ItemHeld, bool) {
 }
 
 // Abilities returns an iterator over the abilities of the PokemonForm.
-func (f *PokemonForm) Abilities() iter.Seq[Ability] {
-	return func(yield func(Ability) bool) {
+func (f *PokemonForm) Abilities() iter.Seq[*Ability] {
+	return func(yield func(*Ability) bool) {
 		for _, a := range f.abilities {
-			if !yield(*a) {
+			if !yield(a) {
 				return
 			}
 		}
@@ -330,11 +330,11 @@ func (f *PokemonForm) Abilities() iter.Seq[Ability] {
 }
 
 // Ability returns a specific ability by index.
-func (f *PokemonForm) Ability(i int) (Ability, bool) {
+func (f *PokemonForm) Ability(i int) (*Ability, bool) {
 	if i < 0 || i >= len(f.abilities) {
-		return Ability{}, false
+		return nil, false
 	}
-	return *f.abilities[i], true
+	return f.abilities[i], true
 }
 
 // AbilitySymbols returns an iterator over the ability symbols of the PokemonForm.
@@ -441,4 +441,6 @@ func MinStat(base int32) int32 {
 	res := 0.9 * float64(base*2+5)
 	return int32(res)
 }
+
+
 

@@ -81,7 +81,7 @@ func (s PokemonService) GetPokemon(requestCtx context.Context, lang string, size
 	}
 
 	thumbnailsIt := iter2.Map(pwfIt, func(pwf pkmn.PokemonWithForm) *PokemonThumbnail {
-		return s.pokemonMapper.PokemonToThumbnail(pwf.Pokemon, pwf.FormId, lang, *policy)
+		return s.pokemonMapper.PokemonToThumbnail(*pwf.Pokemon, pwf.FormId, lang, *policy)
 	})
 
 	return ImplResponse{Code: 200, Body: scroll.Of(thumbnailsIt, int(size))}, nil
@@ -96,8 +96,8 @@ func (s PokemonService) GetFormsByPokemon(requestCtx context.Context, symbol str
 	}
 
 	formsIter := poke.Forms()
-	formPartialsIter := iter2.Map(formsIter, func(form pkmn.PokemonForm) *FormPartial {
-		return s.pokemonMapper.FormToPokemonFormPartial(form, lang, *policy)
+	formPartialsIter := iter2.Map(formsIter, func(form *pkmn.PokemonForm) *FormPartial {
+		return s.pokemonMapper.FormToPokemonFormPartial(*form, lang, *policy)
 	})
 
 	return ImplResponse{Code: 200, Body: slices.Collect(formPartialsIter)}, nil
@@ -116,5 +116,5 @@ func (s PokemonService) GetPokemonForm(requestCtx context.Context, symbol string
 		return ImplResponse{Code: 404, Body: nil}, nil
 	}
 
-	return ImplResponse{Code: 200, Body: s.pokemonMapper.FormToPokemonFormDetails(pkmnForm, lang, *policy)}, nil
+	return ImplResponse{Code: 200, Body: s.pokemonMapper.FormToPokemonFormDetails(*pkmnForm, lang, *policy)}, nil
 }

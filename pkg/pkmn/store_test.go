@@ -8,12 +8,8 @@ import (
 const DataFolder = "../../../test/test_resources/valid-data"
 
 func TestFindTypeBySymbol(t *testing.T) {
-	types := []PokemonType{*NewTypeBuilder().DbSymbol("test").Build()}
 	store := NewStore()
-
-	for _, pokemonType := range types {
-		store.AddType(pokemonType)
-	}
+	store.AddType(AddTypeDto{DbSymbol: "test"})
 
 	found := store.FindTypeBySymbol("test")
 	if found == nil {
@@ -22,16 +18,10 @@ func TestFindTypeBySymbol(t *testing.T) {
 }
 
 func TestFindAllTypes(t *testing.T) {
-	types := []PokemonType{
-		*NewTypeBuilder().DbSymbol("1").Build(),
-		*NewTypeBuilder().DbSymbol("2").Build(),
-		*NewTypeBuilder().DbSymbol("3").Build(),
-	}
 	store := NewStore()
-
-	for _, pokemonType := range types {
-		store.AddType(pokemonType)
-	}
+	store.AddType(AddTypeDto{DbSymbol: "1"})
+	store.AddType(AddTypeDto{DbSymbol: "2"})
+	store.AddType(AddTypeDto{DbSymbol: "3"})
 
 	allIter := store.FindAllTypes()
 	allSlice := slices.Collect(allIter)
@@ -41,18 +31,12 @@ func TestFindAllTypes(t *testing.T) {
 }
 
 func TestFindAllPokemon(t *testing.T) {
-	pokemonList := []Pokemon{
-		*NewPokemonBuilder().ID(1).DbSymbol("1").Build(),
-		*NewPokemonBuilder().ID(2).DbSymbol("2").Build(),
-		*NewPokemonBuilder().ID(4).DbSymbol("4").Build(),
-	}
-
 	store := NewStore()
-	for _, pokemon := range pokemonList {
-		store.AddPokemon(pokemon)
-	}
+	store.AddPokemon(AddPokemonDto{ID: 1, DbSymbol: "1"})
+	store.AddPokemon(AddPokemonDto{ID: 2, DbSymbol: "2"})
+	store.AddPokemon(AddPokemonDto{ID: 4, DbSymbol: "4"})
 
-	idLessThan3 := func(pkmn Pokemon) bool { return pkmn.ID() < 3 }
+	idLessThan3 := func(pkmn *Pokemon) bool { return pkmn.ID() < 3 }
 	result := store.FindAllPokemon(idLessThan3)
 	resultLen := len(slices.Collect(result))
 
@@ -62,16 +46,10 @@ func TestFindAllPokemon(t *testing.T) {
 }
 
 func TestFindPokemonBySymbol(t *testing.T) {
-	pokemonList := []Pokemon{
-		*NewPokemonBuilder().ID(1).DbSymbol("1").Build(),
-		*NewPokemonBuilder().ID(2).DbSymbol("2").Build(),
-		*NewPokemonBuilder().ID(4).DbSymbol("4").Build(),
-	}
 	store := NewStore()
-
-	for _, pokemon := range pokemonList {
-		store.AddPokemon(pokemon)
-	}
+	store.AddPokemon(AddPokemonDto{ID: 1, DbSymbol: "1"})
+	store.AddPokemon(AddPokemonDto{ID: 2, DbSymbol: "2"})
+	store.AddPokemon(AddPokemonDto{ID: 4, DbSymbol: "4"})
 
 	notFound := store.FindPokemonBySymbol("3")
 	if notFound != nil {
@@ -88,18 +66,12 @@ func TestFindPokemonBySymbol(t *testing.T) {
 }
 
 func TestFindAllPokemonWithFilters(t *testing.T) {
-	pokemonList := []Pokemon{
-		*NewPokemonBuilder().ID(1).DbSymbol("pikachu").Build(),
-		*NewPokemonBuilder().ID(2).DbSymbol("bulbasaur").Build(),
-		*NewPokemonBuilder().ID(3).DbSymbol("charmander").Build(),
-	}
 	store := NewStore()
+	store.AddPokemon(AddPokemonDto{ID: 1, DbSymbol: "pikachu"})
+	store.AddPokemon(AddPokemonDto{ID: 2, DbSymbol: "bulbasaur"})
+	store.AddPokemon(AddPokemonDto{ID: 3, DbSymbol: "charmander"})
 
-	for _, pokemon := range pokemonList {
-		store.AddPokemon(pokemon)
-	}
-
-	idGreaterThan1 := func(p Pokemon) bool { return p.ID() > 1 }
+	idGreaterThan1 := func(p *Pokemon) bool { return p.ID() > 1 }
 	result := store.FindAllPokemon(idGreaterThan1)
 	resultSlice := slices.Collect(result)
 
@@ -109,18 +81,14 @@ func TestFindAllPokemonWithFilters(t *testing.T) {
 }
 
 func TestFindPokemonByName_RealData(t *testing.T) {
-	form := NewPokemonFormBuilder().
-		Form(0).
-		Name(Translation{"en": "Abomasnow", "fr": "Blizzaroi"}).
-		Build()
-	pokemonList := []Pokemon{
-		*NewPokemonBuilder().ID(460).DbSymbol("abomasnow").Forms([]PokemonForm{*form}).Build(),
-	}
 	store := NewStore()
-
-	for _, pokemon := range pokemonList {
-		store.AddPokemon(pokemon)
-	}
+	store.AddPokemon(AddPokemonDto{
+		ID:       460,
+		DbSymbol: "abomasnow",
+		Forms: []AddPokemonFormDto{
+			{Form: 0, Name: Translation{"en": "Abomasnow", "fr": "Blizzaroi"}},
+		},
+	})
 
 	p1 := store.FindPokemonByName("abomasnow")
 	if p1 == nil {

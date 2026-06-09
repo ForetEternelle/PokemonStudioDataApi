@@ -5,6 +5,7 @@ query:
   schema:
     type: string
     nullable: true
+    maxLength: 30
   description: Search query to filter pokemon by name, number or symbol
 
 lastId:
@@ -47,5 +48,6 @@ types:
     default: []
     items:
       type: string
+      maxLength: 20
   description: Filter pokemon by types. Multiple types can be specified, in which case pokemon that match any of the specified types will be included in the results.
   example: ["fire", "flying"]

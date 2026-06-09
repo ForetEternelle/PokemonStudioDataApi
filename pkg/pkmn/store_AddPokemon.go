@@ -66,6 +66,10 @@ func (s *Store) AddPokemon(dto AddPokemonDto) *Pokemon {
 			}
 		}
 
+		customProperties := f.CustomProperties
+		if customProperties == nil {
+			customProperties = make(map[string]any)
+		}
 		forms[i] = &PokemonForm{
 			form:             f.Form,
 			type1:            s.FindTypeBySymbol(f.Type1),
@@ -100,16 +104,20 @@ func (s *Store) AddPokemon(dto AddPokemonDto) *Pokemon {
 			frontOffsetY:     f.FrontOffsetY,
 			name:             f.Name,
 			description:      f.Description,
-			customProperties: f.CustomProperties,
+			customProperties: customProperties,
 			resources:        f.Resources,
 		}
 	}
 
+	customProperties := dto.CustomProperties
+	if customProperties == nil {
+		customProperties = make(map[string]any)
+	}
 	pokemon := &Pokemon{
 		id:               dto.ID,
 		dbSymbol:         dto.DbSymbol,
 		forms:            forms,
-		customProperties: dto.CustomProperties,
+		customProperties: customProperties,
 	}
 
 	insertIndex, _ := slices.BinarySearchFunc(s.pokemonList, pokemon, func(a, b *Pokemon) int {

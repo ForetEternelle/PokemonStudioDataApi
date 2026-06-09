@@ -51,11 +51,16 @@ func (s PokemonService) GetPokemonDetailsByName(requestCtx context.Context, name
 	return ImplResponse{Code: 200, Body: s.pokemonMapper.PokemonToDetail(*pkmn, lang, *policy)}, nil
 }
 
-func (s PokemonService) GetPokemon(requestCtx context.Context, lang string, size int32, lastId *int32, lastForm *int32, mainFormsOnly bool, query *string) (ImplResponse, error) {
+func (s PokemonService) GetPokemon(requestCtx context.Context, lang string, size int32, lastId *int32, lastForm *int32, mainFormsOnly bool, query *string, types []string) (ImplResponse, error) {
+	slog.Debug("GetPokemon called with parameters", "lang", lang, "size", size, "lastId", lastId, "lastForm", lastForm, "mainFormsOnly", mainFormsOnly, "query", query, "types", types)
 	policy := s.pokemonAccessPolicyFactory(requestCtx)
+	formFilters := iter2.And(
+		policy.FormFilter,
+		pkmn.NewPokemonFormTypesFilter(types),
+	)
 	pokemonWithFormOptions := []pkmn.FindAllPokemonWithFormOption{
 		pkmn.WithPokemonFilter(policy.PokemonFilter),
-		pkmn.WithFormFilter(policy.FormFilter),
+		pkmn.WithFormFilter(formFilters),
 	}
 
 	if mainFormsOnly {

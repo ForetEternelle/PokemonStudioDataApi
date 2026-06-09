@@ -195,7 +195,11 @@ func (c *PokemonAPIController) GetPokemon(w http.ResponseWriter, r *http.Request
 		queryParam = &param
 	} else {
 	}
-	result, err := c.service.GetPokemon(r.Context(), langParam, sizeParam, lastIdParam, lastFormParam, mainFormsOnlyParam, queryParam)
+	var typesParam []string
+	if query.Has("types") {
+		typesParam = strings.Split(query.Get("types"), ",")
+	}
+	result, err := c.service.GetPokemon(r.Context(), langParam, sizeParam, lastIdParam, lastFormParam, mainFormsOnlyParam, queryParam, typesParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

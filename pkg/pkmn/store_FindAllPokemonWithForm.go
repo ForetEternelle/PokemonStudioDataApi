@@ -87,6 +87,11 @@ func (s *Store) FindAllPokemonWithForm(opts ...FindAllPokemonWithFormOption) ite
 			}
 
 			if options.MainFormOnly {
+				mainForm, _ := pokemon.Form(0)
+				if mainForm == nil || !options.FormFilter(mainForm) {
+					continue
+				}
+				
 				if !yield(PokemonWithForm{
 					Pokemon: pokemon,
 					FormId:  0,

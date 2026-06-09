@@ -92,7 +92,7 @@ func TestPokemonService_GetPokemonDetails_NotFound(t *testing.T) {
 func TestPokemonService_GetPokemon(t *testing.T) {
 	_, service := setupPokemonService()
 
-	resp, err := service.GetPokemon(context.Background(), "en", 20, nil, nil, true, nil )
+	resp, err := service.GetPokemon(context.Background(), "en", 20, nil, nil, true, nil, []string{})
 	if err != nil {
 		t.Error("Expected no error, got", err)
 	}

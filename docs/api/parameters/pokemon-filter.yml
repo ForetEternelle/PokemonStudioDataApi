@@ -37,3 +37,15 @@ mainFormsOnly:
     type: boolean
     default: true
   description: Whether to only include main forms of pokemon (e.g. excluding mega evolutions, regional forms, etc.)
+
+types:
+  in: query
+  name: types
+  required: false
+  schema:
+    type: array
+    default: []
+    items:
+      type: string
+  description: Filter pokemon by types. Multiple types can be specified, in which case pokemon that match any of the specified types will be included in the results.
+  example: ["fire", "flying"]

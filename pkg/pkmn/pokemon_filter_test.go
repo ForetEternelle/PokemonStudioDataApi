@@ -78,3 +78,56 @@ func TestNewPokemonQueryFilter(t *testing.T) {
 		}
 	})
 }
+
+func TestNewPokemonFormTypesFilter(t *testing.T) {
+	fire := &PokemonType{dbSymbol: "fire"}
+	water := &PokemonType{dbSymbol: "water"}
+	grass := &PokemonType{dbSymbol: "grass"}
+	flying := &PokemonType{dbSymbol: "flying"}
+
+	charizard := NewPokemonFormBuilder().Form(0).Type1(fire).Type2(flying).Build()
+	squirtle := NewPokemonFormBuilder().Form(0).Type1(water).Build()
+	bulbasaur := NewPokemonFormBuilder().Form(0).Type1(grass).Build()
+
+	t.Run("match type1", func(t *testing.T) {
+		if !NewPokemonFormTypesFilter([]string{"fire"})(charizard) {
+			t.Error("Expected match 'fire' on charizard (type1)")
+		}
+	})
+
+	t.Run("match type2", func(t *testing.T) {
+		if !NewPokemonFormTypesFilter([]string{"flying"})(charizard) {
+			t.Error("Expected match 'flying' on charizard (type2)")
+		}
+	})
+
+	t.Run("match any of multiple types", func(t *testing.T) {
+		if !NewPokemonFormTypesFilter([]string{"electric", "water"})(squirtle) {
+			t.Error("Expected match 'water' from multiple types")
+		}
+	})
+
+	t.Run("single type no type2", func(t *testing.T) {
+		if !NewPokemonFormTypesFilter([]string{"grass"})(bulbasaur) {
+			t.Error("Expected match 'grass' on bulbasaur")
+		}
+	})
+
+	t.Run("no match", func(t *testing.T) {
+		if NewPokemonFormTypesFilter([]string{"electric"})(charizard) {
+			t.Error("Expected no match 'electric' on charizard")
+		}
+	})
+
+	t.Run("empty types list", func(t *testing.T) {
+		if !NewPokemonFormTypesFilter([]string{})(charizard) {
+			t.Error("Expected match with empty types list")
+		}
+	})
+
+	t.Run("nil types list", func(t *testing.T) {
+		if !NewPokemonFormTypesFilter(nil)(charizard) {
+			t.Error("Expected match with nil types list")
+		}
+	})
+}

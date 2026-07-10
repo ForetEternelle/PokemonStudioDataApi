@@ -39,7 +39,6 @@ type PokemonAPIRouter interface {
 	GetPokemon(http.ResponseWriter, *http.Request)
 	GetPokemonDetails(http.ResponseWriter, *http.Request)
 	GetPokemonDetailsByName(http.ResponseWriter, *http.Request)
-	GetPokemonForm(http.ResponseWriter, *http.Request)
 }
 // TypesAPIRouter defines the required methods for binding the api requests to a responses for the TypesAPI
 // The TypesAPIRouter implementation should parse necessary information from the http request,
@@ -77,9 +76,8 @@ type MovesAPIServicer interface {
 type PokemonAPIServicer interface { 
 	GetFormsByPokemon(context.Context, string, string) (ImplResponse, error)
 	GetPokemon(context.Context, string, int32, *int32, *int32, bool, *string, []string) (ImplResponse, error)
-	GetPokemonDetails(context.Context, string, string) (ImplResponse, error)
+	GetPokemonDetails(context.Context, string, int32, string) (ImplResponse, error)
 	GetPokemonDetailsByName(context.Context, string, string) (ImplResponse, error)
-	GetPokemonForm(context.Context, string, int32, string) (ImplResponse, error)
 }
 
 

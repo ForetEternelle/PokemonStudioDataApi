@@ -17,7 +17,7 @@ package pkmnapispec
 type FormDetails struct {
 
 	// The form number
-	Form *int32 `json:"form,omitempty"`
+	Number int32 `json:"number"`
 
 	// The translated name of the form
 	Name string `json:"name"`
@@ -103,14 +103,12 @@ type FormDetails struct {
 
 	// The list of abilities
 	Abilities []AbilityPartial `json:"abilities"`
-
-	// The image symbol of the form
-	Image string `json:"image"`
 }
 
 // AssertFormDetailsRequired checks if the required fields are not zero-ed
 func AssertFormDetailsRequired(obj FormDetails) error {
 	elements := map[string]interface{}{
+		"number": obj.Number,
 		"name": obj.Name,
 		"description": obj.Description,
 		"height": obj.Height,
@@ -137,7 +135,6 @@ func AssertFormDetailsRequired(obj FormDetails) error {
 		"hatchSteps": obj.HatchSteps,
 		"itemHeld": obj.ItemHeld,
 		"abilities": obj.Abilities,
-		"image": obj.Image,
 	}
 	for name, el := range elements {
 		if isZero := IsZeroValue(el); isZero {

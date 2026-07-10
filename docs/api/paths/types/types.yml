@@ -15,6 +15,6 @@ get:
             title: "Types"
             type: array
             items:
-              $ref: "../../schemas/types/TypePartial.yml"
+              $ref: "../../schemas/types/TypeDetails.yml"
     "400":
       $ref: "../../responses/InvalidParameterError.yml"

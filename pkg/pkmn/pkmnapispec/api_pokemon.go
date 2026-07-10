@@ -62,18 +62,13 @@ func (c *PokemonAPIController) Routes() Routes {
 		},
 		"GetPokemonDetails": Route{
 			strings.ToUpper("Get"),
-			"/pokemon/{symbol}",
+			"/pokemon/{symbol}/forms/{form}",
 			c.GetPokemonDetails,
 		},
 		"GetPokemonDetailsByName": Route{
 			strings.ToUpper("Get"),
 			"/pokemon/name/{name}",
 			c.GetPokemonDetailsByName,
-		},
-		"GetPokemonForm": Route{
-			strings.ToUpper("Get"),
-			"/pokemon/{symbol}/forms/{form}",
-			c.GetPokemonForm,
 		},
 	}
 }
@@ -221,6 +216,14 @@ func (c *PokemonAPIController) GetPokemonDetails(w http.ResponseWriter, r *http.
 		c.errorHandler(w, r, &RequiredError{"symbol"}, nil)
 		return
 	}
+	formParam, err := parseNumericParameter[int32](
+		chi.URLParam(r, "form"),
+		WithRequire[int32](parseInt32),
+	)
+	if err != nil {
+		c.errorHandler(w, r, &ParsingError{Param: "form", Err: err}, nil)
+		return
+	}
 	var langParam string
 	if query.Has("lang") {
 		param := query.Get("lang")
@@ -230,7 +233,7 @@ func (c *PokemonAPIController) GetPokemonDetails(w http.ResponseWriter, r *http.
 		param := "en"
 		langParam = param
 	}
-	result, err := c.service.GetPokemonDetails(r.Context(), symbolParam, langParam)
+	result, err := c.service.GetPokemonDetails(r.Context(), symbolParam, formParam, langParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)
@@ -262,45 +265,6 @@ func (c *PokemonAPIController) GetPokemonDetailsByName(w http.ResponseWriter, r 
 		langParam = param
 	}
 	result, err := c.service.GetPokemonDetailsByName(r.Context(), nameParam, langParam)
-	// If an error occurred, encode the error with the status code
-	if err != nil {
-		c.errorHandler(w, r, err, &result)
-		return
-	}
-	// If no error, encode the body and the result code
-	_ = EncodeJSONResponse(result.Body, &result.Code, w)
-}
-
-// GetPokemonForm - Get a pokemon form details
-func (c *PokemonAPIController) GetPokemonForm(w http.ResponseWriter, r *http.Request) {
-	query, err := parseQuery(r.URL.RawQuery)
-	if err != nil {
-		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
-		return
-	}
-	symbolParam := chi.URLParam(r, "symbol")
-	if symbolParam == "" {
-		c.errorHandler(w, r, &RequiredError{"symbol"}, nil)
-		return
-	}
-	formParam, err := parseNumericParameter[int32](
-		chi.URLParam(r, "form"),
-		WithDefaultOrParse[int32](0, parseInt32),
-	)
-	if err != nil {
-		c.errorHandler(w, r, &ParsingError{Param: "form", Err: err}, nil)
-		return
-	}
-	var langParam string
-	if query.Has("lang") {
-		param := query.Get("lang")
-
-		langParam = param
-	} else {
-		param := "en"
-		langParam = param
-	}
-	result, err := c.service.GetPokemonForm(r.Context(), symbolParam, formParam, langParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

@@ -29,7 +29,7 @@ func NewPokemonService(
 	}
 }
 
-func (s PokemonService) GetPokemonDetails(requestCtx context.Context, symbol string, lang string) (ImplResponse, error) {
+func (s PokemonService) GetPokemonDetails(requestCtx context.Context, symbol string, form int32, lang string) (ImplResponse, error) {
 	policy := s.pokemonAccessPolicyFactory(requestCtx)
 	pkmn := s.store.FindPokemonBySymbol(symbol, policy.PokemonFilter)
 
@@ -37,7 +37,12 @@ func (s PokemonService) GetPokemonDetails(requestCtx context.Context, symbol str
 		return ImplResponse{Code: 404, Body: nil}, nil
 	}
 
-	return ImplResponse{Code: 200, Body: s.pokemonMapper.PokemonToDetail(*pkmn, lang, *policy)}, nil
+	details := s.pokemonMapper.PokemonToDetail(*pkmn, form, lang, *policy)
+	if details == nil {
+		return ImplResponse{Code: 404, Body: nil}, nil
+	}
+
+	return ImplResponse{Code: 200, Body: details}, nil
 }
 
 func (s PokemonService) GetPokemonDetailsByName(requestCtx context.Context, name string, lang string) (ImplResponse, error) {
@@ -48,7 +53,7 @@ func (s PokemonService) GetPokemonDetailsByName(requestCtx context.Context, name
 		return ImplResponse{Code: 404, Body: nil}, nil
 	}
 
-	return ImplResponse{Code: 200, Body: s.pokemonMapper.PokemonToDetail(*pkmn, lang, *policy)}, nil
+	return ImplResponse{Code: 200, Body: s.pokemonMapper.PokemonToDetail(*pkmn, 0, lang, *policy)}, nil
 }
 
 func (s PokemonService) GetPokemon(requestCtx context.Context, lang string, size int32, lastId *int32, lastForm *int32, mainFormsOnly bool, query *string, types []string) (ImplResponse, error) {
@@ -106,20 +111,4 @@ func (s PokemonService) GetFormsByPokemon(requestCtx context.Context, symbol str
 	})
 
 	return ImplResponse{Code: 200, Body: slices.Collect(formPartialsIter)}, nil
-}
-
-func (s PokemonService) GetPokemonForm(requestCtx context.Context, symbol string, form int32, lang string) (ImplResponse, error) {
-	policy := s.pokemonAccessPolicyFactory(requestCtx)
-	pkmn := s.store.FindPokemonBySymbol(symbol, policy.PokemonFilter)
-
-	if pkmn == nil {
-		return ImplResponse{Code: 404, Body: nil}, nil
-	}
-
-	pkmnForm, ok := pkmn.Form(form)
-	if !ok || !policy.FormFilter(pkmnForm) {
-		return ImplResponse{Code: 404, Body: nil}, nil
-	}
-
-	return ImplResponse{Code: 200, Body: s.pokemonMapper.FormToPokemonFormDetails(*pkmnForm, lang, *policy)}, nil
 }

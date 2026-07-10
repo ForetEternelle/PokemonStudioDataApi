@@ -1,6 +1,7 @@
 type: object
 description: An object containing the data of a pokemon form (ev, iv, ...)
 required:
+  - number
   - name
   - type1
   - baseHp
@@ -11,10 +12,9 @@ required:
   - baseDfs
   - image
 properties:
-    form:
+    number:
         type: integer
         description: The form number
-        nullable: true
         example: 0
     name:
         type: string
@@ -53,7 +53,3 @@ properties:
         type: integer
         description: The base special defense stat
         example: 50
-    image:
-        description: The image symbol of the form
-        type: string
-        example: "025"

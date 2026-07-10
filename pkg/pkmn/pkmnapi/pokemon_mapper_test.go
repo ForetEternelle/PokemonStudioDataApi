@@ -48,7 +48,7 @@ func TestPokemonToDetail(t *testing.T) {
 	normalType := pkmn.NewTypeBuilder().DbSymbol("normal").Build()
 
 	form := pkmn.NewPokemonFormBuilder().
-		Form(0).
+		Form(1).
 		Type1(normalType).
 		BaseHp(100).
 		BaseAtk(50).
@@ -68,7 +68,7 @@ func TestPokemonToDetail(t *testing.T) {
 	pokemonMapper := NewPokemonMapper(typeMapper, abilityMapper, store)
 
 	policy := NewPokemonFilterPolicy()
-	detail := pokemonMapper.PokemonToDetail(*pokemon, lang, *policy)
+	detail := pokemonMapper.PokemonToDetail(*pokemon, 1, lang, *policy)
 
 	if detail.Symbol != pokemon.DbSymbol() {
 		t.Error("Mapper should map symbol")
@@ -76,13 +76,13 @@ func TestPokemonToDetail(t *testing.T) {
 	if detail.Number != pokemon.ID() {
 		t.Error("Mapper should map number")
 	}
-	if detail.MainForm.Form == nil {
-		t.Error("Mapper should map main form")
+	if detail.Form.Number != 1 {
+		t.Error("Mapper should map given form")
 	}
-	if detail.MainForm.Name != form.Name(lang) {
+	if detail.Form.Name != form.Name(lang) {
 		t.Error("Mapper should map name")
 	}
-	if detail.MainForm.Description != form.Description(lang) {
+	if detail.Form.Description != form.Description(lang) {
 		t.Error("Mapper should map description")
 	}
 }

@@ -6,6 +6,7 @@ required:
 properties:
   content:
     type: array
+    items: {}
     description: Contains the items of the list
   hasMore:
     description: True if there are elements left to fetch

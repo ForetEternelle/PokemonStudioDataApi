@@ -57,7 +57,7 @@ func setupPokemonService() (*pkmn.Store, PokemonAPIServicer) {
 func TestPokemonService_GetPokemonDetails(t *testing.T) {
 	_, service := setupPokemonService()
 
-	resp, err := service.GetPokemonDetails(context.Background(), "pikachu", "en")
+	resp, err := service.GetPokemonDetails(context.Background(), "pikachu", 0, "en")
 	if err != nil {
 		t.Error("Expected no error, got", err)
 	}
@@ -69,15 +69,30 @@ func TestPokemonService_GetPokemonDetails(t *testing.T) {
 	if details.Symbol != "pikachu" {
 		t.Error("Expected symbol pikachu, got", details.Symbol)
 	}
-	if details.MainForm.Name != "Pikachu" {
-		t.Error("Expected name Pikachu, got", details.MainForm.Name)
+	if details.Form.Name != "Pikachu" {
+		t.Error("Expected name Pikachu, got", details.Form.Name)
 	}
 }
 
 func TestPokemonService_GetPokemonDetails_NotFound(t *testing.T) {
 	_, service := setupPokemonService()
 
-	resp, err := service.GetPokemonDetails(context.Background(), "mewtwo", "en")
+	resp, err := service.GetPokemonDetails(context.Background(), "mewtwo", 0, "en")
+	if err != nil {
+		t.Error("Expected no error, got", err)
+	}
+	if resp.Code != 404 {
+		t.Error("Expected status 404, got", resp.Code)
+	}
+	if resp.Body != nil {
+		t.Error("Expected nil body for non-existent pokemon")
+	}
+}
+
+func TestPokemonService_GetPokemonDetails_FormNotFound(t *testing.T) {
+	_, service := setupPokemonService()
+
+	resp, err := service.GetPokemonDetails(context.Background(), "pikachu", 2, "en")
 	if err != nil {
 		t.Error("Expected no error, got", err)
 	}
@@ -106,36 +121,6 @@ func TestPokemonService_GetPokemon(t *testing.T) {
 	}
 	if len(scroll.Content) != 3 {
 		t.Error("Expected 3 pokemon, got", len(scroll.Content))
-	}
-}
-
-
-func TestPokemonService_GetPokemonForm(t *testing.T) {
-	_, service := setupPokemonService()
-
-	resp, err := service.GetPokemonForm(context.Background(), "pikachu", 0, "en")
-	if err != nil {
-		t.Error("Expected no error, got", err)
-	}
-	if resp.Code != 200 {
-		t.Error("Expected status 200, got", resp.Code)
-	}
-
-	form := resp.Body.(*FormDetails)
-	if form.Form == nil {
-		t.Error("Expected non-nil form")
-	}
-}
-
-func TestPokemonService_GetPokemonForm_NotFound(t *testing.T) {
-	_, service := setupPokemonService()
-
-	resp, err := service.GetPokemonForm(context.Background(), "pikachu", 99, "en")
-	if err != nil {
-		t.Error("Expected no error, got", err)
-	}
-	if resp.Code != 404 {
-		t.Error("Expected status 404 for non-existent form, got", resp.Code)
 	}
 }
 

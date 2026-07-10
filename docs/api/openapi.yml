@@ -9,14 +9,12 @@ servers:
 paths:
   /pokemon:
     $ref: "paths/pokemon/pokemonList.yml"
-  /pokemon/{symbol}:
+  /pokemon/{symbol}/forms/{form}:
     $ref: "paths/pokemon/pokemonDetails.yml"
   /pokemon/name/{name}:
     $ref: "paths/pokemon/pokemonDetailsByName.yml"
   /pokemon/{symbol}/forms:
     $ref: "paths/pokemon/forms.yml"
-  /pokemon/{symbol}/forms/{form}:
-    $ref: "paths/pokemon/pokemonForm.yml"
 
   /types:
     $ref: "paths/types/types.yml"

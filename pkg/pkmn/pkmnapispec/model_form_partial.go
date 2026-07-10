@@ -17,7 +17,7 @@ package pkmnapispec
 type FormPartial struct {
 
 	// The form number
-	Form *int32 `json:"form,omitempty"`
+	Number int32 `json:"number"`
 
 	// The translated name of the form
 	Name string `json:"name"`
@@ -43,14 +43,12 @@ type FormPartial struct {
 
 	// The base special defense stat
 	BaseDfs int32 `json:"baseDfs"`
-
-	// The image symbol of the form
-	Image string `json:"image"`
 }
 
 // AssertFormPartialRequired checks if the required fields are not zero-ed
 func AssertFormPartialRequired(obj FormPartial) error {
 	elements := map[string]interface{}{
+		"number": obj.Number,
 		"name": obj.Name,
 		"type1": obj.Type1,
 		"baseHp": obj.BaseHp,
@@ -59,7 +57,6 @@ func AssertFormPartialRequired(obj FormPartial) error {
 		"baseSpd": obj.BaseSpd,
 		"baseAts": obj.BaseAts,
 		"baseDfs": obj.BaseDfs,
-		"image": obj.Image,
 	}
 	for name, el := range elements {
 		if isZero := IsZeroValue(el); isZero {

@@ -53,28 +53,21 @@ func (m PokemonMapper) PokemonToThumbnail(p pkmn.Pokemon, formId int32, lang str
 	return thumbnail
 }
 
-func (m PokemonMapper) PokemonToDetail(p pkmn.Pokemon, lang string, policy PokemonFilterPolicy) *PokemonDetails {
+func (m PokemonMapper) PokemonToDetail(p pkmn.Pokemon, formId int32, lang string, policy PokemonFilterPolicy) *PokemonDetails {
 	slog.Debug("Mapping pokemon to details", "pokemon", p.DbSymbol(), "lang", lang)
 
-	var mainForm pkmn.PokemonForm
-	hasForm := false
+	
 	formFilter := iter2.And(policy.FormFilter)
-	for form := range p.Forms() {
-		if formFilter(form) {
-			mainForm = *form
-			hasForm = true
-			break
-		}
-	}
+	f, ok := p.Form(formId)
 
-	if !hasForm {
+	if !ok || !formFilter(f){
 		return nil
 	}
 
 	return &PokemonDetails{
 		Symbol:   p.DbSymbol(),
 		Number:   p.ID(),
-		MainForm: *m.FormToPokemonFormDetails(mainForm, lang, policy),
+		Form: *m.FormToPokemonFormDetails(*f, lang, policy),
 	}
 }
 
@@ -99,8 +92,7 @@ func (m PokemonMapper) FormToPokemonFormDetails(f pkmn.PokemonForm, lang string,
 	babyForm := f.BabyForm()
 
 	return &FormDetails{
-		Form: &form,
-
+		Number: form,
 		Name:        f.Name(lang),
 		Description: f.Description(lang),
 		Height:      f.Height(),
@@ -147,7 +139,7 @@ func (m PokemonMapper) FormToPokemonFormPartial(f pkmn.PokemonForm, lang string,
 
 	form := f.Form()
 	return &FormPartial{
-		Form: &form,
+		Number: form,
 
 		Name: f.Name(lang),
 

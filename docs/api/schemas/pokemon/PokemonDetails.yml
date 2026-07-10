@@ -3,7 +3,7 @@ description: An object containing detailed data of a pokemon with its main form
 required:
   - symbol
   - number
-  - main_form
+  - form
 properties:
   symbol:
     type: string
@@ -13,5 +13,5 @@ properties:
     type: integer
     description: The number of the pokemon
     example: 25
-  main_form:
+  form :
     $ref: "./FormDetails.yml"

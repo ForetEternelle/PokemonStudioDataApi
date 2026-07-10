@@ -22,7 +22,7 @@ type PokemonDetails struct {
 	// The number of the pokemon
 	Number int32 `json:"number"`
 
-	MainForm FormDetails `json:"main_form"`
+	Form FormDetails `json:"form"`
 }
 
 // AssertPokemonDetailsRequired checks if the required fields are not zero-ed
@@ -30,7 +30,7 @@ func AssertPokemonDetailsRequired(obj PokemonDetails) error {
 	elements := map[string]interface{}{
 		"symbol": obj.Symbol,
 		"number": obj.Number,
-		"main_form": obj.MainForm,
+		"form": obj.Form,
 	}
 	for name, el := range elements {
 		if isZero := IsZeroValue(el); isZero {
@@ -38,7 +38,7 @@ func AssertPokemonDetailsRequired(obj PokemonDetails) error {
 		}
 	}
 
-	if err := AssertFormDetailsRequired(obj.MainForm); err != nil {
+	if err := AssertFormDetailsRequired(obj.Form); err != nil {
 		return err
 	}
 	return nil
@@ -46,7 +46,7 @@ func AssertPokemonDetailsRequired(obj PokemonDetails) error {
 
 // AssertPokemonDetailsConstraints checks if the values respects the defined constraints
 func AssertPokemonDetailsConstraints(obj PokemonDetails) error {
-	if err := AssertFormDetailsConstraints(obj.MainForm); err != nil {
+	if err := AssertFormDetailsConstraints(obj.Form); err != nil {
 		return err
 	}
 	return nil

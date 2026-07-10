@@ -17,7 +17,7 @@ package pkmnapispec
 type Scroll struct {
 
 	// Contains the items of the list
-	Content []string `json:"content"`
+	Content []map[string]interface{} `json:"content"`
 
 	// True if there are elements left to fetch
 	HasMore bool `json:"hasMore"`

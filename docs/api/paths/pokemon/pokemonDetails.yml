@@ -12,6 +12,13 @@ get:
       required: true
       schema:
         type: string
+    - name: form
+      in: path
+      description: The form number
+      required: true
+      schema:
+        type: integer
+
   responses:
     "200":
       description: OK

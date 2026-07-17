@@ -7,19 +7,15 @@ import (
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/iter2"
 )
 
+// NewPokemonQueryFilter returns a filter function that checks if a PokemonWithForm matches the given query string in its ID or name in any of the specified languages.
 func NewPokemonQueryFilter(query string, langs ...string) iter2.FilterFunc[PokemonWithForm] {
 	return func(pwf PokemonWithForm) bool {
 		queryUpper := strings.ToUpper(query)
 
 		p := pwf.Pokemon
-		symbolUpper := strings.ToUpper(p.dbSymbol)
-
-		if strings.Contains(symbolUpper, queryUpper) {
-			return true
-		}
 
 		idStr := strconv.Itoa(int(p.ID()))
-		if idStr == query {
+		if strings.Contains(idStr, query) {
 			return true
 		}
 
@@ -34,6 +30,7 @@ func NewPokemonQueryFilter(query string, langs ...string) iter2.FilterFunc[Pokem
 	}
 }
 
+// NewPokemonFormTypesFilter returns a filter function that checks if a PokemonForm matches any of the given types.
 func NewPokemonFormTypesFilter(types []string) iter2.FilterFunc[*PokemonForm] {
 	if len(types) == 0 {
 		return iter2.True

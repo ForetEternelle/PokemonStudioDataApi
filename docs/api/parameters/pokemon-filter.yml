@@ -6,7 +6,7 @@ query:
     type: string
     nullable: true
     maxLength: 30
-  description: Search query to filter pokemon by name, number or symbol
+  description: Search query to filter pokemon by name, number
 
 lastId:
   in: query

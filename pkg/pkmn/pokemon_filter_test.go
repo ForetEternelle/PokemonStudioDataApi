@@ -12,20 +12,14 @@ func TestNewPokemonQueryFilter(t *testing.T) {
 		FormId: 0,
 	}
 
-	t.Run("dbSymbol match", func(t *testing.T) {
-		if !NewPokemonQueryFilter("pika")(pwf) {
-			t.Error("Expected match 'pika' in dbSymbol 'pikachu'")
-		}
-	})
-
-	t.Run("dbSymbol case-insensitive", func(t *testing.T) {
-		if !NewPokemonQueryFilter("PIKA")(pwf) {
-			t.Error("Expected match 'PIKA' in dbSymbol 'pikachu'")
-		}
-	})
-
 	t.Run("ID match", func(t *testing.T) {
 		if !NewPokemonQueryFilter("25")(pwf) {
+			t.Error("Expected match ID '25'")
+		}
+	})
+
+	t.Run("ID contained match", func(t *testing.T) {
+		if !NewPokemonQueryFilter("2")(pwf) {
 			t.Error("Expected match ID '25'")
 		}
 	})

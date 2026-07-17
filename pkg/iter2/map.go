@@ -2,7 +2,10 @@ package iter2
 
 import "iter"
 
+// MapFunc is a function that transforms a value of type T into a value of type R.
 type MapFunc[T any, R any] func(T) R
+
+// MapFunc2 is a function that transforms a key-value pair of types K, V into a result pair of types X, Y.
 type MapFunc2[K, V, X, Y any] func(K, V) (X, Y)
 
 // Map applies a mapping function to each item in a Seq and returns a Seq of the results.

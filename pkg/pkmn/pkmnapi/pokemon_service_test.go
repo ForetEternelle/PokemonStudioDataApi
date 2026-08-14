@@ -138,7 +138,7 @@ func TestPokemonService_GetPokemonDetails_FormNotFound(t *testing.T) {
 func TestPokemonService_GetPokemon(t *testing.T) {
 	_, service := setupPokemonService(t)
 
-	resp, err := service.GetPokemon(context.Background(), "en", 20, nil, nil, true, nil, []string{})
+	resp, err := service.GetPokemon(context.Background(), "en", 20, nil, nil, true, nil, []string{}, []string{}, []string{})
 	if err != nil {
 		t.Error("Expected no error, got", err)
 	}

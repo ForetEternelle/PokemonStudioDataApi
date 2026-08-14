@@ -103,6 +103,12 @@ type FormDetails struct {
 
 	// The list of abilities
 	Abilities []AbilityPartial `json:"abilities"`
+
+	// Tags setted by the developer
+	Tags []string `json:"tags"`
+
+	// Custom properties setted by the developer
+	CustomProperties map[string]interface{} `json:"customProperties"`
 }
 
 // AssertFormDetailsRequired checks if the required fields are not zero-ed
@@ -135,6 +141,8 @@ func AssertFormDetailsRequired(obj FormDetails) error {
 		"hatchSteps": obj.HatchSteps,
 		"itemHeld": obj.ItemHeld,
 		"abilities": obj.Abilities,
+		"tags": obj.Tags,
+		"customProperties": obj.CustomProperties,
 	}
 	for name, el := range elements {
 		if isZero := IsZeroValue(el); isZero {

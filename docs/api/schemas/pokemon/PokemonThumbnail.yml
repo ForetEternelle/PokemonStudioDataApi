@@ -7,6 +7,10 @@ required:
   - form
   - image
   - type1
+  - customProperties
+  - tags
+  - formCustomProperties
+  - formTags
 properties:
   symbol:
     type: string
@@ -39,3 +43,12 @@ properties:
   customProperties:
     $ref: "../CustomProperties.yml"
     description: Custom properties setted by the developer
+  tags:
+    $ref: "../Tags.yml"
+    description: Tags setted by the developer
+  formCustomProperties:
+    $ref: "../CustomProperties.yml"
+    description: Custom properties setted by the developer
+  formTags:
+    $ref: "../Tags.yml"
+    description: Tags setted by the developer

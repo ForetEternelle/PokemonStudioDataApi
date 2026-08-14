@@ -23,6 +23,12 @@ type PokemonDetails struct {
 	Number int32 `json:"number"`
 
 	Form FormDetails `json:"form"`
+
+	// Tags setted by the developer
+	Tags []string `json:"tags"`
+
+	// Custom properties setted by the developer
+	CustomProperties map[string]interface{} `json:"customProperties"`
 }
 
 // AssertPokemonDetailsRequired checks if the required fields are not zero-ed
@@ -31,6 +37,8 @@ func AssertPokemonDetailsRequired(obj PokemonDetails) error {
 		"symbol": obj.Symbol,
 		"number": obj.Number,
 		"form": obj.Form,
+		"tags": obj.Tags,
+		"customProperties": obj.CustomProperties,
 	}
 	for name, el := range elements {
 		if isZero := IsZeroValue(el); isZero {

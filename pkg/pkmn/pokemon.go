@@ -61,6 +61,7 @@ func NewPokemon(cfg PokemonConfig) (*Pokemon, error) {
 		dbSymbol:         cfg.DbSymbol,
 		forms:            forms,
 		CustomProperties: make(map[string]any),
+		Tags:             make([]string, 0),
 	}, nil
 }
 
@@ -70,6 +71,7 @@ type Pokemon struct {
 	dbSymbol         string
 	forms            []*PokemonForm
 	CustomProperties map[string]any
+	Tags             []string
 }
 
 // ID returns the national ID of the Pokemon.
@@ -113,40 +115,40 @@ func ComparePokemonId(p1, p2 Pokemon) int {
 
 // PokemonFormConfig configures a new PokemonForm.
 type PokemonFormConfig struct {
-	Form             int32
-	Height           float32
-	Weight           float32
-	Type1            *PokemonType
-	Type2            *PokemonType
-	BaseHp           int32
-	BaseAtk          int32
-	BaseDfe          int32
-	BaseSpd          int32
-	BaseAts          int32
-	BaseDfs          int32
-	EvHp             int32
-	EvAtk            int32
-	EvDfe            int32
-	EvSpd            int32
-	EvAts            int32
-	EvDfs            int32
-	Evolutions       []Evolution
-	ExperienceType   string
-	BaseExperience   int32
-	BaseLoyalty      int32
-	CatchRate        int32
-	FemaleRate       float32
-	BreedGroups      []string
-	HatchSteps       int32
-	BabyDbSymbol     *string
-	BabyForm         int32
-	ItemHeld         []*ItemHeld
-	AbilitySymbols   []string
-	Abilities        []*Ability
-	FrontOffsetY     int32
-	Name             Translation
-	Description      Translation
-	Resources        PokemonResources
+	Form           int32
+	Height         float32
+	Weight         float32
+	Type1          *PokemonType
+	Type2          *PokemonType
+	BaseHp         int32
+	BaseAtk        int32
+	BaseDfe        int32
+	BaseSpd        int32
+	BaseAts        int32
+	BaseDfs        int32
+	EvHp           int32
+	EvAtk          int32
+	EvDfe          int32
+	EvSpd          int32
+	EvAts          int32
+	EvDfs          int32
+	Evolutions     []Evolution
+	ExperienceType string
+	BaseExperience int32
+	BaseLoyalty    int32
+	CatchRate      int32
+	FemaleRate     float32
+	BreedGroups    []string
+	HatchSteps     int32
+	BabyDbSymbol   *string
+	BabyForm       int32
+	ItemHeld       []*ItemHeld
+	AbilitySymbols []string
+	Abilities      []*Ability
+	FrontOffsetY   int32
+	Name           Translation
+	Description    Translation
+	Resources      PokemonResources
 }
 
 // NewPokemonForm creates an immutable PokemonForm from the given config.
@@ -192,6 +194,7 @@ func NewPokemonForm(cfg PokemonFormConfig) (*PokemonForm, error) {
 		name:             cfg.Name,
 		description:      cfg.Description,
 		CustomProperties: make(map[string]any),
+		Tags:             make([]string, 0),
 		resources:        cfg.Resources,
 	}, nil
 }
@@ -232,6 +235,7 @@ type PokemonForm struct {
 	name             Translation
 	description      Translation
 	CustomProperties map[string]any
+	Tags             []string
 	resources        PokemonResources
 }
 
@@ -544,6 +548,3 @@ func MinStat(base int32) int32 {
 	res := 0.9 * float64(base*2+5)
 	return int32(res)
 }
-
-
-

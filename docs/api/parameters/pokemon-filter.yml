@@ -51,3 +51,29 @@ types:
       maxLength: 20
   description: Filter pokemon by types. Multiple types can be specified, in which case pokemon that match any of the specified types will be included in the results.
   example: ["fire", "flying"]
+
+withTags:
+  in: query
+  name: withTags
+  required: false
+  schema:
+    type: array
+    default: []
+    items:
+      type: string
+      maxLength: 30
+  description: Filter pokemon by tags. Multiple tags can be specified, in which case pokemon that match any of the specified tags (on the pokemon or its form) will be included in the results.
+  example: ["starter", "legendary"]
+
+withoutTags:
+  in: query
+  name: withoutTags
+  required: false
+  schema:
+    type: array
+    default: []
+    items:
+      type: string
+      maxLength: 30
+  description: Exclude pokemon matching any of the specified tags (on the pokemon or its form) from the results.
+  example: ["mega", "regional"]

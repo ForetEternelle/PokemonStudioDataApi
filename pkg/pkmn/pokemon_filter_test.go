@@ -145,3 +145,113 @@ func TestNewPokemonFormTypesFilter(t *testing.T) {
 		}
 	})
 }
+
+func TestNewPokemonWithTagsFilter(t *testing.T) {
+	form, err := NewPokemonForm(PokemonFormConfig{Form: 0, Name: Translation{"en": "Raichu"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	form.Tags = []string{"alolan", "evolved"}
+	pokemon, err := NewPokemon(PokemonConfig{
+		ID:       26,
+		DbSymbol: "raichu",
+		Forms:    []*PokemonForm{form},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	pokemon.Tags = []string{"special"}
+
+	pwf := PokemonWithForm{
+		Pokemon: pokemon,
+		FormId:  0,
+	}
+
+	t.Run("no tags matches all", func(t *testing.T) {
+		if !NewPokemonWithTagsFilter(nil)(pwf) {
+			t.Error("Expected match with no tags")
+		}
+	})
+
+	t.Run("empty tags matches all", func(t *testing.T) {
+		if !NewPokemonWithTagsFilter([]string{})(pwf) {
+			t.Error("Expected match with empty tags")
+		}
+	})
+
+	t.Run("match pokemon tag", func(t *testing.T) {
+		if !NewPokemonWithTagsFilter([]string{"special"})(pwf) {
+			t.Error("Expected match pokemon tag 'special'")
+		}
+	})
+
+	t.Run("match form tag", func(t *testing.T) {
+		if !NewPokemonWithTagsFilter([]string{"alolan"})(pwf) {
+			t.Error("Expected match form tag 'alolan'")
+		}
+	})
+
+	t.Run("match any of multiple tags", func(t *testing.T) {
+		if !NewPokemonWithTagsFilter([]string{"other", "evolved"})(pwf) {
+			t.Error("Expected match 'evolved' from multiple tags")
+		}
+	})
+
+	t.Run("no match", func(t *testing.T) {
+		if NewPokemonWithTagsFilter([]string{"legendary"})(pwf) {
+			t.Error("Expected no match 'legendary'")
+		}
+	})
+}
+
+func TestNewPokemonWithoutTagsFilter(t *testing.T) {
+	form, err := NewPokemonForm(PokemonFormConfig{Form: 0, Name: Translation{"en": "Raichu"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	form.Tags = []string{"alolan", "evolved"}
+	pokemon, err := NewPokemon(PokemonConfig{
+		ID:       26,
+		DbSymbol: "raichu",
+		Forms:    []*PokemonForm{form},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	pokemon.Tags = []string{"special"}
+
+	pwf := PokemonWithForm{
+		Pokemon: pokemon,
+		FormId:  0,
+	}
+
+	t.Run("no tags matches all", func(t *testing.T) {
+		if !NewPokemonWithoutTagsFilter(nil)(pwf) {
+			t.Error("Expected match with no tags")
+		}
+	})
+
+	t.Run("empty tags matches all", func(t *testing.T) {
+		if !NewPokemonWithoutTagsFilter([]string{})(pwf) {
+			t.Error("Expected match with empty tags")
+		}
+	})
+
+	t.Run("exclude pokemon tag", func(t *testing.T) {
+		if NewPokemonWithoutTagsFilter([]string{"special"})(pwf) {
+			t.Error("Expected no match with excluded pokemon tag 'special'")
+		}
+	})
+
+	t.Run("exclude form tag", func(t *testing.T) {
+		if NewPokemonWithoutTagsFilter([]string{"evolved"})(pwf) {
+			t.Error("Expected no match with excluded form tag 'evolved'")
+		}
+	})
+
+	t.Run("exclude unrelated tag keeps result", func(t *testing.T) {
+		if !NewPokemonWithoutTagsFilter([]string{"legendary"})(pwf) {
+			t.Error("Expected match when only unrelated tag is excluded")
+		}
+	})
+}

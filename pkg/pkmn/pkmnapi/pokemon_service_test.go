@@ -9,38 +9,69 @@ import (
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/scroll"
 )
 
-func setupPokemonService() (*pkmn.Store, PokemonAPIServicer) {
+func setupPokemonService(t *testing.T) (*pkmn.Store, PokemonAPIServicer) {
+	t.Helper()
 	store := pkmn.NewStore()
-	store.AddType(pkmn.AddTypeDto{
+
+	normal, err := pkmn.NewPokemonType(pkmn.PokemonTypeConfig{
 		DbSymbol: "normal",
 		Name:     pkmn.Translation{"en": "Normal"},
 	})
-	store.AddType(pkmn.AddTypeDto{
+	if err != nil {
+		t.Fatal(err)
+	}
+	store.AddType(normal)
+	electric, err := pkmn.NewPokemonType(pkmn.PokemonTypeConfig{
 		DbSymbol: "electric",
 		Name:     pkmn.Translation{"en": "Electric"},
 	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	store.AddType(electric)
 
-	store.AddPokemon(pkmn.AddPokemonDto{
+	pikachuForm0, err := pkmn.NewPokemonForm(pkmn.PokemonFormConfig{Form: 0, Type1: electric, Name: pkmn.Translation{"en": "Pikachu", "fr": "PikachuFR"}, Description: pkmn.Translation{"en": "Electric mouse"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	pikachuForm1, err := pkmn.NewPokemonForm(pkmn.PokemonFormConfig{Form: 1, Type1: electric, Name: pkmn.Translation{"en": "Pikachu"}, Description: pkmn.Translation{"en": "Electric mouse"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	pikachu, err := pkmn.NewPokemon(pkmn.PokemonConfig{
 		ID: 25, DbSymbol: "pikachu",
-		Forms: []pkmn.AddPokemonFormDto{
-			{Form: 0, Type1: "electric", Name: pkmn.Translation{"en": "Pikachu", "fr": "PikachuFR"}, Description: pkmn.Translation{"en": "Electric mouse"}},
-			{Form: 1, Type1: "electric", Name: pkmn.Translation{"en": "Pikachu"}, Description: pkmn.Translation{"en": "Electric mouse"}},
-		},
+		Forms: []*pkmn.PokemonForm{pikachuForm0, pikachuForm1},
 	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	store.AddPokemon(pikachu)
 
-	store.AddPokemon(pkmn.AddPokemonDto{
+	bulbasaurForm, err := pkmn.NewPokemonForm(pkmn.PokemonFormConfig{Form: 0, Type1: normal, Name: pkmn.Translation{"en": "Bulbasaur"}, Description: pkmn.Translation{"en": "Grass starter"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	bulbasaur, err := pkmn.NewPokemon(pkmn.PokemonConfig{
 		ID: 1, DbSymbol: "bulbasaur",
-		Forms: []pkmn.AddPokemonFormDto{
-			{Form: 0, Type1: "normal", Name: pkmn.Translation{"en": "Bulbasaur"}, Description: pkmn.Translation{"en": "Grass starter"}},
-		},
+		Forms: []*pkmn.PokemonForm{bulbasaurForm},
 	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	store.AddPokemon(bulbasaur)
 
-	store.AddPokemon(pkmn.AddPokemonDto{
+	smettleForm, err := pkmn.NewPokemonForm(pkmn.PokemonFormConfig{Form: 0, Type1: normal, Name: pkmn.Translation{"en": "Smettle", "fr": "Malortie"}, Description: pkmn.Translation{"en": "Smettle is a mischievous Pokémon.", "fr": "Malortie est un Pokémon malicieux."}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	smettle, err := pkmn.NewPokemon(pkmn.PokemonConfig{
 		ID: 724, DbSymbol: "smettle",
-		Forms: []pkmn.AddPokemonFormDto{
-			{Form: 0, Type1: "normal", Name: pkmn.Translation{"en": "Smettle", "fr": "Malortie"}, Description: pkmn.Translation{"en": "Smettle is a mischievous Pokémon.", "fr": "Malortie est un Pokémon malicieux."}},
-		},
+		Forms: []*pkmn.PokemonForm{smettleForm},
 	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	store.AddPokemon(smettle)
 
 	typeMapper := NewTypeMapper()
 	abilityMapper := NewAbilityMapper()
@@ -55,7 +86,7 @@ func setupPokemonService() (*pkmn.Store, PokemonAPIServicer) {
 }
 
 func TestPokemonService_GetPokemonDetails(t *testing.T) {
-	_, service := setupPokemonService()
+	_, service := setupPokemonService(t)
 
 	resp, err := service.GetPokemonDetails(context.Background(), "pikachu", 0, "en")
 	if err != nil {
@@ -75,7 +106,7 @@ func TestPokemonService_GetPokemonDetails(t *testing.T) {
 }
 
 func TestPokemonService_GetPokemonDetails_NotFound(t *testing.T) {
-	_, service := setupPokemonService()
+	_, service := setupPokemonService(t)
 
 	resp, err := service.GetPokemonDetails(context.Background(), "mewtwo", 0, "en")
 	if err != nil {
@@ -90,7 +121,7 @@ func TestPokemonService_GetPokemonDetails_NotFound(t *testing.T) {
 }
 
 func TestPokemonService_GetPokemonDetails_FormNotFound(t *testing.T) {
-	_, service := setupPokemonService()
+	_, service := setupPokemonService(t)
 
 	resp, err := service.GetPokemonDetails(context.Background(), "pikachu", 2, "en")
 	if err != nil {
@@ -105,7 +136,7 @@ func TestPokemonService_GetPokemonDetails_FormNotFound(t *testing.T) {
 }
 
 func TestPokemonService_GetPokemon(t *testing.T) {
-	_, service := setupPokemonService()
+	_, service := setupPokemonService(t)
 
 	resp, err := service.GetPokemon(context.Background(), "en", 20, nil, nil, true, nil, []string{})
 	if err != nil {
@@ -125,7 +156,7 @@ func TestPokemonService_GetPokemon(t *testing.T) {
 }
 
 // func TestPokemonService_GetPokemonDetailsByName(t *testing.T) {
-// 	_, service := setupPokemonService()
+// 	_, service := setupPokemonService(t)
 
 // 	// Test English name
 // 	resp, err := service.GetPokemonDetailsByName(context.Background(), "Pikachu", "en")

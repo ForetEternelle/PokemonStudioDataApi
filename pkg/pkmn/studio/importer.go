@@ -36,13 +36,17 @@ func Load(folder string) (*pkmn.Store, error) {
 		return nil, err
 	}
 	for descriptor := range typeIterator {
-		store.AddType(pkmn.AddTypeDto{
+		pokemonType, err := pkmn.NewPokemonType(pkmn.PokemonTypeConfig{
 			DbSymbol: descriptor.DbSymbol,
 			Color:    descriptor.Color,
 			TextId:   descriptor.TextId,
 			Name:     descriptor.Name,
 			DamageTo: mapTypeDamages(descriptor.DamageTo),
 		})
+		if err != nil {
+			return nil, err
+		}
+		store.AddType(pokemonType)
 	}
 
 	abilityIterator, err := ImportAbility(studioFolder, translationFolder)
@@ -51,13 +55,17 @@ func Load(folder string) (*pkmn.Store, error) {
 		return nil, err
 	}
 	for descriptor := range abilityIterator {
-		store.AddAbility(pkmn.AddAbilityDto{
+		ability, err := pkmn.NewAbility(pkmn.AbilityConfig{
 			DbSymbol:    descriptor.DbSymbol,
-			Id:          descriptor.Id,
+			ID:          descriptor.Id,
 			TextId:      descriptor.TextID,
 			Name:        descriptor.Name,
 			Description: descriptor.Description,
 		})
+		if err != nil {
+			return nil, err
+		}
+		store.AddAbility(ability)
 	}
 
 	moveIterator, err := ImportMoves(studioFolder, translationFolder)
@@ -66,10 +74,10 @@ func Load(folder string) (*pkmn.Store, error) {
 		return nil, err
 	}
 	for descriptor := range moveIterator {
-		store.AddMove(pkmn.AddMoveDto{
-			Id:               descriptor.Id,
+		move, err := pkmn.NewMove(pkmn.MoveConfig{
+			ID:               descriptor.Id,
 			DbSymbol:         descriptor.DbSymbol,
-			Type:             descriptor.Type,
+			Type:             store.FindTypeBySymbol(descriptor.Type),
 			Category:         pkmn.MoveCategory(descriptor.Category),
 			Power:            descriptor.Power,
 			Accuracy:         descriptor.Accuracy,
@@ -85,6 +93,10 @@ func Load(folder string) (*pkmn.Store, error) {
 			Name:             descriptor.Name,
 			Description:      descriptor.Description,
 		})
+		if err != nil {
+			return nil, err
+		}
+		store.AddMove(move)
 	}
 
 	pokemonIterator, err := ImportPokemon(studioFolder, translationFolder)
@@ -93,15 +105,24 @@ func Load(folder string) (*pkmn.Store, error) {
 		return nil, err
 	}
 	for descriptor := range pokemonIterator {
-		forms := make([]pkmn.AddPokemonFormDto, len(descriptor.Forms))
+		forms := make([]*pkmn.PokemonForm, len(descriptor.Forms))
 		for i, f := range descriptor.Forms {
-			abilities := make([]string, len(f.Abilities))
-			copy(abilities, f.Abilities)
+			var type2 *pkmn.PokemonType
+			if f.Type2 != nil {
+				type2 = store.FindTypeBySymbol(*f.Type2)
+			}
 
-			forms[i] = pkmn.AddPokemonFormDto{
+			abilities := make([]*pkmn.Ability, 0, len(f.Abilities))
+			for _, sym := range f.Abilities {
+				if a := store.FindAbilityBySymbol(sym); a != nil {
+					abilities = append(abilities, a)
+				}
+			}
+
+			form, err := pkmn.NewPokemonForm(pkmn.PokemonFormConfig{
 				Form:             f.Form,
-				Type1:            f.Type1,
-				Type2:            f.Type2,
+				Type1:            store.FindTypeBySymbol(f.Type1),
+				Type2:            type2,
 				Height:           f.Height,
 				Weight:           f.Weight,
 				BaseHp:           f.BaseHp,
@@ -127,20 +148,29 @@ func Load(folder string) (*pkmn.Store, error) {
 				BabyDbSymbol:     f.BabyDbSymbol,
 				BabyForm:         f.BabyForm,
 				ItemHeld:         mapItemHelds(f.ItemHeld),
+				AbilitySymbols:   f.Abilities,
 				Abilities:        abilities,
 				FrontOffsetY:     f.FrontOffsetY,
 				Name:             f.Name,
 				Description:      f.Description,
-				CustomProperties: make(map[string]any),
 				Resources:        mapPokemonResources(f.Resources),
+			})
+			if err != nil {
+				return nil, err
 			}
+
+			forms[i] = form
 		}
 
-		store.AddPokemon(pkmn.AddPokemonDto{
+		pokemon, err := pkmn.NewPokemon(pkmn.PokemonConfig{
 			ID:       descriptor.ID,
 			DbSymbol: descriptor.DbSymbol,
 			Forms:    forms,
 		})
+		if err != nil {
+			return nil, err
+		}
+		store.AddPokemon(pokemon)
 	}
 
 	return store, nil

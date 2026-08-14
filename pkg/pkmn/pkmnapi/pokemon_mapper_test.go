@@ -8,17 +8,26 @@ import (
 
 func TestPokemonToThumbnail(t *testing.T) {
 	lang := "test"
-	normalType := pkmn.NewTypeBuilder().DbSymbol("normal").Build()
-	form := pkmn.NewPokemonFormBuilder().
-		Form(0).
-		Type1(normalType).
-		Name(pkmn.Translation{lang: "testName"}).
-		Build()
-	pokemon := pkmn.NewPokemonBuilder().
-		ID(1).
-		DbSymbol("test").
-		Forms([]*pkmn.PokemonForm{form}).
-		Build()
+	normalType, err := pkmn.NewPokemonType(pkmn.PokemonTypeConfig{DbSymbol: "normal"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	form, err := pkmn.NewPokemonForm(pkmn.PokemonFormConfig{
+		Form:  0,
+		Type1: normalType,
+		Name:  pkmn.Translation{lang: "testName"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	pokemon, err := pkmn.NewPokemon(pkmn.PokemonConfig{
+		ID:       1,
+		DbSymbol: "test",
+		Forms:    []*pkmn.PokemonForm{form},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	typeMapper := NewTypeMapper()
 	abilityMapper := NewAbilityMapper()
@@ -45,26 +54,35 @@ func TestPokemonToThumbnail(t *testing.T) {
 
 func TestPokemonToDetail(t *testing.T) {
 	lang := "test"
-	normalType := pkmn.NewTypeBuilder().DbSymbol("normal").Build()
+	normalType, err := pkmn.NewPokemonType(pkmn.PokemonTypeConfig{DbSymbol: "normal"})
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	form := pkmn.NewPokemonFormBuilder().
-		Form(1).
-		Type1(normalType).
-		BaseHp(100).
-		BaseAtk(50).
-		Name(pkmn.Translation{lang: "testName"}).
-		Description(pkmn.Translation{lang: "testDesc"}).
-		Build()
-	pokemon := pkmn.NewPokemonBuilder().
-		ID(1).
-		DbSymbol("test").
-		Forms([]*pkmn.PokemonForm{form}).
-		Build()
+	form, err := pkmn.NewPokemonForm(pkmn.PokemonFormConfig{
+		Form:        1,
+		Type1:       normalType,
+		BaseHp:      100,
+		BaseAtk:     50,
+		Name:        pkmn.Translation{lang: "testName"},
+		Description: pkmn.Translation{lang: "testDesc"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	pokemon, err := pkmn.NewPokemon(pkmn.PokemonConfig{
+		ID:       1,
+		DbSymbol: "test",
+		Forms:    []*pkmn.PokemonForm{form},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	typeMapper := NewTypeMapper()
 	abilityMapper := NewAbilityMapper()
 	store := pkmn.NewStore()
-	store.AddType(pkmn.AddTypeDto{DbSymbol: "normal"})
+	store.AddType(normalType)
 	pokemonMapper := NewPokemonMapper(typeMapper, abilityMapper, store)
 
 	policy := NewPokemonFilterPolicy()

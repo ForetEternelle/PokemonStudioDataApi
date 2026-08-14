@@ -5,11 +5,22 @@ import (
 )
 
 func TestNewPokemonQueryFilter(t *testing.T) {
+	form, err := NewPokemonForm(PokemonFormConfig{Form: 0, Name: Translation{"en": "Pikachu", "fr": "Pikachu", "de": "Pikachu"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	pokemon, err := NewPokemon(PokemonConfig{
+		ID:       25,
+		DbSymbol: "pikachu",
+		Forms:    []*PokemonForm{form},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	pwf := PokemonWithForm{
-		Pokemon: NewPokemonBuilder().ID(25).DbSymbol("pikachu").Forms([]*PokemonForm{
-			NewPokemonFormBuilder().Form(0).Name(Translation{"en": "Pikachu", "fr": "Pikachu", "de": "Pikachu"}).Build(),
-		}).Build(),
-		FormId: 0,
+		Pokemon: pokemon,
+		FormId:  0,
 	}
 
 	t.Run("ID match", func(t *testing.T) {
@@ -79,9 +90,18 @@ func TestNewPokemonFormTypesFilter(t *testing.T) {
 	grass := &PokemonType{dbSymbol: "grass"}
 	flying := &PokemonType{dbSymbol: "flying"}
 
-	charizard := NewPokemonFormBuilder().Form(0).Type1(fire).Type2(flying).Build()
-	squirtle := NewPokemonFormBuilder().Form(0).Type1(water).Build()
-	bulbasaur := NewPokemonFormBuilder().Form(0).Type1(grass).Build()
+	charizard, err := NewPokemonForm(PokemonFormConfig{Form: 0, Type1: fire, Type2: flying})
+	if err != nil {
+		t.Fatal(err)
+	}
+	squirtle, err := NewPokemonForm(PokemonFormConfig{Form: 0, Type1: water})
+	if err != nil {
+		t.Fatal(err)
+	}
+	bulbasaur, err := NewPokemonForm(PokemonFormConfig{Form: 0, Type1: grass})
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	t.Run("match type1", func(t *testing.T) {
 		if !NewPokemonFormTypesFilter([]string{"fire"})(charizard) {

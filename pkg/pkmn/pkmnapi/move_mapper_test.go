@@ -8,17 +8,23 @@ import (
 
 func TestMoveToDetail(t *testing.T) {
 	lang := "test"
-	fireType := pkmn.NewTypeBuilder().DbSymbol("fire").Build()
-	move := pkmn.NewMoveBuilder().
-		DbSymbol("testDbSymbol").
-		Name(pkmn.Translation{lang: "testName"}).
-		Description(pkmn.Translation{lang: "testDescription"}).
-		Power(80).
-		Accuracy(100).
-		PP(15).
-		Type(fireType).
-		Category("special").
-		Build()
+	fireType, err := pkmn.NewPokemonType(pkmn.PokemonTypeConfig{DbSymbol: "fire"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	move, err := pkmn.NewMove(pkmn.MoveConfig{
+		DbSymbol:    "testDbSymbol",
+		Name:        pkmn.Translation{lang: "testName"},
+		Description: pkmn.Translation{lang: "testDescription"},
+		Power:       80,
+		Accuracy:    100,
+		PP:          15,
+		Type:        fireType,
+		Category:    "special",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	typeMapper := NewTypeMapper()
 	moveMapper := NewMoveMapper(typeMapper)
@@ -61,17 +67,23 @@ func TestMoveToDetail(t *testing.T) {
 
 func TestMoveToPartial(t *testing.T) {
 	lang := "test"
-	fireType := pkmn.NewTypeBuilder().DbSymbol("fire").Build()
-	move := pkmn.NewMoveBuilder().
-		DbSymbol("testDbSymbol").
-		Name(pkmn.Translation{lang: "testName"}).
-		Description(pkmn.Translation{lang: "testDescription"}).
-		Power(80).
-		Accuracy(100).
-		PP(15).
-		Type(fireType).
-		Category("special").
-		Build()
+	fireType, err := pkmn.NewPokemonType(pkmn.PokemonTypeConfig{DbSymbol: "fire"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	move, err := pkmn.NewMove(pkmn.MoveConfig{
+		DbSymbol:    "testDbSymbol",
+		Name:        pkmn.Translation{lang: "testName"},
+		Description: pkmn.Translation{lang: "testDescription"},
+		Power:       80,
+		Accuracy:    100,
+		PP:          15,
+		Type:        fireType,
+		Category:    "special",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	typeMapper := NewTypeMapper()
 	moveMapper := NewMoveMapper(typeMapper)

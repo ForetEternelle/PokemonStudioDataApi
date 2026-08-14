@@ -2,6 +2,7 @@ package pkmn
 
 import (
 	"iter"
+	"log/slog"
 	"slices"
 	"strings"
 
@@ -50,6 +51,44 @@ func NewStore() *Store {
 		movesBySymbol:           movesBySymbol,
 		pokemonNameTranslations: []Translation{},
 	}
+}
+
+// AddType adds a PokemonType to the store.
+func (s *Store) AddType(pokemonType *PokemonType) {
+	s.types = append(s.types, pokemonType)
+	s.pokemonTypesBySymbol[pokemonType.DbSymbol()] = pokemonType
+	slog.Info("Adding pokemon type", "symbol", pokemonType.DbSymbol())
+}
+
+// AddAbility adds an Ability to the store.
+func (s *Store) AddAbility(ability *Ability) {
+	s.abilities = append(s.abilities, ability)
+	s.abilitiesBySymbol[ability.DbSymbol()] = ability
+	slog.Info("Adding ability", "symbol", ability.DbSymbol())
+}
+
+// AddMove adds a Move to the store.
+func (s *Store) AddMove(move *Move) {
+	s.moves = append(s.moves, move)
+	s.movesBySymbol[move.DbSymbol()] = move
+	slog.Info("Adding move", "symbol", move.DbSymbol())
+}
+
+// AddPokemon adds a Pokemon to the store, keeping the list sorted by ID.
+func (s *Store) AddPokemon(pokemon *Pokemon) {
+	insertIndex, _ := slices.BinarySearchFunc(s.pokemonList, pokemon, func(a, b *Pokemon) int {
+		return int(a.id) - int(b.id)
+	})
+
+	s.pokemonList = slices.Insert(s.pokemonList, insertIndex, pokemon)
+	s.pokemonBySymbol[pokemon.DbSymbol()] = pokemon
+
+	translationIt := iter2.Map(slices.Values(pokemon.forms), func(form *PokemonForm) Translation {
+		return form.name
+	})
+	s.pokemonNameTranslations = append(s.pokemonNameTranslations, slices.Collect(translationIt)...)
+
+	slog.Info("Adding pokemon", "symbol", pokemon.DbSymbol())
 }
 
 func (s *Store) FindAllPokemon(filters ...iter2.FilterFunc[*Pokemon]) iter.Seq[*Pokemon] {

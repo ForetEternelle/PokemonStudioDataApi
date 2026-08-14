@@ -8,12 +8,15 @@ import (
 
 func TestToTypeDetail(t *testing.T) {
 	lang := "test"
-	pokemonType := pkmn.NewTypeBuilder().
-		DbSymbol("testDbSymbol").
-		Color("testColor").
-		Name(pkmn.Translation{lang: "testName"}).
-		DamageTo(map[string]float32{"defType2": 0.5}).
-		Build()
+	pokemonType, err := pkmn.NewPokemonType(pkmn.PokemonTypeConfig{
+		DbSymbol: "testDbSymbol",
+		Color:    "testColor",
+		Name:     pkmn.Translation{lang: "testName"},
+		DamageTo: map[string]float32{"defType2": 0.5},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	typeMapper := NewTypeMapper()
 	policy := NewPokemonFilterPolicy()
@@ -41,11 +44,14 @@ func TestToTypeDetail(t *testing.T) {
 
 func TestToTypePartial(t *testing.T) {
 	lang := "test"
-	pokemonType := pkmn.NewTypeBuilder().
-		DbSymbol("testDbSymbol").
-		Color("testColor").
-		Name(pkmn.Translation{lang: "testName"}).
-		Build()
+	pokemonType, err := pkmn.NewPokemonType(pkmn.PokemonTypeConfig{
+		DbSymbol: "testDbSymbol",
+		Color:    "testColor",
+		Name:     pkmn.Translation{lang: "testName"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	typeMapper := NewTypeMapper()
 	policy := NewPokemonFilterPolicy()

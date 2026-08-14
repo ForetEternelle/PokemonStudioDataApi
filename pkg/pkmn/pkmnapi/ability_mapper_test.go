@@ -8,11 +8,14 @@ import (
 
 func TestToAbilityDetail(t *testing.T) {
 	lang := "test"
-	ability := pkmn.NewAbilityBuilder().
-		DbSymbol("testDbSymbol").
-		Name(pkmn.Translation{lang: "testName"}).
-		Description(pkmn.Translation{lang: "testDescription"}).
-		Build()
+	ability, err := pkmn.NewAbility(pkmn.AbilityConfig{
+		DbSymbol:    "testDbSymbol",
+		Name:        pkmn.Translation{lang: "testName"},
+		Description: pkmn.Translation{lang: "testDescription"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	abilityMapper := NewAbilityMapper()
 	abilityDetail := abilityMapper.ToAbilityDetail(*ability, lang)
@@ -32,11 +35,14 @@ func TestToAbilityDetail(t *testing.T) {
 
 func TestToAbilityPartial(t *testing.T) {
 	lang := "test"
-	ability := pkmn.NewAbilityBuilder().
-		DbSymbol("testDbSymbol").
-		Name(pkmn.Translation{lang: "testName"}).
-		Description(pkmn.Translation{lang: "testDescription"}).
-		Build()
+	ability, err := pkmn.NewAbility(pkmn.AbilityConfig{
+		DbSymbol:    "testDbSymbol",
+		Name:        pkmn.Translation{lang: "testName"},
+		Description: pkmn.Translation{lang: "testDescription"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	abilityMapper := NewAbilityMapper()
 	abilityPartial := abilityMapper.ToAbilityPartial(*ability, lang)

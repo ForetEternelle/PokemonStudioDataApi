@@ -1,9 +1,34 @@
 package pkmn
 
 import (
+	"errors"
 	"iter"
 	"maps"
 )
+
+// PokemonTypeConfig configures a new PokemonType.
+type PokemonTypeConfig struct {
+	DbSymbol string
+	Color    string
+	TextId   int
+	Name     Translation
+	DamageTo map[string]float32
+}
+
+// NewPokemonType creates an immutable PokemonType from the given config.
+func NewPokemonType(cfg PokemonTypeConfig) (*PokemonType, error) {
+	if cfg.DbSymbol == "" {
+		return nil, errors.New("pkmn: PokemonType dbSymbol is required")
+	}
+
+	return &PokemonType{
+		dbSymbol: cfg.DbSymbol,
+		color:    cfg.Color,
+		textId:   cfg.TextId,
+		name:     cfg.Name,
+		damageTo: maps.Clone(cfg.DamageTo),
+	}, nil
+}
 
 // PokemonType represents a Pokemon type (e.g., Fire, Water, Grass).
 type PokemonType struct {

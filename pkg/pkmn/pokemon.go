@@ -1,7 +1,9 @@
 package pkmn
 
 import (
+	"errors"
 	"iter"
+	"slices"
 )
 
 // ExperienceErratic is the erratic experience type.
@@ -36,12 +38,38 @@ const (
 // ExperienceType is a type alias for experience types.
 type ExperienceType string
 
+// PokemonConfig configures a new Pokemon.
+type PokemonConfig struct {
+	ID       int32
+	DbSymbol string
+	Forms    []*PokemonForm
+}
+
+// NewPokemon creates an immutable Pokemon from the given config.
+func NewPokemon(cfg PokemonConfig) (*Pokemon, error) {
+	if cfg.DbSymbol == "" {
+		return nil, errors.New("pkmn: Pokemon dbSymbol is required")
+	}
+
+	forms := slices.Clone(cfg.Forms)
+	slices.SortFunc(forms, func(a, b *PokemonForm) int {
+		return int(a.form - b.form)
+	})
+
+	return &Pokemon{
+		id:               cfg.ID,
+		dbSymbol:         cfg.DbSymbol,
+		forms:            forms,
+		CustomProperties: make(map[string]any),
+	}, nil
+}
+
 // Pokemon represents a Pokémon species with all its forms.
 type Pokemon struct {
 	id               int32
 	dbSymbol         string
 	forms            []*PokemonForm
-	customProperties map[string]any
+	CustomProperties map[string]any
 }
 
 // ID returns the national ID of the Pokemon.
@@ -75,17 +103,97 @@ func (p *Pokemon) Form(form int32) (*PokemonForm, bool) {
 	return nil, false
 }
 
-// CustomProperties returns the custom properties of the Pokemon.
-func (p *Pokemon) CustomProperties() map[string]any {
-	return p.customProperties
-}
-
 // ComparePokemonId compares two Pokemon by their ID.
 func ComparePokemonId(p1, p2 Pokemon) int {
 	if p1.id >= p2.id {
 		return 1
 	}
 	return -1
+}
+
+// PokemonFormConfig configures a new PokemonForm.
+type PokemonFormConfig struct {
+	Form             int32
+	Height           float32
+	Weight           float32
+	Type1            *PokemonType
+	Type2            *PokemonType
+	BaseHp           int32
+	BaseAtk          int32
+	BaseDfe          int32
+	BaseSpd          int32
+	BaseAts          int32
+	BaseDfs          int32
+	EvHp             int32
+	EvAtk            int32
+	EvDfe            int32
+	EvSpd            int32
+	EvAts            int32
+	EvDfs            int32
+	Evolutions       []Evolution
+	ExperienceType   string
+	BaseExperience   int32
+	BaseLoyalty      int32
+	CatchRate        int32
+	FemaleRate       float32
+	BreedGroups      []string
+	HatchSteps       int32
+	BabyDbSymbol     *string
+	BabyForm         int32
+	ItemHeld         []*ItemHeld
+	AbilitySymbols   []string
+	Abilities        []*Ability
+	FrontOffsetY     int32
+	Name             Translation
+	Description      Translation
+	Resources        PokemonResources
+}
+
+// NewPokemonForm creates an immutable PokemonForm from the given config.
+func NewPokemonForm(cfg PokemonFormConfig) (*PokemonForm, error) {
+	var babyDbSymbol *string
+	if cfg.BabyDbSymbol != nil {
+		babySymbol := *cfg.BabyDbSymbol
+		babyDbSymbol = &babySymbol
+	}
+
+	return &PokemonForm{
+		form:             cfg.Form,
+		height:           cfg.Height,
+		weight:           cfg.Weight,
+		type1:            cfg.Type1,
+		type2:            cfg.Type2,
+		baseHp:           cfg.BaseHp,
+		baseAtk:          cfg.BaseAtk,
+		baseDfe:          cfg.BaseDfe,
+		baseSpd:          cfg.BaseSpd,
+		baseAts:          cfg.BaseAts,
+		baseDfs:          cfg.BaseDfs,
+		evHp:             cfg.EvHp,
+		evAtk:            cfg.EvAtk,
+		evDfe:            cfg.EvDfe,
+		evSpd:            cfg.EvSpd,
+		evAts:            cfg.EvAts,
+		evDfs:            cfg.EvDfs,
+		evolutions:       slices.Clone(cfg.Evolutions),
+		experienceType:   cfg.ExperienceType,
+		baseExperience:   cfg.BaseExperience,
+		baseLoyalty:      cfg.BaseLoyalty,
+		catchRate:        cfg.CatchRate,
+		femaleRate:       cfg.FemaleRate,
+		breedGroups:      slices.Clone(cfg.BreedGroups),
+		hatchSteps:       cfg.HatchSteps,
+		babyDbSymbol:     babyDbSymbol,
+		babyForm:         cfg.BabyForm,
+		itemHeld:         slices.Clone(cfg.ItemHeld),
+		abilitySymbols:   slices.Clone(cfg.AbilitySymbols),
+		abilities:        slices.Clone(cfg.Abilities),
+		frontOffsetY:     cfg.FrontOffsetY,
+		name:             cfg.Name,
+		description:      cfg.Description,
+		CustomProperties: make(map[string]any),
+		resources:        cfg.Resources,
+	}, nil
 }
 
 // PokemonForm represents a specific form of a Pokemon species.
@@ -123,7 +231,7 @@ type PokemonForm struct {
 	frontOffsetY     int32
 	name             Translation
 	description      Translation
-	customProperties map[string]any
+	CustomProperties map[string]any
 	resources        PokemonResources
 }
 
@@ -268,11 +376,6 @@ func (f *PokemonForm) Name(lang string) string {
 // Description returns the description translations of the PokemonForm.
 func (f *PokemonForm) Description(lang string) string {
 	return f.description[lang]
-}
-
-// CustomProperties returns the custom properties of the PokemonForm.
-func (f *PokemonForm) CustomProperties() map[string]any {
-	return f.customProperties
 }
 
 // Resources returns the resources of the PokemonForm.

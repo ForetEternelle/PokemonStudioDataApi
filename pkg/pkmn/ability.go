@@ -1,5 +1,31 @@
 package pkmn
 
+import "errors"
+
+// AbilityConfig configures a new Ability.
+type AbilityConfig struct {
+	DbSymbol    string
+	ID          int
+	TextId      int
+	Name        Translation
+	Description Translation
+}
+
+// NewAbility creates an immutable Ability from the given config.
+func NewAbility(cfg AbilityConfig) (*Ability, error) {
+	if cfg.DbSymbol == "" {
+		return nil, errors.New("pkmn: Ability dbSymbol is required")
+	}
+
+	return &Ability{
+		dbSymbol:    cfg.DbSymbol,
+		id:          cfg.ID,
+		textId:      cfg.TextId,
+		name:        cfg.Name,
+		description: cfg.Description,
+	}, nil
+}
+
 // Ability represents a Pokemon ability.
 type Ability struct {
 	dbSymbol    string

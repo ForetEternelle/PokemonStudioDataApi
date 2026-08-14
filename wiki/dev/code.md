@@ -85,20 +85,21 @@ Edit the generated handler file to add business logic.
 
 ## Code Patterns
 
-### Builder Pattern
+### Entity Construction
 
-Used for constructing complex domain entities. Each entity has a corresponding builder in `pkg/studio/`:
+Domain entities (`Pokemon`, `PokemonForm`, `Move`, `Ability`, `PokemonType`) are immutable: fields are unexported and exposed through getters. They are constructed with a config struct and a constructor that validates and deep-copies the data:
 
 ```go
-func NewPokemonBuilder() *PokemonBuilder
+func NewPokemon(cfg PokemonConfig) (*Pokemon, error)
 
-// Fluent API for building entities
-pokemon := studio.NewPokemonBuilder().
-    ID(25).
-    DbSymbol("pikachu").
-    Name(studio.Translation{"en": "Pikachu", "fr": "Pikachu"}).
-    Build()
+pokemon, err := NewPokemon(PokemonConfig{
+    ID:       25,
+    DbSymbol: "pikachu",
+    Forms:    []*PokemonForm{form},
+})
 ```
+
+Constructors validate required fields (e.g. `DbSymbol`) and return an error when invalid, and clone slices/maps so the entity never aliases caller-owned data. The `Store.Add*` methods register already-constructed entities.
 
 ### Service Layer
 
@@ -116,7 +117,7 @@ Services are injected with dependencies (store, mappers, factories) for testabil
 
 ### Mapper Pattern
 
-Mappers transform domain entities to API response models. Located in `pkg/studio/pkmnapi/`:
+Mappers transform domain entities to API response models. Located in `pkg/pkmn/pkmnapi/`:
 
 ```go
 func (m PokemonMapper) PokemonToThumbnail(p studio.Pokemon, lang string, policy *AccessPolicy) *PokemonThumbnail

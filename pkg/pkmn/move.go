@@ -1,7 +1,60 @@
 package pkmn
 
+import (
+	"errors"
+	"slices"
+)
+
 // MoveCategory represents a move category (Physical, Special, Status).
 type MoveCategory string
+
+// MoveConfig configures a new Move.
+type MoveConfig struct {
+	ID               int
+	DbSymbol         string
+	Type             *PokemonType
+	Category         MoveCategory
+	Power            int
+	Accuracy         int
+	PP               int
+	CriticalRate     int
+	Priority         int
+	MapUse           int
+	Targeting        MoveTargeting
+	Execution        MoveExecution
+	MechanicalTags   []MoveMechanicalTag
+	Interactions     []MoveInteraction
+	SecondaryEffects MoveSecondaryEffects
+	Name             Translation
+	Description      Translation
+}
+
+// NewMove creates an immutable Move from the given config.
+func NewMove(cfg MoveConfig) (*Move, error) {
+	if cfg.DbSymbol == "" {
+		return nil, errors.New("pkmn: Move dbSymbol is required")
+	}
+
+	return &Move{
+		id:               cfg.ID,
+		dbSymbol:         cfg.DbSymbol,
+		moveType:         cfg.Type,
+		category:         cfg.Category,
+		power:            cfg.Power,
+		accuracy:         cfg.Accuracy,
+		pp:               cfg.PP,
+		criticalRate:     cfg.CriticalRate,
+		priority:         cfg.Priority,
+		mapUse:           cfg.MapUse,
+		targeting:        cfg.Targeting,
+		execution:        cfg.Execution,
+		mechanicalTags:   slices.Clone(cfg.MechanicalTags),
+		interactions:     slices.Clone(cfg.Interactions),
+		secondaryEffects: cfg.SecondaryEffects,
+		name:             cfg.Name,
+		description:      cfg.Description,
+	}, nil
+}
 
 // Move represents a Pokemon move.
 type Move struct {

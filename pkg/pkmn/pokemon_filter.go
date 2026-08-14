@@ -1,6 +1,7 @@
 package pkmn
 
 import (
+	"slices"
 	"strconv"
 	"strings"
 
@@ -44,5 +45,48 @@ func NewPokemonFormTypesFilter(types []string) iter2.FilterFunc[*PokemonForm] {
 			}
 		}
 		return false
+	}
+}
+
+// PokemonWithFormTags returns the tags of a PokemonWithForm, from both the pokemon and its form.
+func PokemonWithFormTags(pwf PokemonWithForm) []string {
+	tags := pwf.Pokemon.Tags
+	if f, ok := pwf.Pokemon.Form(pwf.FormId); ok {
+		tags = append(tags, f.Tags...)
+	}
+	return tags
+}
+
+// NewPokemonWithTagsFilter returns a filter function that checks if a PokemonWithForm
+// matches any of the given tags (on the pokemon or its form).
+func NewPokemonWithTagsFilter(tags []string) iter2.FilterFunc[PokemonWithForm] {
+	if len(tags) == 0 {
+		return iter2.True
+	}
+
+	return func(pwf PokemonWithForm) bool {
+		for _, tag := range PokemonWithFormTags(pwf) {
+			if slices.Contains(tags, tag) {
+				return true
+			}
+		}
+		return false
+	}
+}
+
+// NewPokemonWithoutTagsFilter returns a filter function that checks if a PokemonWithForm
+// has none of the given tags (on the pokemon or its form).
+func NewPokemonWithoutTagsFilter(tags []string) iter2.FilterFunc[PokemonWithForm] {
+	if len(tags) == 0 {
+		return iter2.True
+	}
+
+	return func(pwf PokemonWithForm) bool {
+		for _, tag := range PokemonWithFormTags(pwf) {
+			if slices.Contains(tags, tag) {
+				return false
+			}
+		}
+		return true
 	}
 }

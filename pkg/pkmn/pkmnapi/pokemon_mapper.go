@@ -37,12 +37,16 @@ func (m PokemonMapper) PokemonToThumbnail(p pkmn.Pokemon, formId int32, lang str
 	}
 
 	thumbnail := &PokemonThumbnail{
-		Symbol: p.DbSymbol(),
-		Number: p.ID(),
-		Form: formId,
-		Image:  p.DbSymbol(),
-		Type1:  m.typeMapper.ToTypePartial(form.Type1(), lang, policy),
-		Name:   form.Name(lang),
+		Symbol:           p.DbSymbol(),
+		Number:           p.ID(),
+		Form:             formId,
+		Image:            p.DbSymbol(),
+		Type1:            m.typeMapper.ToTypePartial(form.Type1(), lang, policy),
+		Name:             form.Name(lang),
+		CustomProperties: p.CustomProperties,
+		Tags:             p.Tags,
+		FormCustomProperties: form.CustomProperties,
+		FormTags: form.Tags,
 	}
 
 	var type2, okType2 = form.Type2()
@@ -56,18 +60,19 @@ func (m PokemonMapper) PokemonToThumbnail(p pkmn.Pokemon, formId int32, lang str
 func (m PokemonMapper) PokemonToDetail(p pkmn.Pokemon, formId int32, lang string, policy PokemonFilterPolicy) *PokemonDetails {
 	slog.Debug("Mapping pokemon to details", "pokemon", p.DbSymbol(), "lang", lang)
 
-	
 	formFilter := iter2.And(policy.FormFilter)
 	f, ok := p.Form(formId)
 
-	if !ok || !formFilter(f){
+	if !ok || !formFilter(f) {
 		return nil
 	}
 
 	return &PokemonDetails{
-		Symbol:   p.DbSymbol(),
-		Number:   p.ID(),
-		Form: *m.FormToPokemonFormDetails(*f, lang, policy),
+		Symbol:           p.DbSymbol(),
+		Number:           p.ID(),
+		Form:             *m.FormToPokemonFormDetails(*f, lang, policy),
+		CustomProperties: p.CustomProperties,
+		Tags:             p.Tags,
 	}
 }
 
@@ -92,7 +97,7 @@ func (m PokemonMapper) FormToPokemonFormDetails(f pkmn.PokemonForm, lang string,
 	babyForm := f.BabyForm()
 
 	return &FormDetails{
-		Number: form,
+		Number:      form,
 		Name:        f.Name(lang),
 		Description: f.Description(lang),
 		Height:      f.Height(),
@@ -115,15 +120,17 @@ func (m PokemonMapper) FormToPokemonFormDetails(f pkmn.PokemonForm, lang string,
 		EvAts: f.EvAts(),
 		EvDfs: f.EvDfs(),
 
-		ExperienceType: f.ExperienceType(),
-		BaseExperience: f.BaseExperience(),
-		BaseLoyalty:    f.BaseLoyalty(),
-		CatchRate:      f.CatchRate(),
-		FemaleRate:     f.FemaleRate(),
-		HatchSteps:     f.HatchSteps(),
-		BabyDbSymbol:   f.BabyDbSymbol(),
-		BabyForm:       &babyForm,
-		Abilities:      slices.Collect(abilityPartialIt),
+		ExperienceType:   f.ExperienceType(),
+		BaseExperience:   f.BaseExperience(),
+		BaseLoyalty:      f.BaseLoyalty(),
+		CatchRate:        f.CatchRate(),
+		FemaleRate:       f.FemaleRate(),
+		HatchSteps:       f.HatchSteps(),
+		BabyDbSymbol:     f.BabyDbSymbol(),
+		BabyForm:         &babyForm,
+		Abilities:        slices.Collect(abilityPartialIt),
+		CustomProperties: f.CustomProperties,
+		Tags:             f.Tags,
 	}
 }
 
@@ -146,11 +153,13 @@ func (m PokemonMapper) FormToPokemonFormPartial(f pkmn.PokemonForm, lang string,
 		Type1: partialType1,
 		Type2: partialType2,
 
-		BaseHp:  f.BaseHp(),
-		BaseAtk: f.BaseAtk(),
-		BaseDfe: f.BaseDfe(),
-		BaseSpd: f.BaseSpd(),
-		BaseAts: f.BaseAts(),
-		BaseDfs: f.BaseDfs(),
+		BaseHp:           f.BaseHp(),
+		BaseAtk:          f.BaseAtk(),
+		BaseDfe:          f.BaseDfe(),
+		BaseSpd:          f.BaseSpd(),
+		BaseAts:          f.BaseAts(),
+		BaseDfs:          f.BaseDfs(),
+		CustomProperties: f.CustomProperties,
+		Tags:             f.Tags,
 	}
 }

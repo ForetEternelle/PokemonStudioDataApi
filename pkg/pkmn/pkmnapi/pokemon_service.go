@@ -56,8 +56,8 @@ func (s PokemonService) GetPokemonDetailsByName(requestCtx context.Context, name
 	return ImplResponse{Code: 200, Body: s.pokemonMapper.PokemonToDetail(*pkmn, 0, lang, *policy)}, nil
 }
 
-func (s PokemonService) GetPokemon(requestCtx context.Context, lang string, size int32, lastId *int32, lastForm *int32, mainFormsOnly bool, query *string, types []string) (ImplResponse, error) {
-	slog.Debug("GetPokemon called with parameters", "lang", lang, "size", size, "lastId", lastId, "lastForm", lastForm, "mainFormsOnly", mainFormsOnly, "query", query, "types", types)
+func (s PokemonService) GetPokemon(requestCtx context.Context, lang string, size int32, lastId *int32, lastForm *int32, mainFormsOnly bool, query *string, types []string, withTags []string, withoutTags []string) (ImplResponse, error) {
+	slog.Debug("GetPokemon called with parameters", "lang", lang, "size", size, "lastId", lastId, "lastForm", lastForm, "mainFormsOnly", mainFormsOnly, "query", query, "types", types, "withTags", withTags, "withoutTags", withoutTags)
 	policy := s.pokemonAccessPolicyFactory(requestCtx)
 	formFilters := iter2.And(
 		policy.FormFilter,
@@ -88,6 +88,16 @@ func (s PokemonService) GetPokemon(requestCtx context.Context, lang string, size
 	if query != nil {
 		slog.Debug("Query filter provided for GetPokemon", "query", *query)
 		pwfIt = iter2.Filter(pwfIt, pkmn.NewPokemonQueryFilter(*query, lang))
+	}
+
+	if len(withTags) > 0 {
+		slog.Debug("With tags filter provided for GetPokemon", "withTags", withTags)
+		pwfIt = iter2.Filter(pwfIt, pkmn.NewPokemonWithTagsFilter(withTags))
+	}
+
+	if len(withoutTags) > 0 {
+		slog.Debug("Without tags filter provided for GetPokemon", "withoutTags", withoutTags)
+		pwfIt = iter2.Filter(pwfIt, pkmn.NewPokemonWithoutTagsFilter(withoutTags))
 	}
 
 	thumbnailsIt := iter2.Map(pwfIt, func(pwf pkmn.PokemonWithForm) *PokemonThumbnail {

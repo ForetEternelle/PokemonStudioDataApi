@@ -43,6 +43,12 @@ type FormPartial struct {
 
 	// The base special defense stat
 	BaseDfs int32 `json:"baseDfs"`
+
+	// Tags setted by the developer
+	Tags []string `json:"tags"`
+
+	// Custom properties setted by the developer
+	CustomProperties map[string]interface{} `json:"customProperties"`
 }
 
 // AssertFormPartialRequired checks if the required fields are not zero-ed
@@ -57,6 +63,8 @@ func AssertFormPartialRequired(obj FormPartial) error {
 		"baseSpd": obj.BaseSpd,
 		"baseAts": obj.BaseAts,
 		"baseDfs": obj.BaseDfs,
+		"tags": obj.Tags,
+		"customProperties": obj.CustomProperties,
 	}
 	for name, el := range elements {
 		if isZero := IsZeroValue(el); isZero {

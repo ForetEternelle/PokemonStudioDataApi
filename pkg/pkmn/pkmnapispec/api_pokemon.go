@@ -194,7 +194,15 @@ func (c *PokemonAPIController) GetPokemon(w http.ResponseWriter, r *http.Request
 	if query.Has("types") {
 		typesParam = strings.Split(query.Get("types"), ",")
 	}
-	result, err := c.service.GetPokemon(r.Context(), langParam, sizeParam, lastIdParam, lastFormParam, mainFormsOnlyParam, queryParam, typesParam)
+	var withTagsParam []string
+	if query.Has("withTags") {
+		withTagsParam = strings.Split(query.Get("withTags"), ",")
+	}
+	var withoutTagsParam []string
+	if query.Has("withoutTags") {
+		withoutTagsParam = strings.Split(query.Get("withoutTags"), ",")
+	}
+	result, err := c.service.GetPokemon(r.Context(), langParam, sizeParam, lastIdParam, lastFormParam, mainFormsOnlyParam, queryParam, typesParam, withTagsParam, withoutTagsParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

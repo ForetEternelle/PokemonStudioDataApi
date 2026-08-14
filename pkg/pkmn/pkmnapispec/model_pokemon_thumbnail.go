@@ -36,7 +36,16 @@ type PokemonThumbnail struct {
 	Type2 *TypePartial `json:"type2,omitempty"`
 
 	// Custom properties setted by the developer
-	CustomProperties map[string]interface{} `json:"customProperties,omitempty"`
+	CustomProperties map[string]interface{} `json:"customProperties"`
+
+	// Tags setted by the developer
+	Tags []string `json:"tags"`
+
+	// Custom properties setted by the developer
+	FormCustomProperties map[string]interface{} `json:"formCustomProperties"`
+
+	// Tags setted by the developer
+	FormTags []string `json:"formTags"`
 }
 
 // AssertPokemonThumbnailRequired checks if the required fields are not zero-ed
@@ -48,6 +57,10 @@ func AssertPokemonThumbnailRequired(obj PokemonThumbnail) error {
 		"form": obj.Form,
 		"image": obj.Image,
 		"type1": obj.Type1,
+		"customProperties": obj.CustomProperties,
+		"tags": obj.Tags,
+		"formCustomProperties": obj.FormCustomProperties,
+		"formTags": obj.FormTags,
 	}
 	for name, el := range elements {
 		if isZero := IsZeroValue(el); isZero {

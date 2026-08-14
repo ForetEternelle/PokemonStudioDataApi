@@ -4,6 +4,8 @@ required:
   - symbol
   - number
   - form
+  - tags
+  - customProperties
 properties:
   symbol:
     type: string
@@ -15,3 +17,9 @@ properties:
     example: 25
   form :
     $ref: "./FormDetails.yml"
+  tags:
+    $ref: "../Tags.yml"
+    description: Tags setted by the developer
+  customProperties:
+    $ref: "../CustomProperties.yml"
+    description: Custom properties setted by the developer

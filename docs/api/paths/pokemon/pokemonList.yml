@@ -12,6 +12,8 @@ get:
     - $ref: "../../parameters/pokemon-filter.yml#/mainFormsOnly"
     - $ref: "../../parameters/pokemon-filter.yml#/query"
     - $ref: "../../parameters/pokemon-filter.yml#/types"
+    - $ref: "../../parameters/pokemon-filter.yml#/withTags"
+    - $ref: "../../parameters/pokemon-filter.yml#/withoutTags"
   responses:
     "200":
       description: OK

@@ -29,6 +29,8 @@ required:
   - itemHeld
   - abilities
   - image
+  - tags
+  - customProperties
 properties:
     number:
         type: integer
@@ -183,3 +185,9 @@ properties:
         description: The list of abilities
         items:
             $ref: "../abilities/AbilityPartial.yml"
+    tags:
+        $ref: "../Tags.yml"
+        description: Tags setted by the developer
+    customProperties:
+        $ref: "../CustomProperties.yml"
+        description: Custom properties setted by the developer

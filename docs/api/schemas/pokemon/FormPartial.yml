@@ -11,6 +11,8 @@ required:
   - baseAts
   - baseDfs
   - image
+  - tags
+  - customProperties
 properties:
     number:
         type: integer
@@ -53,3 +55,9 @@ properties:
         type: integer
         description: The base special defense stat
         example: 50
+    tags:
+        $ref: "../Tags.yml"
+        description: Tags setted by the developer
+    customProperties:
+        $ref: "../CustomProperties.yml"
+        description: Custom properties setted by the developer

@@ -9,7 +9,7 @@ const DataFolder = "../../../test/test_resources/valid-data"
 
 func TestFindTypeBySymbol(t *testing.T) {
 	store := NewStore()
-	store.AddType(	newTestType(t, nil))
+	store.AddType(newTestTypeDto(nil))
 
 	found := store.FindTypeBySymbol("test")
 	if found == nil {
@@ -19,9 +19,9 @@ func TestFindTypeBySymbol(t *testing.T) {
 
 func TestFindAllTypes(t *testing.T) {
 	store := NewStore()
-	store.AddType(	newTestType(t, nil))
-	store.AddType(	newTestType(t, nil))
-	store.AddType(	newTestType(t, nil))
+	store.AddType(newTestTypeDto(nil))
+	store.AddType(newTestTypeDto(nil))
+	store.AddType(newTestTypeDto(nil))
 
 	allIter := store.FindAllTypes()
 	allSlice := slices.Collect(allIter)
@@ -32,11 +32,11 @@ func TestFindAllTypes(t *testing.T) {
 
 func TestFindAllPokemon(t *testing.T) {
 	store := NewStore()
-	store.AddPokemon(	newTestPokemon(t, 1, "1"))
-	store.AddPokemon(	newTestPokemon(t, 2, "2"))
-	store.AddPokemon(	newTestPokemon(t, 4, "4"))
+	store.AddPokemon(newTestPokemonDto(1, "1"))
+	store.AddPokemon(newTestPokemonDto(2, "2"))
+	store.AddPokemon(newTestPokemonDto(4, "4"))
 
-	idLessThan3 := func(pkmn *Pokemon) bool { return pkmn.ID() < 3 }
+	idLessThan3 := func(pkmn *Pokemon) bool { return pkmn.ID < 3 }
 	result := store.FindAllPokemon(idLessThan3)
 	resultLen := len(slices.Collect(result))
 
@@ -47,9 +47,9 @@ func TestFindAllPokemon(t *testing.T) {
 
 func TestFindPokemonBySymbol(t *testing.T) {
 	store := NewStore()
-	store.AddPokemon(	newTestPokemon(t, 1, "1"))
-	store.AddPokemon(	newTestPokemon(t, 2, "2"))
-	store.AddPokemon(	newTestPokemon(t, 4, "4"))
+	store.AddPokemon(newTestPokemonDto(1, "1"))
+	store.AddPokemon(newTestPokemonDto(2, "2"))
+	store.AddPokemon(newTestPokemonDto(4, "4"))
 
 	notFound := store.FindPokemonBySymbol("3")
 	if notFound != nil {
@@ -60,18 +60,18 @@ func TestFindPokemonBySymbol(t *testing.T) {
 	if found == nil {
 		t.Error("Expect result not to be null")
 	}
-	if found.ID() != 4 {
-		t.Error("Expect result ID to be 4, is", found.ID())
+	if found.ID != 4 {
+		t.Error("Expect result ID to be 4, is", found.ID)
 	}
 }
 
 func TestFindAllPokemonWithFilters(t *testing.T) {
 	store := NewStore()
-	store.AddPokemon(	newTestPokemon(t, 1, "pikachu"))
-	store.AddPokemon(	newTestPokemon(t, 2, "bulbasaur"))
-	store.AddPokemon(	newTestPokemon(t, 3, "charmander"))
+	store.AddPokemon(newTestPokemonDto(1, "pikachu"))
+	store.AddPokemon(newTestPokemonDto(2, "bulbasaur"))
+	store.AddPokemon(newTestPokemonDto(3, "charmander"))
 
-	idGreaterThan1 := func(p *Pokemon) bool { return p.ID() > 1 }
+	idGreaterThan1 := func(p *Pokemon) bool { return p.ID > 1 }
 	result := store.FindAllPokemon(idGreaterThan1)
 	resultSlice := slices.Collect(result)
 
@@ -83,19 +83,13 @@ func TestFindAllPokemonWithFilters(t *testing.T) {
 func TestFindPokemonByName_RealData(t *testing.T) {
 	store := NewStore()
 
-	form, err := NewPokemonForm(PokemonFormConfig{Form: 0, Name: Translation{"en": "Abomasnow", "fr": "Blizzaroi"}})
-	if err != nil {
-		t.Fatal(err)
-	}
-	pokemon, err := NewPokemon(PokemonConfig{
+	store.AddPokemon(AddPokemonDto{
 		ID:       460,
 		DbSymbol: "abomasnow",
-		Forms:    []*PokemonForm{form},
+		Forms: []AddPokemonFormDto{
+			{Form: 0, Name: Translation{"en": "Abomasnow", "fr": "Blizzaroi"}},
+		},
 	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	store.AddPokemon(pokemon)
 
 	p1 := store.FindPokemonByName("abomasnow")
 	if p1 == nil {
@@ -105,8 +99,8 @@ func TestFindPokemonByName_RealData(t *testing.T) {
 	p2 := store.FindPokemonByName("Blizzaroi")
 	if p2 == nil {
 		t.Error("Should find abomasnow by name (French CSV fallback)")
-	} else if p2.DbSymbol() != "abomasnow" {
-		t.Errorf("Expected abomasnow, got %s", p2.DbSymbol())
+	} else if p2.DbSymbol != "abomasnow" {
+		t.Errorf("Expected abomasnow, got %s", p2.DbSymbol)
 	}
 
 	p3 := store.FindPokemonByName("blizzaroi")

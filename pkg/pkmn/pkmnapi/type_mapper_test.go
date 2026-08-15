@@ -8,30 +8,27 @@ import (
 
 func TestToTypeDetail(t *testing.T) {
 	lang := "test"
-	pokemonType, err := pkmn.NewPokemonType(pkmn.PokemonTypeConfig{
+	pokemonType := &pkmn.PokemonType{
 		DbSymbol: "testDbSymbol",
 		Color:    "testColor",
 		Name:     pkmn.Translation{lang: "testName"},
 		DamageTo: map[string]float32{"defType2": 0.5},
-	})
-	if err != nil {
-		t.Fatal(err)
 	}
 
 	typeMapper := NewTypeMapper()
 	policy := NewPokemonFilterPolicy()
 	typeDetail := typeMapper.ToTypeDetail(*pokemonType, lang, *policy)
 
-	if typeDetail.Name != pokemonType.Name(lang) {
-		t.Error("Mapper should map name, expected", pokemonType.Name(lang), ", has", typeDetail.Name)
+	if typeDetail.Name != pokemonType.Name[lang] {
+		t.Error("Mapper should map name, expected", pokemonType.Name[lang], ", has", typeDetail.Name)
 	}
 
-	if typeDetail.Color != pokemonType.Color() {
-		t.Error("Mapper should map color, expected", pokemonType.Color(), ", has", typeDetail.Color)
+	if typeDetail.Color != pokemonType.Color {
+		t.Error("Mapper should map color, expected", pokemonType.Color, ", has", typeDetail.Color)
 	}
 
-	if typeDetail.Symbol != pokemonType.DbSymbol() {
-		t.Error("Mapper should map db symbol, expected", pokemonType.DbSymbol(), ", has", typeDetail.Symbol)
+	if typeDetail.Symbol != pokemonType.DbSymbol {
+		t.Error("Mapper should map db symbol, expected", pokemonType.DbSymbol, ", has", typeDetail.Symbol)
 	}
 
 	def, ok := typeDetail.TypeDamage["defType2"]
@@ -44,28 +41,25 @@ func TestToTypeDetail(t *testing.T) {
 
 func TestToTypePartial(t *testing.T) {
 	lang := "test"
-	pokemonType, err := pkmn.NewPokemonType(pkmn.PokemonTypeConfig{
+	pokemonType := &pkmn.PokemonType{
 		DbSymbol: "testDbSymbol",
 		Color:    "testColor",
 		Name:     pkmn.Translation{lang: "testName"},
-	})
-	if err != nil {
-		t.Fatal(err)
 	}
 
 	typeMapper := NewTypeMapper()
 	policy := NewPokemonFilterPolicy()
 	typePartial := typeMapper.ToTypePartial(*pokemonType, lang, *policy)
 
-	if typePartial.Name != pokemonType.Name(lang) {
-		t.Error("Mapper should map name, expected", pokemonType.Name(lang), ", has", typePartial.Name)
+	if typePartial.Name != pokemonType.Name[lang] {
+		t.Error("Mapper should map name, expected", pokemonType.Name[lang], ", has", typePartial.Name)
 	}
 
-	if typePartial.Color != pokemonType.Color() {
-		t.Error("Mapper should map color, expected", pokemonType.Color(), ", has", typePartial.Color)
+	if typePartial.Color != pokemonType.Color {
+		t.Error("Mapper should map color, expected", pokemonType.Color, ", has", typePartial.Color)
 	}
 
-	if typePartial.Symbol != pokemonType.DbSymbol() {
-		t.Error("Mapper should map db symbol, expected", pokemonType.DbSymbol(), ", has", typePartial.Symbol)
+	if typePartial.Symbol != pokemonType.DbSymbol {
+		t.Error("Mapper should map db symbol, expected", pokemonType.DbSymbol, ", has", typePartial.Symbol)
 	}
 }

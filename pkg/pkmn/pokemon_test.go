@@ -5,18 +5,18 @@ import (
 )
 
 func TestComparePokemonId(t *testing.T) {
-	p1 := 	newTestPokemon(t, 1, "p1")
-	p2 := 	newTestPokemon(t, 2, "p2")
-	p3 := 	newTestPokemon(t, 1, "p3")
+	p1 := newTestPokemon(t, 1, "p1")
+	p2 := newTestPokemon(t, 2, "p2")
+	p3 := newTestPokemon(t, 1, "p3")
 
 	if ComparePokemonId(*p1, *p2) != -1 {
-		t.Error("ComparePokemonId with p1:", p1.ID(), "and p2:", p2.ID(), "should return -1")
+		t.Error("ComparePokemonId with p1:", p1.ID, "and p2:", p2.ID, "should return -1")
 	}
 	if ComparePokemonId(*p2, *p1) != 1 {
-		t.Error("ComparePokemonId with p2:", p2.ID(), "and p1:", p1.ID(), "should return 1")
+		t.Error("ComparePokemonId with p2:", p2.ID, "and p1:", p1.ID, "should return 1")
 	}
 	if ComparePokemonId(*p1, *p3) != 1 {
-		t.Error("ComparePokemonId with p1:", p1.ID(), "and p3:", p3.ID(), "should return 1")
+		t.Error("ComparePokemonId with p1:", p1.ID, "and p3:", p3.ID, "should return 1")
 	}
 }
 

@@ -15,14 +15,14 @@ func NewPokemonQueryFilter(query string, langs ...string) iter2.FilterFunc[Pokem
 
 		p := pwf.Pokemon
 
-		idStr := strconv.Itoa(int(p.ID()))
+		idStr := strconv.Itoa(int(p.ID))
 		if strings.Contains(idStr, query) {
 			return true
 		}
 
 		f, _ := p.Form(pwf.FormId)
 		for _, lang := range langs {
-			nameUpper := strings.ToUpper(f.Name(lang))
+			nameUpper := strings.ToUpper(f.Name[lang])
 			if strings.Contains(nameUpper, queryUpper) {
 				return true
 			}
@@ -39,8 +39,8 @@ func NewPokemonFormTypesFilter(types []string) iter2.FilterFunc[*PokemonForm] {
 
 	return func(pf *PokemonForm) bool {
 		for _, t := range types {
-			if pf.type1.dbSymbol == t ||
-				(pf.type2 != nil && pf.type2.dbSymbol == t) {
+			if pf.Type1.DbSymbol == t ||
+				(pf.Type2 != nil && pf.Type2.DbSymbol == t) {
 				return true
 			}
 		}

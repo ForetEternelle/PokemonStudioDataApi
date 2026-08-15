@@ -1,11 +1,5 @@
 package pkmn
 
-import (
-	"errors"
-	"iter"
-	"slices"
-)
-
 // ExperienceErratic is the erratic experience type.
 const (
 	ExperienceErratic     = "erratic"
@@ -38,67 +32,26 @@ const (
 // ExperienceType is a type alias for experience types.
 type ExperienceType string
 
-// PokemonConfig configures a new Pokemon.
-type PokemonConfig struct {
-	ID       int32
-	DbSymbol string
-	Forms    []*PokemonForm
-}
-
-// NewPokemon creates an immutable Pokemon from the given config.
-func NewPokemon(cfg PokemonConfig) (*Pokemon, error) {
-	if cfg.DbSymbol == "" {
-		return nil, errors.New("pkmn: Pokemon dbSymbol is required")
-	}
-
-	forms := slices.Clone(cfg.Forms)
-	slices.SortFunc(forms, func(a, b *PokemonForm) int {
-		return int(a.form - b.form)
-	})
-
-	return &Pokemon{
-		id:               cfg.ID,
-		dbSymbol:         cfg.DbSymbol,
-		forms:            forms,
-		CustomProperties: make(map[string]any),
-		Tags:             make([]string, 0),
-	}, nil
-}
-
 // Pokemon represents a Pokémon species with all its forms.
+//
+// Entities are immutable by convention only: fields are exported but must not
+// be mutated after the entity has been registered in a store.
 type Pokemon struct {
-	id               int32
-	dbSymbol         string
-	forms            []*PokemonForm
+	// ID is the national ID of the Pokemon.
+	// Immutable: used to order the pokemon list in the store.
+	ID int32
+	// DbSymbol is the database symbol of the Pokemon.
+	// Immutable: used to index pokemon in the store.
+	DbSymbol         string
+	Forms            []*PokemonForm
 	CustomProperties map[string]any
 	Tags             []string
 }
 
-// ID returns the national ID of the Pokemon.
-func (p *Pokemon) ID() int32 {
-	return p.id
-}
-
-// DbSymbol returns the database symbol of the Pokemon.
-func (p *Pokemon) DbSymbol() string {
-	return p.dbSymbol
-}
-
-// Forms returns an iterator over all forms of the Pokemon.
-func (p *Pokemon) Forms() iter.Seq[*PokemonForm] {
-	return func(yield func(*PokemonForm) bool) {
-		for _, f := range p.forms {
-			if !yield(f) {
-				return
-			}
-		}
-	}
-}
-
 // Form returns a specific form of the Pokemon by its form number.
 func (p *Pokemon) Form(form int32) (*PokemonForm, bool) {
-	for _, f := range p.forms {
-		if f.form == form {
+	for _, f := range p.Forms {
+		if f.Form == form {
 			return f, true
 		}
 	}
@@ -107,379 +60,53 @@ func (p *Pokemon) Form(form int32) (*PokemonForm, bool) {
 
 // ComparePokemonId compares two Pokemon by their ID.
 func ComparePokemonId(p1, p2 Pokemon) int {
-	if p1.id >= p2.id {
+	if p1.ID >= p2.ID {
 		return 1
 	}
 	return -1
 }
 
-// PokemonFormConfig configures a new PokemonForm.
-type PokemonFormConfig struct {
-	Form           int32
-	Height         float32
-	Weight         float32
-	Type1          *PokemonType
-	Type2          *PokemonType
-	BaseHp         int32
-	BaseAtk        int32
-	BaseDfe        int32
-	BaseSpd        int32
-	BaseAts        int32
-	BaseDfs        int32
-	EvHp           int32
-	EvAtk          int32
-	EvDfe          int32
-	EvSpd          int32
-	EvAts          int32
-	EvDfs          int32
-	Evolutions     []Evolution
-	ExperienceType string
-	BaseExperience int32
-	BaseLoyalty    int32
-	CatchRate      int32
-	FemaleRate     float32
-	BreedGroups    []string
-	HatchSteps     int32
-	BabyDbSymbol   *string
-	BabyForm       int32
-	ItemHeld       []*ItemHeld
-	AbilitySymbols []string
-	Abilities      []*Ability
-	FrontOffsetY   int32
-	Name           Translation
-	Description    Translation
-	Resources      PokemonResources
-}
-
-// NewPokemonForm creates an immutable PokemonForm from the given config.
-func NewPokemonForm(cfg PokemonFormConfig) (*PokemonForm, error) {
-	var babyDbSymbol *string
-	if cfg.BabyDbSymbol != nil {
-		babySymbol := *cfg.BabyDbSymbol
-		babyDbSymbol = &babySymbol
-	}
-
-	return &PokemonForm{
-		form:             cfg.Form,
-		height:           cfg.Height,
-		weight:           cfg.Weight,
-		type1:            cfg.Type1,
-		type2:            cfg.Type2,
-		baseHp:           cfg.BaseHp,
-		baseAtk:          cfg.BaseAtk,
-		baseDfe:          cfg.BaseDfe,
-		baseSpd:          cfg.BaseSpd,
-		baseAts:          cfg.BaseAts,
-		baseDfs:          cfg.BaseDfs,
-		evHp:             cfg.EvHp,
-		evAtk:            cfg.EvAtk,
-		evDfe:            cfg.EvDfe,
-		evSpd:            cfg.EvSpd,
-		evAts:            cfg.EvAts,
-		evDfs:            cfg.EvDfs,
-		evolutions:       slices.Clone(cfg.Evolutions),
-		experienceType:   cfg.ExperienceType,
-		baseExperience:   cfg.BaseExperience,
-		baseLoyalty:      cfg.BaseLoyalty,
-		catchRate:        cfg.CatchRate,
-		femaleRate:       cfg.FemaleRate,
-		breedGroups:      slices.Clone(cfg.BreedGroups),
-		hatchSteps:       cfg.HatchSteps,
-		babyDbSymbol:     babyDbSymbol,
-		babyForm:         cfg.BabyForm,
-		itemHeld:         slices.Clone(cfg.ItemHeld),
-		abilitySymbols:   slices.Clone(cfg.AbilitySymbols),
-		abilities:        slices.Clone(cfg.Abilities),
-		frontOffsetY:     cfg.FrontOffsetY,
-		name:             cfg.Name,
-		description:      cfg.Description,
-		CustomProperties: make(map[string]any),
-		Tags:             make([]string, 0),
-		resources:        cfg.Resources,
-	}, nil
-}
-
 // PokemonForm represents a specific form of a Pokemon species.
+//
+// Entities are immutable by convention only: fields are exported but must not
+// be mutated after the entity has been registered in a store.
 type PokemonForm struct {
-	form             int32
-	height           float32
-	weight           float32
-	type1            *PokemonType
-	type2            *PokemonType
-	baseHp           int32
-	baseAtk          int32
-	baseDfe          int32
-	baseSpd          int32
-	baseAts          int32
-	baseDfs          int32
-	evHp             int32
-	evAtk            int32
-	evDfe            int32
-	evSpd            int32
-	evAts            int32
-	evDfs            int32
-	evolutions       []Evolution
-	experienceType   string
-	baseExperience   int32
-	baseLoyalty      int32
-	catchRate        int32
-	femaleRate       float32
-	breedGroups      []string
-	hatchSteps       int32
-	babyDbSymbol     *string
-	babyForm         int32
-	itemHeld         []*ItemHeld
-	abilitySymbols   []string
-	abilities        []*Ability
-	frontOffsetY     int32
-	name             Translation
-	description      Translation
+	Form             int32
+	Height           float32
+	Weight           float32
+	Type1            *PokemonType
+	Type2            *PokemonType
+	BaseHp           int32
+	BaseAtk          int32
+	BaseDfe          int32
+	BaseSpd          int32
+	BaseAts          int32
+	BaseDfs          int32
+	EvHp             int32
+	EvAtk            int32
+	EvDfe            int32
+	EvSpd            int32
+	EvAts            int32
+	EvDfs            int32
+	Evolutions       []Evolution
+	ExperienceType   string
+	BaseExperience   int32
+	BaseLoyalty      int32
+	CatchRate        int32
+	FemaleRate       float32
+	BreedGroups      []string
+	HatchSteps       int32
+	BabyDbSymbol     *string
+	BabyForm         int32
+	ItemHeld         []*ItemHeld
+	AbilitySymbols   []string
+	Abilities        []*Ability
+	FrontOffsetY     int32
+	Name             Translation
+	Description      Translation
 	CustomProperties map[string]any
 	Tags             []string
-	resources        PokemonResources
-}
-
-// Form returns the form number of the PokemonForm.
-func (f *PokemonForm) Form() int32 {
-	return f.form
-}
-
-// Height returns the height of the PokemonForm in meters.
-func (f *PokemonForm) Height() float32 {
-	return f.height
-}
-
-// Weight returns the weight of the PokemonForm in hectograms.
-func (f *PokemonForm) Weight() float32 {
-	return f.weight
-}
-
-// Type1 returns the primary type of the PokemonForm.
-func (f *PokemonForm) Type1() PokemonType {
-	return *f.type1
-}
-
-// Type2 returns the secondary type of the PokemonForm.
-func (f *PokemonForm) Type2() (PokemonType, bool) {
-	if f.type2 == nil {
-		return PokemonType{}, false
-	}
-	return *f.type2, true
-}
-
-// BaseHp returns the base HP of the PokemonForm.
-func (f *PokemonForm) BaseHp() int32 {
-	return f.baseHp
-}
-
-// BaseAtk returns the base Attack of the PokemonForm.
-func (f *PokemonForm) BaseAtk() int32 {
-	return f.baseAtk
-}
-
-// BaseDfe returns the base Defense of the PokemonForm.
-func (f *PokemonForm) BaseDfe() int32 {
-	return f.baseDfe
-}
-
-// BaseSpd returns the base Speed of the PokemonForm.
-func (f *PokemonForm) BaseSpd() int32 {
-	return f.baseSpd
-}
-
-// BaseAts returns the base Special Attack of the PokemonForm.
-func (f *PokemonForm) BaseAts() int32 {
-	return f.baseAts
-}
-
-// BaseDfs returns the base Special Defense of the PokemonForm.
-func (f *PokemonForm) BaseDfs() int32 {
-	return f.baseDfs
-}
-
-// EvHp returns the EV yield for HP of the PokemonForm.
-func (f *PokemonForm) EvHp() int32 {
-	return f.evHp
-}
-
-// EvAtk returns the EV yield for Attack of the PokemonForm.
-func (f *PokemonForm) EvAtk() int32 {
-	return f.evAtk
-}
-
-// EvDfe returns the EV yield for Defense of the PokemonForm.
-func (f *PokemonForm) EvDfe() int32 {
-	return f.evDfe
-}
-
-// EvSpd returns the EV yield for Speed of the PokemonForm.
-func (f *PokemonForm) EvSpd() int32 {
-	return f.evSpd
-}
-
-// EvAts returns the EV yield for Special Attack of the PokemonForm.
-func (f *PokemonForm) EvAts() int32 {
-	return f.evAts
-}
-
-// EvDfs returns the EV yield for Special Defense of the PokemonForm.
-func (f *PokemonForm) EvDfs() int32 {
-	return f.evDfs
-}
-
-// ExperienceType returns the experience type of the PokemonForm.
-func (f *PokemonForm) ExperienceType() string {
-	return f.experienceType
-}
-
-// BaseExperience returns the base experience of the PokemonForm.
-func (f *PokemonForm) BaseExperience() int32 {
-	return f.baseExperience
-}
-
-// BaseLoyalty returns the base loyalty of the PokemonForm.
-func (f *PokemonForm) BaseLoyalty() int32 {
-	return f.baseLoyalty
-}
-
-// CatchRate returns the catch rate of the PokemonForm.
-func (f *PokemonForm) CatchRate() int32 {
-	return f.catchRate
-}
-
-// FemaleRate returns the female rate of the PokemonForm.
-func (f *PokemonForm) FemaleRate() float32 {
-	return f.femaleRate
-}
-
-// HatchSteps returns the hatch steps of the PokemonForm.
-func (f *PokemonForm) HatchSteps() int32 {
-	return f.hatchSteps
-}
-
-// BabyDbSymbol returns the baby Pokemon database symbol of the PokemonForm.
-func (f *PokemonForm) BabyDbSymbol() *string {
-	return f.babyDbSymbol
-}
-
-// BabyForm returns the baby form number of the PokemonForm.
-func (f *PokemonForm) BabyForm() int32 {
-	return f.babyForm
-}
-
-// FrontOffsetY returns the front offset Y of the PokemonForm.
-func (f *PokemonForm) FrontOffsetY() int32 {
-	return f.frontOffsetY
-}
-
-// Name returns the name translations of the PokemonForm.
-func (f *PokemonForm) Name(lang string) string {
-	return f.name[lang]
-}
-
-// Description returns the description translations of the PokemonForm.
-func (f *PokemonForm) Description(lang string) string {
-	return f.description[lang]
-}
-
-// Resources returns the resources of the PokemonForm.
-func (f *PokemonForm) Resources() PokemonResources {
-	return f.resources
-}
-
-// Evolutions returns an iterator over the evolutions of the PokemonForm.
-func (f *PokemonForm) Evolutions() iter.Seq[Evolution] {
-	return func(yield func(Evolution) bool) {
-		for _, e := range f.evolutions {
-			if !yield(e) {
-				return
-			}
-		}
-	}
-}
-
-// Evolution returns a specific evolution by index.
-func (f *PokemonForm) Evolution(i int) (Evolution, bool) {
-	if i < 0 || i >= len(f.evolutions) {
-		return Evolution{}, false
-	}
-	return f.evolutions[i], true
-}
-
-// ItemHeld returns an iterator over the items held by the PokemonForm.
-func (f *PokemonForm) ItemHeld() iter.Seq[*ItemHeld] {
-	return func(yield func(*ItemHeld) bool) {
-		for _, item := range f.itemHeld {
-			if !yield(item) {
-				return
-			}
-		}
-	}
-}
-
-// Item returns a specific held item by index.
-func (f *PokemonForm) Item(i int) (*ItemHeld, bool) {
-	if i < 0 || i >= len(f.itemHeld) {
-		return nil, false
-	}
-	return f.itemHeld[i], true
-}
-
-// Abilities returns an iterator over the abilities of the PokemonForm.
-func (f *PokemonForm) Abilities() iter.Seq[*Ability] {
-	return func(yield func(*Ability) bool) {
-		for _, a := range f.abilities {
-			if !yield(a) {
-				return
-			}
-		}
-	}
-}
-
-// Ability returns a specific ability by index.
-func (f *PokemonForm) Ability(i int) (*Ability, bool) {
-	if i < 0 || i >= len(f.abilities) {
-		return nil, false
-	}
-	return f.abilities[i], true
-}
-
-// AbilitySymbols returns an iterator over the ability symbols of the PokemonForm.
-func (f *PokemonForm) AbilitySymbols() iter.Seq[string] {
-	return func(yield func(string) bool) {
-		for _, s := range f.abilitySymbols {
-			if !yield(s) {
-				return
-			}
-		}
-	}
-}
-
-// AbilitySymbol returns a specific ability symbol by index.
-func (f *PokemonForm) AbilitySymbol(i int) (string, bool) {
-	if i < 0 || i >= len(f.abilitySymbols) {
-		return "", false
-	}
-	return f.abilitySymbols[i], true
-}
-
-// BreedGroups returns an iterator over the breed groups of the PokemonForm.
-func (f *PokemonForm) BreedGroups() iter.Seq[string] {
-	return func(yield func(string) bool) {
-		for _, g := range f.breedGroups {
-			if !yield(g) {
-				return
-			}
-		}
-	}
-}
-
-// BreedGroup returns a specific breed group by index.
-func (f *PokemonForm) BreedGroup(i int) (string, bool) {
-	if i < 0 || i >= len(f.breedGroups) {
-		return "", false
-	}
-	return f.breedGroups[i], true
+	Resources        PokemonResources
 }
 
 // Evolution represents an evolution from one Pokemon to another.

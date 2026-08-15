@@ -36,17 +36,13 @@ func Load(folder string) (*pkmn.Store, error) {
 		return nil, err
 	}
 	for descriptor := range typeIterator {
-		pokemonType, err := pkmn.NewPokemonType(pkmn.PokemonTypeConfig{
+		store.AddType(pkmn.AddTypeDto{
 			DbSymbol: descriptor.DbSymbol,
 			Color:    descriptor.Color,
 			TextId:   descriptor.TextId,
 			Name:     descriptor.Name,
 			DamageTo: mapTypeDamages(descriptor.DamageTo),
 		})
-		if err != nil {
-			return nil, err
-		}
-		store.AddType(pokemonType)
 	}
 
 	abilityIterator, err := ImportAbility(studioFolder, translationFolder)
@@ -55,17 +51,13 @@ func Load(folder string) (*pkmn.Store, error) {
 		return nil, err
 	}
 	for descriptor := range abilityIterator {
-		ability, err := pkmn.NewAbility(pkmn.AbilityConfig{
+		store.AddAbility(pkmn.AddAbilityDto{
 			DbSymbol:    descriptor.DbSymbol,
 			ID:          descriptor.Id,
-			TextId:      descriptor.TextID,
+			TextID:      descriptor.TextID,
 			Name:        descriptor.Name,
 			Description: descriptor.Description,
 		})
-		if err != nil {
-			return nil, err
-		}
-		store.AddAbility(ability)
 	}
 
 	moveIterator, err := ImportMoves(studioFolder, translationFolder)
@@ -74,10 +66,10 @@ func Load(folder string) (*pkmn.Store, error) {
 		return nil, err
 	}
 	for descriptor := range moveIterator {
-		move, err := pkmn.NewMove(pkmn.MoveConfig{
+		store.AddMove(pkmn.AddMoveDto{
 			ID:               descriptor.Id,
 			DbSymbol:         descriptor.DbSymbol,
-			Type:             store.FindTypeBySymbol(descriptor.Type),
+			Type:             descriptor.Type,
 			Category:         pkmn.MoveCategory(descriptor.Category),
 			Power:            descriptor.Power,
 			Accuracy:         descriptor.Accuracy,
@@ -93,10 +85,6 @@ func Load(folder string) (*pkmn.Store, error) {
 			Name:             descriptor.Name,
 			Description:      descriptor.Description,
 		})
-		if err != nil {
-			return nil, err
-		}
-		store.AddMove(move)
 	}
 
 	pokemonIterator, err := ImportPokemon(studioFolder, translationFolder)
@@ -105,72 +93,50 @@ func Load(folder string) (*pkmn.Store, error) {
 		return nil, err
 	}
 	for descriptor := range pokemonIterator {
-		forms := make([]*pkmn.PokemonForm, len(descriptor.Forms))
+		forms := make([]pkmn.AddPokemonFormDto, len(descriptor.Forms))
 		for i, f := range descriptor.Forms {
-			var type2 *pkmn.PokemonType
-			if f.Type2 != nil {
-				type2 = store.FindTypeBySymbol(*f.Type2)
+			forms[i] = pkmn.AddPokemonFormDto{
+				Form:           f.Form,
+				Type1:          f.Type1,
+				Type2:          f.Type2,
+				Height:         f.Height,
+				Weight:         f.Weight,
+				BaseHp:         f.BaseHp,
+				BaseAtk:        f.BaseAtk,
+				BaseDfe:        f.BaseDfe,
+				BaseSpd:        f.BaseSpd,
+				BaseAts:        f.BaseAts,
+				BaseDfs:        f.BaseDfs,
+				EvHp:           f.EvHp,
+				EvAtk:          f.EvAtk,
+				EvDfe:          f.EvDfe,
+				EvSpd:          f.EvSpd,
+				EvAts:          f.EvAts,
+				EvDfs:          f.EvDfs,
+				Evolutions:     mapEvolutions(f.Evolutions),
+				ExperienceType: ExperienceTypeMap[f.ExperienceType],
+				BaseExperience: f.BaseExperience,
+				BaseLoyalty:    f.BaseLoyalty,
+				CatchRate:      f.CatchRate,
+				FemaleRate:     f.FemaleRate,
+				BreedGroups:    mapBreedGroups(f.BreedGroups),
+				HatchSteps:     f.HatchSteps,
+				BabyDbSymbol:   f.BabyDbSymbol,
+				BabyForm:       f.BabyForm,
+				ItemHeld:       mapItemHelds(f.ItemHeld),
+				AbilitySymbols: f.Abilities,
+				FrontOffsetY:   f.FrontOffsetY,
+				Name:           f.Name,
+				Description:    f.Description,
+				Resources:      mapPokemonResources(f.Resources),
 			}
-
-			abilities := make([]*pkmn.Ability, 0, len(f.Abilities))
-			for _, sym := range f.Abilities {
-				if a := store.FindAbilityBySymbol(sym); a != nil {
-					abilities = append(abilities, a)
-				}
-			}
-
-			form, err := pkmn.NewPokemonForm(pkmn.PokemonFormConfig{
-				Form:             f.Form,
-				Type1:            store.FindTypeBySymbol(f.Type1),
-				Type2:            type2,
-				Height:           f.Height,
-				Weight:           f.Weight,
-				BaseHp:           f.BaseHp,
-				BaseAtk:          f.BaseAtk,
-				BaseDfe:          f.BaseDfe,
-				BaseSpd:          f.BaseSpd,
-				BaseAts:          f.BaseAts,
-				BaseDfs:          f.BaseDfs,
-				EvHp:             f.EvHp,
-				EvAtk:            f.EvAtk,
-				EvDfe:            f.EvDfe,
-				EvSpd:            f.EvSpd,
-				EvAts:            f.EvAts,
-				EvDfs:            f.EvDfs,
-				Evolutions:       mapEvolutions(f.Evolutions),
-				ExperienceType:   ExperienceTypeMap[f.ExperienceType],
-				BaseExperience:   f.BaseExperience,
-				BaseLoyalty:      f.BaseLoyalty,
-				CatchRate:        f.CatchRate,
-				FemaleRate:       f.FemaleRate,
-				BreedGroups:      mapBreedGroups(f.BreedGroups),
-				HatchSteps:       f.HatchSteps,
-				BabyDbSymbol:     f.BabyDbSymbol,
-				BabyForm:         f.BabyForm,
-				ItemHeld:         mapItemHelds(f.ItemHeld),
-				AbilitySymbols:   f.Abilities,
-				Abilities:        abilities,
-				FrontOffsetY:     f.FrontOffsetY,
-				Name:             f.Name,
-				Description:      f.Description,
-				Resources:        mapPokemonResources(f.Resources),
-			})
-			if err != nil {
-				return nil, err
-			}
-
-			forms[i] = form
 		}
 
-		pokemon, err := pkmn.NewPokemon(pkmn.PokemonConfig{
+		store.AddPokemon(pkmn.AddPokemonDto{
 			ID:       descriptor.ID,
 			DbSymbol: descriptor.DbSymbol,
 			Forms:    forms,
 		})
-		if err != nil {
-			return nil, err
-		}
-		store.AddPokemon(pokemon)
 	}
 
 	return store, nil
@@ -460,9 +426,9 @@ func ImportPokemon(studioFolder, translationFolder string) (iter.Seq[*PokemonDes
 				form := &pokemonDesc.Forms[i]
 				formTextId := form.FormTextId
 
-				if formTextId.Name == 0{
+				if formTextId.Name == 0 {
 					form.Name = MapTranslation(int(pokemonDesc.ID), pokemonNameTranslations)
-				}else{
+				} else {
 					form.Name = MapTranslation(formTextId.Name, pokemonFormNameTranslations)
 				}
 

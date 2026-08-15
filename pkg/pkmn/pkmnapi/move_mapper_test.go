@@ -8,22 +8,16 @@ import (
 
 func TestMoveToDetail(t *testing.T) {
 	lang := "test"
-	fireType, err := pkmn.NewPokemonType(pkmn.PokemonTypeConfig{DbSymbol: "fire"})
-	if err != nil {
-		t.Fatal(err)
-	}
-	move, err := pkmn.NewMove(pkmn.MoveConfig{
+	fireType := &pkmn.PokemonType{DbSymbol: "fire"}
+	move := &pkmn.Move{
 		DbSymbol:    "testDbSymbol",
 		Name:        pkmn.Translation{lang: "testName"},
 		Description: pkmn.Translation{lang: "testDescription"},
 		Power:       80,
 		Accuracy:    100,
 		PP:          15,
-		Type:        fireType,
+		MoveType:    fireType,
 		Category:    "special",
-	})
-	if err != nil {
-		t.Fatal(err)
 	}
 
 	typeMapper := NewTypeMapper()
@@ -31,58 +25,51 @@ func TestMoveToDetail(t *testing.T) {
 	policy := NewPokemonFilterPolicy()
 	moveDetail := moveMapper.ToMoveDetail(*move, lang, *policy)
 
-	if moveDetail.Name != move.Name(lang) {
-		t.Error("Mapper should map name, expected", move.Name(lang), ", has", moveDetail.Name)
+	if moveDetail.Name != move.Name[lang] {
+		t.Error("Mapper should map name, expected", move.Name[lang], ", has", moveDetail.Name)
 	}
 
-	if moveDetail.Symbol != move.DbSymbol() {
-		t.Error("Mapper should map db symbol, expected", move.DbSymbol(), ", has", moveDetail.Symbol)
+	if moveDetail.Symbol != move.DbSymbol {
+		t.Error("Mapper should map db symbol, expected", move.DbSymbol, ", has", moveDetail.Symbol)
 	}
 
-	if moveDetail.Description != move.Description(lang) {
-		t.Error("Mapper should map description, expected", move.Description(lang), ", has", moveDetail.Description)
+	if moveDetail.Description != move.Description[lang] {
+		t.Error("Mapper should map description, expected", move.Description[lang], ", has", moveDetail.Description)
 	}
 
-	if moveDetail.Power != int32(move.Power()) {
-		t.Error("Mapper should map power, expected", move.Power(), ", has", moveDetail.Power)
+	if moveDetail.Power != int32(move.Power) {
+		t.Error("Mapper should map power, expected", move.Power, ", has", moveDetail.Power)
 	}
 
-	if moveDetail.Accuracy != int32(move.Accuracy()) {
-		t.Error("Mapper should map accuracy, expected", move.Accuracy(), ", has", moveDetail.Accuracy)
+	if moveDetail.Accuracy != int32(move.Accuracy) {
+		t.Error("Mapper should map accuracy, expected", move.Accuracy, ", has", moveDetail.Accuracy)
 	}
 
-	if moveDetail.Pp != int32(move.PP()) {
-		t.Error("Mapper should map pp, expected", move.PP(), ", has", moveDetail.Pp)
+	if moveDetail.Pp != int32(move.PP) {
+		t.Error("Mapper should map pp, expected", move.PP, ", has", moveDetail.Pp)
 	}
 
-	pt := move.Type()
-	if moveDetail.Type.Symbol != pt.DbSymbol() {
-		t.Error("Mapper should map type symbol, expected", pt.DbSymbol(), ", has", moveDetail.Type.Symbol)
+	if moveDetail.Type.Symbol != fireType.DbSymbol {
+		t.Error("Mapper should map type symbol, expected", fireType.DbSymbol, ", has", moveDetail.Type.Symbol)
 	}
 
-	if moveDetail.Category != string(move.Category()) {
-		t.Error("Mapper should map category, expected", move.Category(), ", has", moveDetail.Category)
+	if moveDetail.Category != string(move.Category) {
+		t.Error("Mapper should map category, expected", move.Category, ", has", moveDetail.Category)
 	}
 }
 
 func TestMoveToPartial(t *testing.T) {
 	lang := "test"
-	fireType, err := pkmn.NewPokemonType(pkmn.PokemonTypeConfig{DbSymbol: "fire"})
-	if err != nil {
-		t.Fatal(err)
-	}
-	move, err := pkmn.NewMove(pkmn.MoveConfig{
+	fireType := &pkmn.PokemonType{DbSymbol: "fire"}
+	move := &pkmn.Move{
 		DbSymbol:    "testDbSymbol",
 		Name:        pkmn.Translation{lang: "testName"},
 		Description: pkmn.Translation{lang: "testDescription"},
 		Power:       80,
 		Accuracy:    100,
 		PP:          15,
-		Type:        fireType,
+		MoveType:    fireType,
 		Category:    "special",
-	})
-	if err != nil {
-		t.Fatal(err)
 	}
 
 	typeMapper := NewTypeMapper()
@@ -90,11 +77,11 @@ func TestMoveToPartial(t *testing.T) {
 	policy := NewPokemonFilterPolicy()
 	movePartial := moveMapper.ToMovePartial(*move, lang, *policy)
 
-	if movePartial.Name != move.Name(lang) {
-		t.Error("Mapper should map name, expected", move.Name(lang), ", has", movePartial.Name)
+	if movePartial.Name != move.Name[lang] {
+		t.Error("Mapper should map name, expected", move.Name[lang], ", has", movePartial.Name)
 	}
 
-	if movePartial.Symbol != move.DbSymbol() {
-		t.Error("Mapper should map db symbol, expected", move.DbSymbol(), ", has", movePartial.Symbol)
+	if movePartial.Symbol != move.DbSymbol {
+		t.Error("Mapper should map db symbol, expected", move.DbSymbol, ", has", movePartial.Symbol)
 	}
 }

@@ -1,13 +1,12 @@
 package pkmn
 
-import (
-	"errors"
-	"iter"
-	"maps"
-)
-
-// PokemonTypeConfig configures a new PokemonType.
-type PokemonTypeConfig struct {
+// PokemonType represents a Pokemon type (e.g., Fire, Water, Grass).
+//
+// Entities are immutable by convention only: fields are exported but must not
+// be mutated after the entity has been registered in a store.
+type PokemonType struct {
+	// DbSymbol is the database symbol of the PokemonType.
+	// Immutable: used to index PokemonTypes in the store.
 	DbSymbol string
 	Color    string
 	TextId   int
@@ -15,58 +14,9 @@ type PokemonTypeConfig struct {
 	DamageTo map[string]float32
 }
 
-// NewPokemonType creates an immutable PokemonType from the given config.
-func NewPokemonType(cfg PokemonTypeConfig) (*PokemonType, error) {
-	if cfg.DbSymbol == "" {
-		return nil, errors.New("pkmn: PokemonType dbSymbol is required")
-	}
-
-	return &PokemonType{
-		dbSymbol: cfg.DbSymbol,
-		color:    cfg.Color,
-		textId:   cfg.TextId,
-		name:     cfg.Name,
-		damageTo: maps.Clone(cfg.DamageTo),
-	}, nil
-}
-
-// PokemonType represents a Pokemon type (e.g., Fire, Water, Grass).
-type PokemonType struct {
-	dbSymbol string
-	color    string
-	textId   int
-	name     Translation
-	damageTo map[string]float32
-}
-
-// DbSymbol returns the database symbol of the PokemonType.
-func (t *PokemonType) DbSymbol() string {
-	return t.dbSymbol
-}
-
-// Color returns the color of the PokemonType.
-func (t *PokemonType) Color() string {
-	return t.color
-}
-
-// TextId returns the text ID of the PokemonType.
-func (t *PokemonType) TextId() int {
-	return t.textId
-}
-
-// Name returns the localized name of the PokemonType for the given language.
-func (t *PokemonType) Name(lang string) string {
-	return t.name[lang]
-}
-
-// DamageTo returns an iterator over the type damage relations.
-func (t *PokemonType) DamageTo() iter.Seq2[string, float32] {
-	return maps.All(t.damageTo)
-}
-
 // Damage returns the type damage relation for a defending type.
 func (t *PokemonType) Damage(defType string) (float32, bool) {
-	factor, ok := t.damageTo[defType]
+	factor, ok := t.DamageTo[defType]
 	return factor, ok
 }
 
@@ -84,5 +34,3 @@ func (t *PokemonType) DamageToTypes(type1, type2 string) float32 {
 	}
 	return res
 }
-
-

@@ -1,18 +1,18 @@
 package pkmn
 
-import (
-	"errors"
-	"slices"
-)
-
 // MoveCategory represents a move category (Physical, Special, Status).
 type MoveCategory string
 
-// MoveConfig configures a new Move.
-type MoveConfig struct {
-	ID               int
+// Move represents a Pokemon move.
+//
+// Entities are immutable by convention only: fields are exported but must not
+// be mutated after the entity has been registered in a store.
+type Move struct {
+	// DbSymbol is the database symbol of the Move.
+	// Immutable: used to index moves in the store.
 	DbSymbol         string
-	Type             *PokemonType
+	ID               int
+	MoveType         *PokemonType
 	Category         MoveCategory
 	Power            int
 	Accuracy         int
@@ -27,141 +27,6 @@ type MoveConfig struct {
 	SecondaryEffects MoveSecondaryEffects
 	Name             Translation
 	Description      Translation
-}
-
-// NewMove creates an immutable Move from the given config.
-func NewMove(cfg MoveConfig) (*Move, error) {
-	if cfg.DbSymbol == "" {
-		return nil, errors.New("pkmn: Move dbSymbol is required")
-	}
-
-	return &Move{
-		id:               cfg.ID,
-		dbSymbol:         cfg.DbSymbol,
-		moveType:         cfg.Type,
-		category:         cfg.Category,
-		power:            cfg.Power,
-		accuracy:         cfg.Accuracy,
-		pp:               cfg.PP,
-		criticalRate:     cfg.CriticalRate,
-		priority:         cfg.Priority,
-		mapUse:           cfg.MapUse,
-		targeting:        cfg.Targeting,
-		execution:        cfg.Execution,
-		mechanicalTags:   slices.Clone(cfg.MechanicalTags),
-		interactions:     slices.Clone(cfg.Interactions),
-		secondaryEffects: cfg.SecondaryEffects,
-		name:             cfg.Name,
-		description:      cfg.Description,
-	}, nil
-}
-
-// Move represents a Pokemon move.
-type Move struct {
-	id           int
-	dbSymbol     string
-	moveType     *PokemonType
-	category     MoveCategory
-	power        int
-	accuracy     int
-	pp           int
-	criticalRate int
-	priority     int
-	mapUse       int
-
-	targeting        MoveTargeting
-	execution        MoveExecution
-	mechanicalTags   []MoveMechanicalTag
-	interactions     []MoveInteraction
-	secondaryEffects MoveSecondaryEffects
-
-	name        Translation
-	description Translation
-}
-
-// ID returns the ID of the Move.
-func (m *Move) ID() int {
-	return m.id
-}
-
-// DbSymbol returns the database symbol of the Move.
-func (m *Move) DbSymbol() string {
-	return m.dbSymbol
-}
-
-// Type returns the type of the Move.
-func (m *Move) Type() PokemonType {
-	return *m.moveType
-}
-
-// Category returns the category of the Move.
-func (m *Move) Category() MoveCategory {
-	return m.category
-}
-
-// Power returns the power of the Move.
-func (m *Move) Power() int {
-	return m.power
-}
-
-// Accuracy returns the accuracy of the Move.
-func (m *Move) Accuracy() int {
-	return m.accuracy
-}
-
-// PP returns the PP of the Move.
-func (m *Move) PP() int {
-	return m.pp
-}
-
-// CriticalRate returns the critical rate of the Move.
-func (m *Move) CriticalRate() int {
-	return m.criticalRate
-}
-
-// Priority returns the priority of the Move.
-func (m *Move) Priority() int {
-	return m.priority
-}
-
-// MapUse returns the map use of the Move.
-func (m *Move) MapUse() int {
-	return m.mapUse
-}
-
-// Name returns the localized name of the Move for the given language.
-func (m *Move) Name(lang string) string {
-	return m.name[lang]
-}
-
-// Description returns the localized description of the Move for the given language.
-func (m *Move) Description(lang string) string {
-	return m.description[lang]
-}
-
-// Targeting returns the targeting of the Move.
-func (m *Move) Targeting() MoveTargeting {
-	return m.targeting
-}
-
-// Execution returns the execution of the Move.
-func (m *Move) Execution() MoveExecution {
-	return m.execution
-}
-
-// MechanicalTags returns the mechanical tags of the Move.
-func (m *Move) MechanicalTags() []MoveMechanicalTag {
-	return m.mechanicalTags
-}
-
-// Interactions returns the interactions of the Move.
-func (m *Move) Interactions() []MoveInteraction {
-	return m.interactions
-}
-
-// SecondaryEffects returns the secondary effects of the Move.
-func (m *Move) SecondaryEffects() MoveSecondaryEffects {
-	return m.secondaryEffects
 }
 
 // AimedTarget represents the target of a move
@@ -280,5 +145,3 @@ type MoveSecondaryEffects struct {
 	StatusEffects    []MoveStatusEffect
 	StatStageChanges []MoveStatStageChange
 }
-
-

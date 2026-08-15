@@ -72,10 +72,10 @@ func (s *Store) FindAllPokemonWithForm(opts ...FindAllPokemonWithFormOption) ite
 	if options.LastId != nil {
 		var ok bool
 		startAt, ok = slices.BinarySearchFunc(s.pokemonList, *options.LastId, func(p *Pokemon, id int32) int {
-			return int(p.ID()) - int(id)
+			return int(p.ID) - int(id)
 		})
 		if ok {
-			startAt ++
+			startAt++
 			slog.Debug("Last ID found in pokemon list, starting from next index", "lastId", *options.LastId, "startAt", startAt)
 		}
 	}
@@ -91,7 +91,7 @@ func (s *Store) FindAllPokemonWithForm(opts ...FindAllPokemonWithFormOption) ite
 				if mainForm == nil || !options.FormFilter(mainForm) {
 					continue
 				}
-				
+
 				if !yield(PokemonWithForm{
 					Pokemon: pokemon,
 					FormId:  0,
@@ -101,12 +101,12 @@ func (s *Store) FindAllPokemonWithForm(opts ...FindAllPokemonWithFormOption) ite
 				continue
 			}
 
-			formIt := pokemon.Forms()
+			formIt := slices.Values(pokemon.Forms)
 			formIt = iter2.Filter(formIt, options.FormFilter)
 			for form := range formIt {
 				if !yield(PokemonWithForm{
 					Pokemon: pokemon,
-					FormId:  form.form,
+					FormId:  form.Form,
 				}) {
 					return
 				}

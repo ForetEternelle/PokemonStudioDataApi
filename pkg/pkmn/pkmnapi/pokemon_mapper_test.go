@@ -8,25 +8,16 @@ import (
 
 func TestPokemonToThumbnail(t *testing.T) {
 	lang := "test"
-	normalType, err := pkmn.NewPokemonType(pkmn.PokemonTypeConfig{DbSymbol: "normal"})
-	if err != nil {
-		t.Fatal(err)
-	}
-	form, err := pkmn.NewPokemonForm(pkmn.PokemonFormConfig{
+	normalType := &pkmn.PokemonType{DbSymbol: "normal"}
+	form := &pkmn.PokemonForm{
 		Form:  0,
 		Type1: normalType,
 		Name:  pkmn.Translation{lang: "testName"},
-	})
-	if err != nil {
-		t.Fatal(err)
 	}
-	pokemon, err := pkmn.NewPokemon(pkmn.PokemonConfig{
+	pokemon := &pkmn.Pokemon{
 		ID:       1,
 		DbSymbol: "test",
 		Forms:    []*pkmn.PokemonForm{form},
-	})
-	if err != nil {
-		t.Fatal(err)
 	}
 
 	typeMapper := NewTypeMapper()
@@ -38,69 +29,60 @@ func TestPokemonToThumbnail(t *testing.T) {
 	thumbnail := pokemonMapper.PokemonToThumbnail(*pokemon, 0, lang,
 		*policy)
 
-	if thumbnail.Image != pokemon.DbSymbol() {
-		t.Error("Mapper should map image, expected", pokemon.DbSymbol(), ", has", thumbnail.Image)
+	if thumbnail.Image != pokemon.DbSymbol {
+		t.Error("Mapper should map image, expected", pokemon.DbSymbol, ", has", thumbnail.Image)
 	}
-	if thumbnail.Symbol != pokemon.DbSymbol() {
-		t.Error("Mapper should map db symbol, expected", pokemon.DbSymbol(), ", has", thumbnail.Symbol)
+	if thumbnail.Symbol != pokemon.DbSymbol {
+		t.Error("Mapper should map db symbol, expected", pokemon.DbSymbol, ", has", thumbnail.Symbol)
 	}
-	if thumbnail.Number != pokemon.ID() {
-		t.Error("Mapper should map Id, expected", pokemon.ID(), ", has", thumbnail.Number)
+	if thumbnail.Number != pokemon.ID {
+		t.Error("Mapper should map Id, expected", pokemon.ID, ", has", thumbnail.Number)
 	}
-	if thumbnail.Name != form.Name(lang) {
-		t.Error("Mapper should map name, expected", form.Name(lang), ", has", thumbnail.Name)
+	if thumbnail.Name != form.Name[lang] {
+		t.Error("Mapper should map name, expected", form.Name[lang], ", has", thumbnail.Name)
 	}
 }
 
 func TestPokemonToDetail(t *testing.T) {
 	lang := "test"
-	normalType, err := pkmn.NewPokemonType(pkmn.PokemonTypeConfig{DbSymbol: "normal"})
-	if err != nil {
-		t.Fatal(err)
-	}
+	normalType := &pkmn.PokemonType{DbSymbol: "normal"}
 
-	form, err := pkmn.NewPokemonForm(pkmn.PokemonFormConfig{
+	form := &pkmn.PokemonForm{
 		Form:        1,
 		Type1:       normalType,
 		BaseHp:      100,
 		BaseAtk:     50,
 		Name:        pkmn.Translation{lang: "testName"},
 		Description: pkmn.Translation{lang: "testDesc"},
-	})
-	if err != nil {
-		t.Fatal(err)
 	}
-	pokemon, err := pkmn.NewPokemon(pkmn.PokemonConfig{
+	pokemon := &pkmn.Pokemon{
 		ID:       1,
 		DbSymbol: "test",
 		Forms:    []*pkmn.PokemonForm{form},
-	})
-	if err != nil {
-		t.Fatal(err)
 	}
 
 	typeMapper := NewTypeMapper()
 	abilityMapper := NewAbilityMapper()
 	store := pkmn.NewStore()
-	store.AddType(normalType)
+	store.AddType(pkmn.AddTypeDto{DbSymbol: "normal"})
 	pokemonMapper := NewPokemonMapper(typeMapper, abilityMapper, store)
 
 	policy := NewPokemonFilterPolicy()
 	detail := pokemonMapper.PokemonToDetail(*pokemon, 1, lang, *policy)
 
-	if detail.Symbol != pokemon.DbSymbol() {
+	if detail.Symbol != pokemon.DbSymbol {
 		t.Error("Mapper should map symbol")
 	}
-	if detail.Number != pokemon.ID() {
+	if detail.Number != pokemon.ID {
 		t.Error("Mapper should map number")
 	}
 	if detail.Form.Number != 1 {
 		t.Error("Mapper should map given form")
 	}
-	if detail.Form.Name != form.Name(lang) {
+	if detail.Form.Name != form.Name[lang] {
 		t.Error("Mapper should map name")
 	}
-	if detail.Form.Description != form.Description(lang) {
+	if detail.Form.Description != form.Description[lang] {
 		t.Error("Mapper should map description")
 	}
 }

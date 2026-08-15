@@ -87,19 +87,19 @@ Edit the generated handler file to add business logic.
 
 ### Entity Construction
 
-Domain entities (`Pokemon`, `PokemonForm`, `Move`, `Ability`, `PokemonType`) are immutable: fields are unexported and exposed through getters. They are constructed with a config struct and a constructor that validates and deep-copies the data:
+Domain entities (`Pokemon`, `PokemonForm`, `Move`, `Ability`, `PokemonType`) have exported fields and are immutable by convention only: fields must not be mutated once an entity has been registered in a store. The fields used to index/order entities in the store (`Pokemon.ID`, `Pokemon.DbSymbol`, `PokemonForm.Form`, `Move.DbSymbol`, `Ability.DbSymbol`, `PokemonType.DbSymbol`) are documented as immutable. Entities are built by the store `Add*` methods, which take a DTO and return the constructed entity:
 
 ```go
-func NewPokemon(cfg PokemonConfig) (*Pokemon, error)
-
-pokemon, err := NewPokemon(PokemonConfig{
+store.AddPokemon(AddPokemonDto{
     ID:       25,
     DbSymbol: "pikachu",
-    Forms:    []*PokemonForm{form},
+    Forms: []AddPokemonFormDto{
+        {Form: 0, Type1: "electric", Name: Translation{"en": "Pikachu"}},
+    },
 })
 ```
 
-Constructors validate required fields (e.g. `DbSymbol`) and return an error when invalid, and clone slices/maps so the entity never aliases caller-owned data. The `Store.Add*` methods register already-constructed entities.
+The `Add*` methods resolve symbol references (types, abilities), default `CustomProperties`/`Tags`, sort forms, and register the entity in the store indexes.
 
 ### Service Layer
 

@@ -13,65 +13,36 @@ func setupPokemonService(t *testing.T) (*pkmn.Store, PokemonAPIServicer) {
 	t.Helper()
 	store := pkmn.NewStore()
 
-	normal, err := pkmn.NewPokemonType(pkmn.PokemonTypeConfig{
+	store.AddType(pkmn.AddTypeDto{
 		DbSymbol: "normal",
 		Name:     pkmn.Translation{"en": "Normal"},
 	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	store.AddType(normal)
-	electric, err := pkmn.NewPokemonType(pkmn.PokemonTypeConfig{
+	store.AddType(pkmn.AddTypeDto{
 		DbSymbol: "electric",
 		Name:     pkmn.Translation{"en": "Electric"},
 	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	store.AddType(electric)
 
-	pikachuForm0, err := pkmn.NewPokemonForm(pkmn.PokemonFormConfig{Form: 0, Type1: electric, Name: pkmn.Translation{"en": "Pikachu", "fr": "PikachuFR"}, Description: pkmn.Translation{"en": "Electric mouse"}})
-	if err != nil {
-		t.Fatal(err)
-	}
-	pikachuForm1, err := pkmn.NewPokemonForm(pkmn.PokemonFormConfig{Form: 1, Type1: electric, Name: pkmn.Translation{"en": "Pikachu"}, Description: pkmn.Translation{"en": "Electric mouse"}})
-	if err != nil {
-		t.Fatal(err)
-	}
-	pikachu, err := pkmn.NewPokemon(pkmn.PokemonConfig{
+	store.AddPokemon(pkmn.AddPokemonDto{
 		ID: 25, DbSymbol: "pikachu",
-		Forms: []*pkmn.PokemonForm{pikachuForm0, pikachuForm1},
+		Forms: []pkmn.AddPokemonFormDto{
+			{Form: 0, Type1: "electric", Name: pkmn.Translation{"en": "Pikachu", "fr": "PikachuFR"}, Description: pkmn.Translation{"en": "Electric mouse"}},
+			{Form: 1, Type1: "electric", Name: pkmn.Translation{"en": "Pikachu"}, Description: pkmn.Translation{"en": "Electric mouse"}},
+		},
 	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	store.AddPokemon(pikachu)
 
-	bulbasaurForm, err := pkmn.NewPokemonForm(pkmn.PokemonFormConfig{Form: 0, Type1: normal, Name: pkmn.Translation{"en": "Bulbasaur"}, Description: pkmn.Translation{"en": "Grass starter"}})
-	if err != nil {
-		t.Fatal(err)
-	}
-	bulbasaur, err := pkmn.NewPokemon(pkmn.PokemonConfig{
+	store.AddPokemon(pkmn.AddPokemonDto{
 		ID: 1, DbSymbol: "bulbasaur",
-		Forms: []*pkmn.PokemonForm{bulbasaurForm},
+		Forms: []pkmn.AddPokemonFormDto{
+			{Form: 0, Type1: "normal", Name: pkmn.Translation{"en": "Bulbasaur"}, Description: pkmn.Translation{"en": "Grass starter"}},
+		},
 	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	store.AddPokemon(bulbasaur)
 
-	smettleForm, err := pkmn.NewPokemonForm(pkmn.PokemonFormConfig{Form: 0, Type1: normal, Name: pkmn.Translation{"en": "Smettle", "fr": "Malortie"}, Description: pkmn.Translation{"en": "Smettle is a mischievous Pokémon.", "fr": "Malortie est un Pokémon malicieux."}})
-	if err != nil {
-		t.Fatal(err)
-	}
-	smettle, err := pkmn.NewPokemon(pkmn.PokemonConfig{
+	store.AddPokemon(pkmn.AddPokemonDto{
 		ID: 724, DbSymbol: "smettle",
-		Forms: []*pkmn.PokemonForm{smettleForm},
+		Forms: []pkmn.AddPokemonFormDto{
+			{Form: 0, Type1: "normal", Name: pkmn.Translation{"en": "Smettle", "fr": "Malortie"}, Description: pkmn.Translation{"en": "Smettle is a mischievous Pokémon.", "fr": "Malortie est un Pokémon malicieux."}},
+		},
 	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	store.AddPokemon(smettle)
 
 	typeMapper := NewTypeMapper()
 	abilityMapper := NewAbilityMapper()

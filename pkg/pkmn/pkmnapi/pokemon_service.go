@@ -115,7 +115,7 @@ func (s PokemonService) GetFormsByPokemon(requestCtx context.Context, symbol str
 		return ImplResponse{Code: 404, Body: nil}, nil
 	}
 
-	formsIter := poke.Forms()
+	formsIter := slices.Values(poke.Forms)
 	formPartialsIter := iter2.Map(formsIter, func(form *pkmn.PokemonForm) *FormPartial {
 		return s.pokemonMapper.FormToPokemonFormPartial(*form, lang, *policy)
 	})

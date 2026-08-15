@@ -20,36 +20,35 @@ func NewMoveMapper(typeMapper *TypeMapper) *MoveMapper {
 // move the move to map
 // lang the language expected
 func (m MoveMapper) ToMoveDetail(move pkmn.Move, lang string, policy PokemonFilterPolicy) MoveDetails {
-	slog.Debug("Mapping move to details", "move", move.DbSymbol(), "lang", lang)
+	slog.Debug("Mapping move to details", "move", move.DbSymbol, "lang", lang)
 
 	details := MoveDetails{
-		Symbol:       move.DbSymbol(),
-		Name:         move.Name(lang),
-		Description:  move.Description(lang),
-		Category:     string(move.Category()),
-		Power:        int32(move.Power()),
-		Accuracy:     int32(move.Accuracy()),
-		Pp:           int32(move.PP()),
-		CriticalRate: int32(move.CriticalRate()),
-		Priority:     int32(move.Priority()),
+		Symbol:       move.DbSymbol,
+		Name:         move.Name[lang],
+		Description:  move.Description[lang],
+		Category:     string(move.Category),
+		Power:        int32(move.Power),
+		Accuracy:     int32(move.Accuracy),
+		Pp:           int32(move.PP),
+		CriticalRate: int32(move.CriticalRate),
+		Priority:     int32(move.Priority),
 	}
 
 	// Map type
-	t := move.Type()
-	if t.DbSymbol() != "" {
-		typePartial := m.typeMapper.ToTypePartial(move.Type(), lang, policy)
+	if move.MoveType != nil {
+		typePartial := m.typeMapper.ToTypePartial(*move.MoveType, lang, policy)
 		details.Type = typePartial
 	}
 
 	// Map targeting
-	targeting := move.Targeting()
+	targeting := move.Targeting
 	details.Targeting = map[string]interface{}{
 		"aimedTarget": string(targeting.AimedTarget),
 		"contactType": string(targeting.ContactType),
 	}
 
 	// Map execution
-	execution := move.Execution()
+	execution := move.Execution
 	details.Execution = map[string]interface{}{
 		"method":   string(execution.Method),
 		"charge":   execution.Charge,
@@ -57,7 +56,7 @@ func (m MoveMapper) ToMoveDetail(move pkmn.Move, lang string, policy PokemonFilt
 	}
 
 	// Map mechanical tags
-	mechanicalTags := move.MechanicalTags()
+	mechanicalTags := move.MechanicalTags
 	if len(mechanicalTags) > 0 {
 		tags := make([]map[string]interface{}, len(mechanicalTags))
 		for i, tag := range mechanicalTags {
@@ -67,7 +66,7 @@ func (m MoveMapper) ToMoveDetail(move pkmn.Move, lang string, policy PokemonFilt
 	}
 
 	// Map interactions
-	interactions := move.Interactions()
+	interactions := move.Interactions
 	if len(interactions) > 0 {
 		interactionList := make([]string, len(interactions))
 		for i, interaction := range interactions {
@@ -77,7 +76,7 @@ func (m MoveMapper) ToMoveDetail(move pkmn.Move, lang string, policy PokemonFilt
 	}
 
 	// Map secondary effects
-	secondaryEffects := move.SecondaryEffects()
+	secondaryEffects := move.SecondaryEffects
 	secondaryEffectsMap := map[string]interface{}{
 		"chance": secondaryEffects.Chance,
 	}
@@ -113,19 +112,18 @@ func (m MoveMapper) ToMoveDetail(move pkmn.Move, lang string, policy PokemonFilt
 // move the move to map
 // lang the language expected
 func (m MoveMapper) ToMovePartial(move pkmn.Move, lang string, policy PokemonFilterPolicy) MovePartial {
-	slog.Debug("Mapping move to partial", "move", move.DbSymbol(), "lang", lang)
+	slog.Debug("Mapping move to partial", "move", move.DbSymbol, "lang", lang)
 	partial := MovePartial{
-		Symbol:   move.DbSymbol(),
-		Name:     move.Name(lang),
-		Category: string(move.Category()),
-		Pp:       int32(move.PP()),
-		Power:    int32(move.Power()),
-		Accuracy: int32(move.Accuracy()),
+		Symbol:   move.DbSymbol,
+		Name:     move.Name[lang],
+		Category: string(move.Category),
+		Pp:       int32(move.PP),
+		Power:    int32(move.Power),
+		Accuracy: int32(move.Accuracy),
 	}
 
-	t := move.Type()
-	if t.DbSymbol() != "" {
-		typePartial := m.typeMapper.ToTypePartial(move.Type(), lang, policy)
+	if move.MoveType != nil {
+		typePartial := m.typeMapper.ToTypePartial(*move.MoveType, lang, policy)
 		partial.Type = typePartial
 	}
 

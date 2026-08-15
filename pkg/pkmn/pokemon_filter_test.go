@@ -5,17 +5,11 @@ import (
 )
 
 func TestNewPokemonQueryFilter(t *testing.T) {
-	form, err := NewPokemonForm(PokemonFormConfig{Form: 0, Name: Translation{"en": "Pikachu", "fr": "Pikachu", "de": "Pikachu"}})
-	if err != nil {
-		t.Fatal(err)
-	}
-	pokemon, err := NewPokemon(PokemonConfig{
+	form := &PokemonForm{Form: 0, Name: Translation{"en": "Pikachu", "fr": "Pikachu", "de": "Pikachu"}}
+	pokemon := &Pokemon{
 		ID:       25,
 		DbSymbol: "pikachu",
 		Forms:    []*PokemonForm{form},
-	})
-	if err != nil {
-		t.Fatal(err)
 	}
 
 	pwf := PokemonWithForm{
@@ -85,23 +79,14 @@ func TestNewPokemonQueryFilter(t *testing.T) {
 }
 
 func TestNewPokemonFormTypesFilter(t *testing.T) {
-	fire := &PokemonType{dbSymbol: "fire"}
-	water := &PokemonType{dbSymbol: "water"}
-	grass := &PokemonType{dbSymbol: "grass"}
-	flying := &PokemonType{dbSymbol: "flying"}
+	fire := &PokemonType{DbSymbol: "fire"}
+	water := &PokemonType{DbSymbol: "water"}
+	grass := &PokemonType{DbSymbol: "grass"}
+	flying := &PokemonType{DbSymbol: "flying"}
 
-	charizard, err := NewPokemonForm(PokemonFormConfig{Form: 0, Type1: fire, Type2: flying})
-	if err != nil {
-		t.Fatal(err)
-	}
-	squirtle, err := NewPokemonForm(PokemonFormConfig{Form: 0, Type1: water})
-	if err != nil {
-		t.Fatal(err)
-	}
-	bulbasaur, err := NewPokemonForm(PokemonFormConfig{Form: 0, Type1: grass})
-	if err != nil {
-		t.Fatal(err)
-	}
+	charizard := &PokemonForm{Form: 0, Type1: fire, Type2: flying}
+	squirtle := &PokemonForm{Form: 0, Type1: water}
+	bulbasaur := &PokemonForm{Form: 0, Type1: grass}
 
 	t.Run("match type1", func(t *testing.T) {
 		if !NewPokemonFormTypesFilter([]string{"fire"})(charizard) {
@@ -147,18 +132,12 @@ func TestNewPokemonFormTypesFilter(t *testing.T) {
 }
 
 func TestNewPokemonWithTagsFilter(t *testing.T) {
-	form, err := NewPokemonForm(PokemonFormConfig{Form: 0, Name: Translation{"en": "Raichu"}})
-	if err != nil {
-		t.Fatal(err)
-	}
+	form := &PokemonForm{Form: 0, Name: Translation{"en": "Raichu"}}
 	form.Tags = []string{"alolan", "evolved"}
-	pokemon, err := NewPokemon(PokemonConfig{
+	pokemon := &Pokemon{
 		ID:       26,
 		DbSymbol: "raichu",
 		Forms:    []*PokemonForm{form},
-	})
-	if err != nil {
-		t.Fatal(err)
 	}
 	pokemon.Tags = []string{"special"}
 
@@ -205,18 +184,12 @@ func TestNewPokemonWithTagsFilter(t *testing.T) {
 }
 
 func TestNewPokemonWithoutTagsFilter(t *testing.T) {
-	form, err := NewPokemonForm(PokemonFormConfig{Form: 0, Name: Translation{"en": "Raichu"}})
-	if err != nil {
-		t.Fatal(err)
-	}
+	form := &PokemonForm{Form: 0, Name: Translation{"en": "Raichu"}}
 	form.Tags = []string{"alolan", "evolved"}
-	pokemon, err := NewPokemon(PokemonConfig{
+	pokemon := &Pokemon{
 		ID:       26,
 		DbSymbol: "raichu",
 		Forms:    []*PokemonForm{form},
-	})
-	if err != nil {
-		t.Fatal(err)
 	}
 	pokemon.Tags = []string{"special"}
 

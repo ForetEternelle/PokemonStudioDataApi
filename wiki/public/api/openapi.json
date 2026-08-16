@@ -1,0 +1,1319 @@
+{
+  "openapi" : "3.0.0",
+  "info" : {
+    "description" : "API for the Pokemon Studio",
+    "title" : "Pokemon Studio API",
+    "version" : "0.0.1"
+  },
+  "servers" : [ {
+    "url" : "http://localhost:8080"
+  }, {
+    "url" : "http://localhost:8080/api"
+  } ],
+  "paths" : {
+    "/pokemon" : {
+      "get" : {
+        "description" : "This endpoint returns a list of pokemon.",
+        "operationId" : "getPokemon",
+        "parameters" : [ {
+          "description" : "The language of the response",
+          "in" : "query",
+          "name" : "lang",
+          "required" : false,
+          "schema" : {
+            "default" : "en",
+            "maxLength" : 5,
+            "type" : "string"
+          }
+        }, {
+          "description" : "The size of the scroll",
+          "in" : "query",
+          "name" : "size",
+          "required" : false,
+          "schema" : {
+            "default" : 20,
+            "maximum" : 100,
+            "type" : "integer"
+          }
+        }, {
+          "description" : "Start de search after this id. Used for scrolling.",
+          "in" : "query",
+          "name" : "lastId",
+          "required" : false,
+          "schema" : {
+            "format" : "int32",
+            "minimum" : 1,
+            "nullable" : true,
+            "type" : "integer"
+          }
+        }, {
+          "description" : "Start de search after this form. Used for scrolling.",
+          "in" : "query",
+          "name" : "lastForm",
+          "required" : false,
+          "schema" : {
+            "format" : "int32",
+            "minimum" : 0,
+            "nullable" : true,
+            "type" : "integer"
+          }
+        }, {
+          "description" : "Whether to only include main forms of pokemon (e.g. excluding mega evolutions, regional forms, etc.)",
+          "in" : "query",
+          "name" : "mainFormsOnly",
+          "required" : false,
+          "schema" : {
+            "default" : true,
+            "type" : "boolean"
+          }
+        }, {
+          "description" : "Search query to filter pokemon by name, number",
+          "in" : "query",
+          "name" : "query",
+          "required" : false,
+          "schema" : {
+            "maxLength" : 30,
+            "nullable" : true,
+            "type" : "string"
+          }
+        }, {
+          "description" : "Filter pokemon by types. Multiple types can be specified, in which case pokemon that match any of the specified types will be included in the results.",
+          "example" : [ "fire", "flying" ],
+          "in" : "query",
+          "name" : "types",
+          "required" : false,
+          "schema" : {
+            "default" : [ ],
+            "items" : {
+              "maxLength" : 20,
+              "type" : "string"
+            },
+            "type" : "array"
+          }
+        }, {
+          "description" : "Filter pokemon by tags. Multiple tags can be specified, in which case pokemon that match any of the specified tags (on the pokemon or its form) will be included in the results.",
+          "example" : [ "starter", "legendary" ],
+          "in" : "query",
+          "name" : "withTags",
+          "required" : false,
+          "schema" : {
+            "default" : [ ],
+            "items" : {
+              "maxLength" : 30,
+              "type" : "string"
+            },
+            "type" : "array"
+          }
+        }, {
+          "description" : "Exclude pokemon matching any of the specified tags (on the pokemon or its form) from the results.",
+          "example" : [ "mega", "regional" ],
+          "in" : "query",
+          "name" : "withoutTags",
+          "required" : false,
+          "schema" : {
+            "default" : [ ],
+            "items" : {
+              "maxLength" : 30,
+              "type" : "string"
+            },
+            "type" : "array"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PokemonScroll"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "description" : "invalid parameter error"
+          }
+        },
+        "summary" : "Get a list of pokemon",
+        "tags" : [ "Pokemon" ]
+      }
+    },
+    "/pokemon/{symbol}/forms/{form}" : {
+      "get" : {
+        "description" : "This endpoint returns a pokemon details based on the symbol. The symbol is the unique identifier of the pokemon",
+        "operationId" : "getPokemonDetails",
+        "parameters" : [ {
+          "description" : "The language of the response",
+          "in" : "query",
+          "name" : "lang",
+          "required" : false,
+          "schema" : {
+            "default" : "en",
+            "maxLength" : 5,
+            "type" : "string"
+          }
+        }, {
+          "description" : "The symbol of the pokemon",
+          "in" : "path",
+          "name" : "symbol",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "The form number",
+          "in" : "path",
+          "name" : "form",
+          "required" : true,
+          "schema" : {
+            "type" : "integer"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PokemonDetails"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "description" : "invalid parameter error"
+          }
+        },
+        "summary" : "Get a pokemon details",
+        "tags" : [ "Pokemon" ]
+      }
+    },
+    "/pokemon/name/{name}" : {
+      "get" : {
+        "description" : "This endpoint returns a pokemon details based on the name. The name is the translated name of the pokemon in any language.",
+        "operationId" : "getPokemonDetailsByName",
+        "parameters" : [ {
+          "description" : "The language of the response",
+          "in" : "query",
+          "name" : "lang",
+          "required" : false,
+          "schema" : {
+            "default" : "en",
+            "maxLength" : 5,
+            "type" : "string"
+          }
+        }, {
+          "description" : "The name of the pokemon in any language",
+          "in" : "path",
+          "name" : "name",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PokemonDetails"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "description" : "invalid parameter error"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "description" : "not found"
+          }
+        },
+        "summary" : "Get a pokemon details by name",
+        "tags" : [ "Pokemon" ]
+      }
+    },
+    "/pokemon/{symbol}/forms" : {
+      "get" : {
+        "description" : "This endpoint returns a list of all the forms of a given pokemon. For example, this endpoint will return the different forms of Deoxys (Normal, Attack, Defense, Speed).",
+        "operationId" : "getFormsByPokemon",
+        "parameters" : [ {
+          "description" : "The language of the response",
+          "in" : "query",
+          "name" : "lang",
+          "required" : false,
+          "schema" : {
+            "default" : "en",
+            "maxLength" : 5,
+            "type" : "string"
+          }
+        }, {
+          "description" : "The symbol of the pokemon",
+          "in" : "path",
+          "name" : "symbol",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "items" : {
+                    "$ref" : "#/components/schemas/FormPartial"
+                  },
+                  "title" : "Forms",
+                  "type" : "array"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "description" : "invalid parameter error"
+          }
+        },
+        "summary" : "Get all given pokemon's forms",
+        "tags" : [ "Pokemon" ]
+      }
+    },
+    "/types" : {
+      "get" : {
+        "description" : "This endpoint returns a list of all types",
+        "operationId" : "getTypes",
+        "parameters" : [ {
+          "description" : "The language of the response",
+          "in" : "query",
+          "name" : "lang",
+          "required" : false,
+          "schema" : {
+            "default" : "en",
+            "maxLength" : 5,
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "items" : {
+                    "$ref" : "#/components/schemas/TypeDetails"
+                  },
+                  "title" : "Types",
+                  "type" : "array"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "description" : "invalid parameter error"
+          }
+        },
+        "summary" : "Get all types",
+        "tags" : [ "Types" ]
+      }
+    },
+    "/types/{symbol}" : {
+      "get" : {
+        "description" : "This endpoint returns a type details based on the symbol. The symbol is the unique identifier of the type",
+        "operationId" : "getTypeDetails",
+        "parameters" : [ {
+          "description" : "The language of the response",
+          "in" : "query",
+          "name" : "lang",
+          "required" : false,
+          "schema" : {
+            "default" : "en",
+            "maxLength" : 5,
+            "type" : "string"
+          }
+        }, {
+          "description" : "The symbol of the type",
+          "in" : "path",
+          "name" : "symbol",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TypeDetails"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "description" : "invalid parameter error"
+          }
+        },
+        "summary" : "Get a type details",
+        "tags" : [ "Types" ]
+      }
+    },
+    "/moves/{symbol}" : {
+      "get" : {
+        "description" : "This endpoint returns a move with its most important details based on the symbol. The symbol is the unique identifier of the move",
+        "operationId" : "getMove",
+        "parameters" : [ {
+          "description" : "The language of the response",
+          "in" : "query",
+          "name" : "lang",
+          "required" : false,
+          "schema" : {
+            "default" : "en",
+            "maxLength" : 5,
+            "type" : "string"
+          }
+        }, {
+          "description" : "The symbol of the move",
+          "in" : "path",
+          "name" : "symbol",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/MovePartial"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "description" : "invalid parameter error"
+          }
+        },
+        "summary" : "Get a move with it most important details",
+        "tags" : [ "Moves" ]
+      }
+    },
+    "/moves/detail/{symbol}" : {
+      "get" : {
+        "description" : "This endpoint returns a move details based on the symbol. The symbol is the unique identifier of the move",
+        "operationId" : "getMoveDetails",
+        "parameters" : [ {
+          "description" : "The language of the response",
+          "in" : "query",
+          "name" : "lang",
+          "required" : false,
+          "schema" : {
+            "default" : "en",
+            "maxLength" : 5,
+            "type" : "string"
+          }
+        }, {
+          "description" : "The symbol of the move",
+          "in" : "path",
+          "name" : "symbol",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/MoveDetails"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "description" : "invalid parameter error"
+          }
+        },
+        "summary" : "Get a move details",
+        "tags" : [ "Moves" ]
+      }
+    },
+    "/abilities" : {
+      "get" : {
+        "description" : "This endpoint returns a list of all abilities",
+        "operationId" : "getAbilities",
+        "parameters" : [ {
+          "description" : "The language of the response",
+          "in" : "query",
+          "name" : "lang",
+          "required" : false,
+          "schema" : {
+            "default" : "en",
+            "maxLength" : 5,
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "items" : {
+                    "$ref" : "#/components/schemas/AbilityPartial"
+                  },
+                  "title" : "Abilities",
+                  "type" : "array"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "description" : "invalid parameter error"
+          }
+        },
+        "summary" : "Get all abilities",
+        "tags" : [ "Abilities" ]
+      }
+    },
+    "/abilities/{symbol}" : {
+      "get" : {
+        "description" : "This endpoint returns an ability details based on the symbol. The symbol is the unique identifier of the ability",
+        "operationId" : "getAbilityDetails",
+        "parameters" : [ {
+          "description" : "The language of the response",
+          "in" : "query",
+          "name" : "lang",
+          "required" : false,
+          "schema" : {
+            "default" : "en",
+            "maxLength" : 5,
+            "type" : "string"
+          }
+        }, {
+          "description" : "The symbol of the ability",
+          "in" : "path",
+          "name" : "symbol",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AbilityDetails"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "description" : "invalid parameter error"
+          }
+        },
+        "summary" : "Get an ability details",
+        "tags" : [ "Abilities" ]
+      }
+    }
+  },
+  "components" : {
+    "parameters" : {
+      "lang" : {
+        "description" : "The language of the response",
+        "in" : "query",
+        "name" : "lang",
+        "required" : false,
+        "schema" : {
+          "default" : "en",
+          "maxLength" : 5,
+          "type" : "string"
+        }
+      },
+      "size" : {
+        "description" : "The size of the scroll",
+        "in" : "query",
+        "name" : "size",
+        "required" : false,
+        "schema" : {
+          "default" : 20,
+          "maximum" : 100,
+          "type" : "integer"
+        }
+      },
+      "lastId" : {
+        "description" : "Start de search after this id. Used for scrolling.",
+        "in" : "query",
+        "name" : "lastId",
+        "required" : false,
+        "schema" : {
+          "format" : "int32",
+          "minimum" : 1,
+          "nullable" : true,
+          "type" : "integer"
+        }
+      },
+      "lastForm" : {
+        "description" : "Start de search after this form. Used for scrolling.",
+        "in" : "query",
+        "name" : "lastForm",
+        "required" : false,
+        "schema" : {
+          "format" : "int32",
+          "minimum" : 0,
+          "nullable" : true,
+          "type" : "integer"
+        }
+      },
+      "mainFormsOnly" : {
+        "description" : "Whether to only include main forms of pokemon (e.g. excluding mega evolutions, regional forms, etc.)",
+        "in" : "query",
+        "name" : "mainFormsOnly",
+        "required" : false,
+        "schema" : {
+          "default" : true,
+          "type" : "boolean"
+        }
+      },
+      "query" : {
+        "description" : "Search query to filter pokemon by name, number",
+        "in" : "query",
+        "name" : "query",
+        "required" : false,
+        "schema" : {
+          "maxLength" : 30,
+          "nullable" : true,
+          "type" : "string"
+        }
+      },
+      "types" : {
+        "description" : "Filter pokemon by types. Multiple types can be specified, in which case pokemon that match any of the specified types will be included in the results.",
+        "example" : [ "fire", "flying" ],
+        "in" : "query",
+        "name" : "types",
+        "required" : false,
+        "schema" : {
+          "default" : [ ],
+          "items" : {
+            "maxLength" : 20,
+            "type" : "string"
+          },
+          "type" : "array"
+        }
+      },
+      "withTags" : {
+        "description" : "Filter pokemon by tags. Multiple tags can be specified, in which case pokemon that match any of the specified tags (on the pokemon or its form) will be included in the results.",
+        "example" : [ "starter", "legendary" ],
+        "in" : "query",
+        "name" : "withTags",
+        "required" : false,
+        "schema" : {
+          "default" : [ ],
+          "items" : {
+            "maxLength" : 30,
+            "type" : "string"
+          },
+          "type" : "array"
+        }
+      },
+      "withoutTags" : {
+        "description" : "Exclude pokemon matching any of the specified tags (on the pokemon or its form) from the results.",
+        "example" : [ "mega", "regional" ],
+        "in" : "query",
+        "name" : "withoutTags",
+        "required" : false,
+        "schema" : {
+          "default" : [ ],
+          "items" : {
+            "maxLength" : 30,
+            "type" : "string"
+          },
+          "type" : "array"
+        }
+      }
+    },
+    "responses" : {
+      "InvalidParameterError" : {
+        "content" : {
+          "application/json" : {
+            "schema" : {
+              "type" : "string"
+            }
+          }
+        },
+        "description" : "invalid parameter error"
+      },
+      "NotFoundError" : {
+        "content" : {
+          "application/json" : {
+            "schema" : {
+              "type" : "string"
+            }
+          }
+        },
+        "description" : "not found"
+      }
+    },
+    "schemas" : {
+      "Scroll" : {
+        "description" : "A list of content",
+        "properties" : {
+          "content" : {
+            "description" : "Contains the items of the list",
+            "items" : {
+              "type" : "object"
+            },
+            "type" : "array"
+          },
+          "hasMore" : {
+            "description" : "True if there are elements left to fetch",
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "content", "hasMore" ],
+        "type" : "object"
+      },
+      "PokemonThumbnail" : {
+        "description" : "An object containing base information to display a pokemon",
+        "properties" : {
+          "symbol" : {
+            "description" : "The symbol of the pokemon",
+            "example" : "pikachu",
+            "type" : "string"
+          },
+          "name" : {
+            "description" : "The translated name of the first pokemon's form",
+            "example" : "Pikachu",
+            "type" : "string"
+          },
+          "number" : {
+            "description" : "The number of the pokemon",
+            "example" : 25,
+            "type" : "integer"
+          },
+          "form" : {
+            "description" : "The form of the pokemon",
+            "example" : 0,
+            "type" : "integer"
+          },
+          "image" : {
+            "description" : "The image symbol of the pokemon",
+            "example" : "025",
+            "type" : "string"
+          },
+          "type1" : {
+            "$ref" : "#/components/schemas/TypePartial"
+          },
+          "type2" : {
+            "$ref" : "#/components/schemas/TypePartial"
+          },
+          "customProperties" : {
+            "$ref" : "#/components/schemas/CustomProperties"
+          },
+          "tags" : {
+            "$ref" : "#/components/schemas/Tags"
+          },
+          "formCustomProperties" : {
+            "$ref" : "#/components/schemas/CustomProperties"
+          },
+          "formTags" : {
+            "$ref" : "#/components/schemas/Tags"
+          }
+        },
+        "required" : [ "customProperties", "form", "formCustomProperties", "formTags", "image", "name", "number", "symbol", "tags", "type1" ],
+        "type" : "object"
+      },
+      "PokemonDetails" : {
+        "description" : "An object containing detailed data of a pokemon with its main form",
+        "properties" : {
+          "symbol" : {
+            "description" : "The symbol of the pokemon",
+            "example" : "pikachu",
+            "type" : "string"
+          },
+          "number" : {
+            "description" : "The number of the pokemon",
+            "example" : 25,
+            "type" : "integer"
+          },
+          "form" : {
+            "$ref" : "#/components/schemas/FormDetails"
+          },
+          "tags" : {
+            "$ref" : "#/components/schemas/Tags"
+          },
+          "customProperties" : {
+            "$ref" : "#/components/schemas/CustomProperties"
+          }
+        },
+        "required" : [ "customProperties", "form", "number", "symbol", "tags" ],
+        "type" : "object"
+      },
+      "FormPartial" : {
+        "description" : "An object containing the data of a pokemon form (ev, iv, ...)",
+        "properties" : {
+          "number" : {
+            "description" : "The form number",
+            "example" : 0,
+            "type" : "integer"
+          },
+          "name" : {
+            "description" : "The translated name of the form",
+            "example" : "Pikachu",
+            "type" : "string"
+          },
+          "type1" : {
+            "$ref" : "#/components/schemas/TypePartial"
+          },
+          "type2" : {
+            "$ref" : "#/components/schemas/TypePartial"
+          },
+          "baseHp" : {
+            "description" : "The base HP stat",
+            "example" : 35,
+            "type" : "integer"
+          },
+          "baseAtk" : {
+            "description" : "The base attack stat",
+            "example" : 55,
+            "type" : "integer"
+          },
+          "baseDfe" : {
+            "description" : "The base defense stat",
+            "example" : 40,
+            "type" : "integer"
+          },
+          "baseSpd" : {
+            "description" : "The base speed stat",
+            "example" : 90,
+            "type" : "integer"
+          },
+          "baseAts" : {
+            "description" : "The base special attack stat",
+            "example" : 50,
+            "type" : "integer"
+          },
+          "baseDfs" : {
+            "description" : "The base special defense stat",
+            "example" : 50,
+            "type" : "integer"
+          },
+          "tags" : {
+            "$ref" : "#/components/schemas/Tags"
+          },
+          "customProperties" : {
+            "$ref" : "#/components/schemas/CustomProperties"
+          }
+        },
+        "required" : [ "baseAtk", "baseAts", "baseDfe", "baseDfs", "baseHp", "baseSpd", "customProperties", "image", "name", "number", "tags", "type1" ],
+        "type" : "object"
+      },
+      "TypeDetails" : {
+        "description" : "An object containing detailed data of a pokemon type",
+        "properties" : {
+          "name" : {
+            "description" : "The translated name of the pokemon type",
+            "example" : "Electric",
+            "type" : "string"
+          },
+          "symbol" : {
+            "description" : "The symbol of the pokemon type",
+            "example" : "electric",
+            "type" : "string"
+          },
+          "color" : {
+            "description" : "The color of the pokemon type",
+            "example" : "#F8D030",
+            "type" : "string"
+          },
+          "typeDamage" : {
+            "additionalProperties" : {
+              "type" : "number"
+            },
+            "description" : "The damage inflicted by this type",
+            "type" : "object"
+          }
+        },
+        "required" : [ "color", "name", "symbol", "typeDamage" ],
+        "type" : "object"
+      },
+      "MovePartial" : {
+        "description" : "An object containing partial data of a pokemon move",
+        "properties" : {
+          "symbol" : {
+            "description" : "The symbol of the pokemon move",
+            "example" : "thunderbolt",
+            "type" : "string"
+          },
+          "name" : {
+            "description" : "The translated name of the pokemon move",
+            "example" : "Thunderbolt",
+            "type" : "string"
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/TypePartial"
+          },
+          "category" : {
+            "description" : "The category of the pokemon move",
+            "enum" : [ "physical", "special", "status" ],
+            "type" : "string"
+          },
+          "pp" : {
+            "description" : "The PP of the pokemon move",
+            "example" : 15,
+            "type" : "integer"
+          },
+          "power" : {
+            "description" : "The power of the pokemon move",
+            "example" : 90,
+            "type" : "integer"
+          },
+          "accuracy" : {
+            "description" : "The accuracy of the pokemon move",
+            "example" : 100,
+            "type" : "integer"
+          }
+        },
+        "required" : [ "accuracy", "category", "name", "power", "pp", "symbol", "type" ],
+        "type" : "object"
+      },
+      "MoveDetails" : {
+        "description" : "Full definition of a battle move",
+        "properties" : {
+          "name" : {
+            "description" : "The translated name of the move",
+            "example" : "Bug Buzz",
+            "type" : "string"
+          },
+          "description" : {
+            "description" : "The translated description of the move",
+            "example" : "The user vibrates its wings to generate a damaging sound wave.",
+            "type" : "string"
+          },
+          "symbol" : {
+            "description" : "The symbol of the move",
+            "example" : "bug_buzz",
+            "type" : "string"
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/TypePartial"
+          },
+          "category" : {
+            "description" : "The category of the move",
+            "enum" : [ "physical", "special", "status" ],
+            "type" : "string"
+          },
+          "power" : {
+            "description" : "The power of the move",
+            "example" : 90,
+            "type" : "integer"
+          },
+          "accuracy" : {
+            "description" : "The accuracy of the move",
+            "example" : 100,
+            "type" : "integer"
+          },
+          "pp" : {
+            "description" : "The PP of the move",
+            "example" : 10,
+            "type" : "integer"
+          },
+          "criticalRate" : {
+            "description" : "The critical hit rate of the move",
+            "example" : 1,
+            "type" : "integer"
+          },
+          "priority" : {
+            "description" : "The priority of the move",
+            "example" : 0,
+            "type" : "integer"
+          },
+          "targeting" : {
+            "$ref" : "#/components/schemas/MoveTargeting"
+          },
+          "execution" : {
+            "$ref" : "#/components/schemas/MoveExecution"
+          },
+          "mechanicalTags" : {
+            "items" : {
+              "$ref" : "#/components/schemas/MoveMechanicalTag"
+            },
+            "type" : "array"
+          },
+          "interactions" : {
+            "$ref" : "#/components/schemas/MoveInteractions"
+          },
+          "secondaryEffects" : {
+            "$ref" : "#/components/schemas/MoveSecondaryEffects"
+          }
+        },
+        "required" : [ "accuracy", "category", "criticalRate", "description", "execution", "interactions", "mechanicalTags", "name", "power", "pp", "priority", "secondaryEffects", "symbol", "targeting", "type" ],
+        "type" : "object"
+      },
+      "AbilityPartial" : {
+        "description" : "An object containing partial data of a pokemon ability",
+        "nullable" : true,
+        "properties" : {
+          "symbol" : {
+            "description" : "The symbol of the pokemon ability",
+            "example" : "overgrow",
+            "type" : "string"
+          },
+          "name" : {
+            "description" : "The translated name of the pokemon ability",
+            "example" : "Overgrow",
+            "type" : "string"
+          },
+          "description" : {
+            "description" : "The translated description of the pokemon ability",
+            "example" : "Powers up Grass-type moves when the Pokémon's HP is low.",
+            "type" : "string"
+          }
+        },
+        "required" : [ "description", "name", "symbol" ],
+        "type" : "object"
+      },
+      "AbilityDetails" : {
+        "description" : "An object containing detailed data of a pokemon ability",
+        "properties" : {
+          "symbol" : {
+            "description" : "The symbol of the pokemon ability",
+            "example" : "overgrow",
+            "type" : "string"
+          },
+          "name" : {
+            "description" : "The translated name of the pokemon ability",
+            "example" : "Overgrow",
+            "type" : "string"
+          },
+          "description" : {
+            "description" : "The translated description of the pokemon ability",
+            "example" : "Powers up Grass-type moves when the Pokémon's HP is low.",
+            "type" : "string"
+          }
+        },
+        "required" : [ "description", "name", "symbol" ],
+        "type" : "object"
+      },
+      "TypePartial" : {
+        "description" : "An object containing partial data of a pokemon type",
+        "nullable" : true,
+        "properties" : {
+          "name" : {
+            "description" : "The translated name of the pokemon type",
+            "example" : "Electric",
+            "type" : "string"
+          },
+          "symbol" : {
+            "description" : "The symbol of the pokemon type",
+            "example" : "electric",
+            "type" : "string"
+          },
+          "color" : {
+            "description" : "The color of the pokemon type",
+            "example" : "#F8D030",
+            "type" : "string"
+          }
+        },
+        "required" : [ "color", "name", "symbol" ],
+        "type" : "object"
+      },
+      "CustomProperties" : {
+        "description" : "Custom properties setted by the developer",
+        "type" : "object"
+      },
+      "Tags" : {
+        "description" : "Tags setted by the developer",
+        "items" : {
+          "type" : "string"
+        },
+        "type" : "array"
+      },
+      "FormDetails" : {
+        "description" : "An object containing the data of a pokemon form (ev, iv, ...)",
+        "properties" : {
+          "number" : {
+            "description" : "The form number",
+            "example" : 0,
+            "type" : "integer"
+          },
+          "name" : {
+            "description" : "The translated name of the form",
+            "example" : "Pikachu",
+            "type" : "string"
+          },
+          "description" : {
+            "description" : "The translated description of the form",
+            "example" : "Pika Pika",
+            "type" : "string"
+          },
+          "height" : {
+            "description" : "The height",
+            "example" : 0.4,
+            "type" : "number"
+          },
+          "weight" : {
+            "description" : "The weight",
+            "example" : 0.8,
+            "type" : "number"
+          },
+          "type1" : {
+            "$ref" : "#/components/schemas/TypePartial"
+          },
+          "type2" : {
+            "$ref" : "#/components/schemas/TypePartial"
+          },
+          "baseHp" : {
+            "description" : "The base HP stat",
+            "example" : 35,
+            "type" : "integer"
+          },
+          "baseAtk" : {
+            "description" : "The base attack stat",
+            "example" : 55,
+            "type" : "integer"
+          },
+          "baseDfe" : {
+            "description" : "The base defense stat",
+            "example" : 40,
+            "type" : "integer"
+          },
+          "baseSpd" : {
+            "description" : "The base speed stat",
+            "example" : 90,
+            "type" : "integer"
+          },
+          "baseAts" : {
+            "description" : "The base special attack stat",
+            "example" : 50,
+            "type" : "integer"
+          },
+          "baseDfs" : {
+            "description" : "The base special defense stat",
+            "example" : 50,
+            "type" : "integer"
+          },
+          "evHp" : {
+            "description" : "The HP EV given",
+            "example" : 0,
+            "type" : "integer"
+          },
+          "evAtk" : {
+            "description" : "The attack EV given",
+            "example" : 0,
+            "type" : "integer"
+          },
+          "evDfe" : {
+            "description" : "The defense EV given",
+            "example" : 0,
+            "type" : "integer"
+          },
+          "evSpd" : {
+            "description" : "The speed EV given",
+            "example" : 2,
+            "type" : "integer"
+          },
+          "evAts" : {
+            "description" : "The special attack EV given",
+            "example" : 0,
+            "type" : "integer"
+          },
+          "evDfs" : {
+            "description" : "The special defense EV given",
+            "example" : 0,
+            "type" : "integer"
+          },
+          "experienceType" : {
+            "description" : "The experience type",
+            "enum" : [ "erratic", "fast", "medium_fast", "medium_slow", "slow", "fluctuating" ],
+            "example" : "erratic",
+            "type" : "string"
+          },
+          "baseExperience" : {
+            "description" : "The base experience",
+            "example" : 64,
+            "type" : "integer"
+          },
+          "baseLoyalty" : {
+            "description" : "The base loyalty",
+            "example" : 50,
+            "type" : "integer"
+          },
+          "catchRate" : {
+            "description" : "The catch rate",
+            "example" : 45,
+            "type" : "integer"
+          },
+          "femaleRate" : {
+            "description" : "The female rate",
+            "example" : 12.5,
+            "type" : "number"
+          },
+          "breedGroups" : {
+            "description" : "The breed groups",
+            "example" : [ "field", "fairy" ],
+            "items" : {
+              "enum" : [ "monster", "water1", "bug", "flying", "field", "fairy", "grass", "human-like", "water3", "mineral", "amorphous", "water2", "ditto", "dragon", "undiscovered" ],
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "hatchSteps" : {
+            "description" : "The number of steps before hatching",
+            "example" : 3840,
+            "type" : "integer"
+          },
+          "babyDbSymbol" : {
+            "description" : "The symbol of the baby form",
+            "example" : "pikachu",
+            "nullable" : true,
+            "type" : "string"
+          },
+          "babyForm" : {
+            "description" : "The form number of the baby form",
+            "example" : 0,
+            "nullable" : true,
+            "type" : "integer"
+          },
+          "itemHeld" : {
+            "description" : "The list of items held",
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "abilities" : {
+            "description" : "The list of abilities",
+            "items" : {
+              "$ref" : "#/components/schemas/AbilityPartial"
+            },
+            "type" : "array"
+          },
+          "tags" : {
+            "$ref" : "#/components/schemas/Tags"
+          },
+          "customProperties" : {
+            "$ref" : "#/components/schemas/CustomProperties"
+          }
+        },
+        "required" : [ "abilities", "baseAtk", "baseAts", "baseDfe", "baseDfs", "baseExperience", "baseHp", "baseLoyalty", "baseSpd", "breedGroups", "catchRate", "customProperties", "description", "evAtk", "evAts", "evDfe", "evDfs", "evHp", "evSpd", "experienceType", "femaleRate", "hatchSteps", "height", "image", "itemHeld", "name", "number", "tags", "type1", "weight" ],
+        "type" : "object"
+      },
+      "MoveTargeting" : {
+        "type" : "object"
+      },
+      "MoveExecution" : {
+        "type" : "object"
+      },
+      "MoveMechanicalTag" : {
+        "type" : "object"
+      },
+      "MoveInteractions" : {
+        "type" : "object"
+      },
+      "MoveSecondaryEffects" : {
+        "type" : "object"
+      },
+      "PokemonScroll" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/Scroll"
+        }, {
+          "properties" : {
+            "content" : {
+              "items" : {
+                "$ref" : "#/components/schemas/PokemonThumbnail"
+              },
+              "type" : "array"
+            }
+          },
+          "type" : "object"
+        } ],
+        "title" : "PokemonScroll"
+      }
+    }
+  }
+}

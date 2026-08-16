@@ -13,9 +13,29 @@ Application entry point. Initializes and starts the HTTP server.
 Core packages containing business logic and utilities:
 
 - **`pkg/iter2/`** - Iterator utilities for collection processing
-- **`pkg/pagination/`** - Pagination logic for list endpoints
+- **`pkg/scroll/`** - Scroll-based pagination for list endpoints
 - **`pkg/file/`** - File system utilities
 - **`pkg/middleware/`** - HTTP middleware (caching, logging, etc.)
+
+### `pkg/pkmn/`
+
+The Pokémon Studio domain model:
+
+- **`pkg/pkmn/pokemon.go`**, **`move.go`**, **`ability.go`**, **`types.go`** - Domain entities
+- **`pkg/pkmn/store.go`** - In-memory data store and indexes
+- **`pkg/pkmn/pokemon_filter.go`** - Filtering logic for list queries
+
+### `pkg/pkmn/studio/`
+
+Data importers that load the Pokémon Studio JSON/CSV data files into the store.
+
+### `pkg/pkmn/pkmnapi/`
+
+API layer: services, mappers and the router wiring (`handler.go`).
+
+### `pkg/pkmn/pkmnapispec/`
+
+Generated OpenAPI server code (models and handlers), regenerated from `docs/api/`.
 
 ### `docs/api/`
 
@@ -41,7 +61,10 @@ Test resources including:
 
 - **`.mise.toml`** - Mise tool and task definitions
 - **`go.mod` / `go.sum`** - Go dependencies
+- **`package.json` / `package-lock.json`** - Node dependencies (VitePress wiki)
+- **`.air.toml`** - Live reload configuration for development (Air)
 - **`docker-compose.yml`** - Docker composition for production
 - **`docker-compose-dev.yml`** - Docker composition for development
 - **`Dockerfile`** - Container image definition
 - **`openapitools*.json`** - OpenAPI Generator configuration
+- **`.github/workflows/`** - CI pipeline (build, release) and Dependabot configuration

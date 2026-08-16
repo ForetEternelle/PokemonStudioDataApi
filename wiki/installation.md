@@ -15,42 +15,40 @@ docker pull foreternelle/pokemon-studio-data-api
 ### Run the Container
 
 ```bash
-docker run -p 8000:8000 -v /path/to/data:/data foreternelle/pokemon-studio-data-api
+docker run -p 8000:8000 -v /path/to/data:/app/data/ foreternelle/pokemon-studio-data-api
 ```
 
 ### Configuration
 
 | Environment Variable | Default | Description |
 |---------------------|---------|-------------|
-| `PORT` | `8000` | Server port |
+| `DATA` | `/app/data/` | Data directory path |
 | `CORS` | `*` | CORS headers |
-| `DATA_FOLDER` | `/data` | Data directory path |
 | `LOG_LEVEL` | `INFO` | Logging level (DEBUG, INFO, WARN, ERROR) |
+
+The server port is fixed to `8000` inside the container, so map it to a host port of your choice with `-p`.
 
 ### Example with Custom Configuration
 
 ```bash
-docker run -p 8080:8080 \
-  -e PORT=8080 \
+docker run -p 8080:8000 \
   -e LOG_LEVEL=DEBUG \
   -e CORS="https://example.com" \
-  -v /my/pokemon/data:/data \
+  -v /my/pokemon/data:/app/data/ \
   foreternelle/pokemon-studio-data-api
 ```
 
 ### Docker Compose
 
 ```yaml
-version: '3.8'
 services:
   api:
     image: foreternelle/pokemon-studio-data-api
     ports:
       - "8000:8000"
     volumes:
-      - ./data:/data
+      - ./data:/app/data/
     environment:
-      - PORT=8000
       - LOG_LEVEL=DEBUG
       - CORS=*
 ```
@@ -66,9 +64,6 @@ See [Development Setup](dev/setup) for building from source.
 
 ## Data Setup
 
-Retrieve data files:
+The API requires a data folder containing the Pokémon Studio project files.
 
-1. **Texts**: From [foret-eternelle-texts](https://gitlab.com/Aerun/foret-eternelle-texts)
-2. **Pokemon/Types**: From [foret-eternelle](https://gitlab.com/Aerun/foret-eternelle) repository
-
-Place the data in the container's `/data` folder or your local data directory.
+Place the data in the container's `/app/data/` folder or your local data directory.

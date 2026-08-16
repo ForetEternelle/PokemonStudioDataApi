@@ -1,0 +1,7 @@
+{
+  "inputSpec": "./docs/api/openapi.yml",
+  "generatorName": "openapi",
+  "outputFile": "openapi.json",
+  "outputDir": "wiki/public/api"
+
+}

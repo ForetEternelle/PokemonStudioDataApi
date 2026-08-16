@@ -4,10 +4,10 @@ A Go-based REST API for accessing Pokémon Studio project data.
 
 ## Features
 
-- **Pokemon**: List and get details
+- **Pokemon**: List and get details, including forms
 - **Types**: Query type relationships
 - **Abilities**: Access ability information
-- **Moves**: Coming soon
+- **Moves**: List and get move details
 
 ## Quick Start
 
@@ -37,7 +37,7 @@ The API is documented with OpenAPI 3.0. See [docs/api/openapi.yml](docs/api/open
 | `-port` | `8000` | Server port |
 | `-cors` | `*` | CORS headers |
 | `-data` | `data` | Data directory |
-| `-log-level` | `INFO` | Logging level |
+| `-log-level` | `DEBUG` | Logging level |
 
 ## Development
 

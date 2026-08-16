@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- **Go** 1.24 or higher
+- **Go** 1.26 or higher
 - **Java** 17 or higher (for OpenAPI Generator)
 - **OpenAPI Generator CLI** 2.13.2 or higher
 
@@ -29,6 +29,8 @@ Simply `cd` into the project directory. Mise will automatically install the corr
 | `mise run generate` | Regenerate API client from OpenAPI specs |
 | `mise run test` | Run the test suite |
 | `mise run clean` | Remove build artifacts |
+| `mise run wiki:dev` | Start the VitePress wiki with hot reload |
+| `mise run wiki:build` | Build the VitePress wiki |
 
 ## Manual Setup
 
@@ -65,5 +67,5 @@ mise run dev
 mise run start
 
 # Or run the built binary
-./build/PokemonStudioDataApi -port=8080 -log-level=DEBUG
+./build/bin -port=8080 -log-level=DEBUG
 ```

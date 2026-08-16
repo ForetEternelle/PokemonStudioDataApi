@@ -1,0 +1,8 @@
+{
+  "engine": {
+    "node": "lts"
+  },
+  "devDependencies": {
+    "vitepress": "^2.0.0-alpha.19"
+  }
+}

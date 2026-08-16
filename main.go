@@ -24,7 +24,7 @@ const (
 	DefaultApiCors = "*"
 
 	KeyApiPort     = "port"
-	DefaultApiPort = 8000
+	DefaultApiPort = 8080
 
 	KeyImportDataFolderPath     = "data"
 	DefaultImportDataFolderPath = "data"

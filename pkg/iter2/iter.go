@@ -38,6 +38,9 @@ func SkipUntil[V any](it iter.Seq[V], skip func(V) bool) iter.Seq[V] {
 			if skipping {
 				if skip(item) {
 					skipping = false
+					if !yield(item) {
+						break
+					}
 				}
 				continue
 			}

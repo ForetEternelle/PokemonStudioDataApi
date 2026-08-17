@@ -130,6 +130,27 @@ func TestFindAllPokemonWithForm_LastIdAndMainFormsOnly(t *testing.T) {
 	}
 }
 
+func TestFindAllPokemonWithForm_LastIdAndLastForm(t *testing.T) {
+	store := NewStore()
+	store.AddPokemon(newTestPokemonDto(1, "bulbasaur", newTestFormDto(0), newTestFormDto(1), newTestFormDto(2)))
+	store.AddPokemon(newTestPokemonDto(2, "ivysaur", newTestFormDto(0)))
+
+	lastId := int32(1)
+	lastForm := int32(1)
+	result := store.FindAllPokemonWithForm(WithLastId(lastId), WithLastForm(lastForm))
+	all := slices.Collect(result)
+
+	if len(all) != 2 {
+		t.Fatalf("Expected 2 PokemonWithForm (bulbasaur form 2, ivysaur form 0), got %d", len(all))
+	}
+	if all[0].Pokemon.ID != 1 || all[0].FormId != 2 {
+		t.Errorf("Expected first to be bulbasaur form 2, got ID %d form %d", all[0].Pokemon.ID, all[0].FormId)
+	}
+	if all[1].Pokemon.ID != 2 || all[1].FormId != 0 {
+		t.Errorf("Expected second to be ivysaur form 0, got ID %d form %d", all[1].Pokemon.ID, all[1].FormId)
+	}
+}
+
 func TestFindAllPokemonWithForm_EmptyStore(t *testing.T) {
 	store := NewStore()
 

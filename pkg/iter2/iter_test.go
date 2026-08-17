@@ -58,8 +58,8 @@ func TestSkipUntil(t *testing.T) {
 	it := slices.Values(data)
 	skipped := SkipUntil(it, func(v int) bool { return v >= 3 })
 	res := slices.Collect(skipped)
-	if !slices.Equal(res, []int{4, 5}) {
-		t.Errorf("expected [4 5], got %v", res)
+	if !slices.Equal(res, []int{3, 4, 5}) {
+		t.Errorf("expected [3 4 5], got %v", res)
 	}
 }
 
@@ -78,8 +78,8 @@ func TestSkipUntilFirstMatch(t *testing.T) {
 	it := slices.Values(data)
 	skipped := SkipUntil(it, func(v int) bool { return true })
 	res := slices.Collect(skipped)
-	if !slices.Equal(res, []int{2, 3}) {
-		t.Errorf("expected [2 3], got %v", res)
+	if !slices.Equal(res, []int{1, 2, 3}) {
+		t.Errorf("expected [1 2 3], got %v", res)
 	}
 }
 

@@ -2,6 +2,8 @@ package pkmn
 
 import (
 	"testing"
+
+	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/iter2"
 )
 
 func TestNewPokemonQueryFilter(t *testing.T) {
@@ -139,7 +141,6 @@ func TestNewPokemonWithTagsFilter(t *testing.T) {
 		DbSymbol: "raichu",
 		Forms:    []*PokemonForm{form},
 	}
-	pokemon.Tags = []string{"special"}
 
 	pwf := PokemonWithForm{
 		Pokemon: pokemon,
@@ -155,12 +156,6 @@ func TestNewPokemonWithTagsFilter(t *testing.T) {
 	t.Run("empty tags matches all", func(t *testing.T) {
 		if !NewPokemonWithTagsFilter([]string{})(pwf) {
 			t.Error("Expected match with empty tags")
-		}
-	})
-
-	t.Run("match pokemon tag", func(t *testing.T) {
-		if !NewPokemonWithTagsFilter([]string{"special"})(pwf) {
-			t.Error("Expected match pokemon tag 'special'")
 		}
 	})
 
@@ -191,7 +186,6 @@ func TestNewPokemonWithoutTagsFilter(t *testing.T) {
 		DbSymbol: "raichu",
 		Forms:    []*PokemonForm{form},
 	}
-	pokemon.Tags = []string{"special"}
 
 	pwf := PokemonWithForm{
 		Pokemon: pokemon,
@@ -210,12 +204,6 @@ func TestNewPokemonWithoutTagsFilter(t *testing.T) {
 		}
 	})
 
-	t.Run("exclude pokemon tag", func(t *testing.T) {
-		if NewPokemonWithoutTagsFilter([]string{"special"})(pwf) {
-			t.Error("Expected no match with excluded pokemon tag 'special'")
-		}
-	})
-
 	t.Run("exclude form tag", func(t *testing.T) {
 		if NewPokemonWithoutTagsFilter([]string{"evolved"})(pwf) {
 			t.Error("Expected no match with excluded form tag 'evolved'")
@@ -225,6 +213,24 @@ func TestNewPokemonWithoutTagsFilter(t *testing.T) {
 	t.Run("exclude unrelated tag keeps result", func(t *testing.T) {
 		if !NewPokemonWithoutTagsFilter([]string{"legendary"})(pwf) {
 			t.Error("Expected match when only unrelated tag is excluded")
+		}
+	})
+
+	t.Run("combined with and without filters", func(t *testing.T) {
+		with := NewPokemonWithTagsFilter([]string{"alolan", "kanto"})
+		without := NewPokemonWithoutTagsFilter([]string{"evolved", "legendary"})
+		filter := iter2.And(with, without)
+
+		if filter(pwf) {
+			t.Error("Expected no match: 'alolan' is included but 'evolved' is excluded")
+		}
+
+		with = NewPokemonWithTagsFilter([]string{"evolved"})
+		without = NewPokemonWithoutTagsFilter([]string{"legendary"})
+		filter = iter2.And(with, without)
+
+		if !filter(pwf) {
+			t.Error("Expected match: 'evolved' is included but 'legendary' is excluded")
 		}
 	})
 }

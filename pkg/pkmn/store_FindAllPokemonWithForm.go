@@ -13,6 +13,10 @@ type PokemonWithForm struct {
 	FormId  int32
 }
 
+func (pwf *PokemonWithForm) Form() (*PokemonForm, bool) {
+  return pwf.Pokemon.Form(pwf.FormId)
+}
+
 type findAllWithFormOptions struct {
 	PokemonFilter iter2.FilterFunc[*Pokemon]
 	FormFilter    iter2.FilterFunc[*PokemonForm]

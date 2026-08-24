@@ -48,15 +48,6 @@ func NewPokemonFormTypesFilter(types []string) iter2.FilterFunc[*PokemonForm] {
 	}
 }
 
-// PokemonWithFormTags returns the tags of a PokemonWithForm, from both the pokemon and its form.
-func PokemonWithFormTags(pwf PokemonWithForm) []string {
-	tags := pwf.Pokemon.Tags
-	if f, ok := pwf.Pokemon.Form(pwf.FormId); ok {
-		tags = append(tags, f.Tags...)
-	}
-	return tags
-}
-
 // NewPokemonWithTagsFilter returns a filter function that checks if a PokemonWithForm
 // matches any of the given tags (on the pokemon or its form).
 func NewPokemonWithTagsFilter(tags []string) iter2.FilterFunc[PokemonWithForm] {
@@ -65,7 +56,12 @@ func NewPokemonWithTagsFilter(tags []string) iter2.FilterFunc[PokemonWithForm] {
 	}
 
 	return func(pwf PokemonWithForm) bool {
-		for _, tag := range PokemonWithFormTags(pwf) {
+		form, ok := pwf.Form()
+		if !ok {
+			return false
+		}
+
+		for _, tag := range form.Tags {
 			if slices.Contains(tags, tag) {
 				return true
 			}
@@ -82,7 +78,12 @@ func NewPokemonWithoutTagsFilter(tags []string) iter2.FilterFunc[PokemonWithForm
 	}
 
 	return func(pwf PokemonWithForm) bool {
-		for _, tag := range PokemonWithFormTags(pwf) {
+		form, ok := pwf.Form()
+		if !ok {
+			return false
+		}
+
+		for _, tag := range form.Tags {
 			if slices.Contains(tags, tag) {
 				return false
 			}

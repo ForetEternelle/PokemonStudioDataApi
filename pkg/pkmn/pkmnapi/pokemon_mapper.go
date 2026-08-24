@@ -43,10 +43,8 @@ func (m PokemonMapper) PokemonToThumbnail(p pkmn.Pokemon, formId int32, lang str
 		Image:                p.DbSymbol,
 		Type1:                m.typeMapper.ToTypePartial(*form.Type1, lang, policy),
 		Name:                 form.Name[lang],
-		CustomProperties:     p.CustomProperties,
-		Tags:                 p.Tags,
-		FormCustomProperties: form.CustomProperties,
-		FormTags:             form.Tags,
+		CustomProperties:     form.CustomProperties,
+		Tags:                 form.Tags,
 	}
 
 	if form.Type2 != nil {
@@ -70,8 +68,8 @@ func (m PokemonMapper) PokemonToDetail(p pkmn.Pokemon, formId int32, lang string
 		Symbol:           p.DbSymbol,
 		Number:           p.ID,
 		Form:             *m.FormToPokemonFormDetails(*f, lang, policy),
-		CustomProperties: p.CustomProperties,
-		Tags:             p.Tags,
+		CustomProperties: f.CustomProperties,
+		Tags:             f.Tags,
 	}
 }
 

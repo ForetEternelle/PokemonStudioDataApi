@@ -44,8 +44,6 @@ type Pokemon struct {
 	// Immutable: used to index pokemon in the store.
 	DbSymbol         string
 	Forms            []*PokemonForm
-	CustomProperties map[string]any
-	Tags             []string
 }
 
 // Form returns a specific form of the Pokemon by its form number.

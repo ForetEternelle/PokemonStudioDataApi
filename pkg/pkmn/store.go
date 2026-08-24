@@ -284,8 +284,6 @@ func (s *Store) AddPokemon(dto AddPokemonDto) *Pokemon {
 		ID:               dto.ID,
 		DbSymbol:         dto.DbSymbol,
 		Forms:            forms,
-		CustomProperties: customProperties,
-		Tags:             tags,
 	}
 
 	insertIndex, _ := slices.BinarySearchFunc(s.pokemonList, pokemon, func(a, b *Pokemon) int {

@@ -32,12 +32,14 @@ The API is documented with OpenAPI 3.0. See [docs/api/openapi.yml](docs/api/open
 
 ## Configuration
 
-| Flag | Default | Description |
-|------|---------|-------------|
-| `-port` | `8000` | Server port |
-| `-cors` | `*` | CORS headers |
-| `-data` | `data` | Data directory |
-| `-log-level` | `INFO` | Logging level |
+| Flag | Env | Default | Description |
+|------|-----|---------|-------------|
+| `-port` | `PORT` | `8000` | Server port |
+| `-cors` | `CORS` | `*` | CORS headers |
+| `-data` | `DATA` | `data` | Data directory |
+| `-log-level` | `LOG_LEVEL` | `INFO` | Logging level |
+
+Flags take precedence over environment variables.
 
 ## Development
 

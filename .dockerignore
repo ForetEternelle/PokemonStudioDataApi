@@ -1,0 +1,7 @@
+.git
+tmp/
+data/
+.local/
+__debug_*
+*.db
+*.db-journal

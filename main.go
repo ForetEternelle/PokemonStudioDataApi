@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"os"
+	"strconv"
 	"time"
 
 	customMiddleware "github.com/ForetEternelle/PokemonStudioDataApi/pkg/middleware"
@@ -38,10 +40,10 @@ type Config struct {
 }
 
 func ParseApiConfig() *Config {
-	logLevelStr := flag.String(KeyAppLogLevel, DefaultAppLogLevel, "The log level")
-	dataFolder := flag.String(KeyImportDataFolderPath, DefaultImportDataFolderPath, "Data folder")
-	port := flag.Int(KeyApiPort, DefaultApiPort, "port to serve server on")
-	cors := flag.String(KeyApiCors, DefaultApiCors, "cors header")
+	logLevelStr := flag.String(KeyAppLogLevel, envOr("LOG_LEVEL", DefaultAppLogLevel), "The log level")
+	dataFolder := flag.String(KeyImportDataFolderPath, envOr("DATA", DefaultImportDataFolderPath), "Data folder")
+	port := flag.Int(KeyApiPort, envOrInt("PORT", DefaultApiPort), "port to serve server on")
+	cors := flag.String(KeyApiCors, envOr("CORS", DefaultApiCors), "cors header")
 	flag.Parse()
 
 	logLevel := ParseLogLevel(*logLevelStr)
@@ -52,6 +54,26 @@ func ParseApiConfig() *Config {
 		Port:       *port,
 		Cors:       *cors,
 	}
+}
+
+func envOr(key, fallback string) string {
+	if value, ok := os.LookupEnv(key); ok && value != "" {
+		return value
+	}
+	return fallback
+}
+
+func envOrInt(key string, fallback int) int {
+	value, ok := os.LookupEnv(key)
+	if !ok || value == "" {
+		return fallback
+	}
+
+	parsed, err := strconv.Atoi(value)
+	if err != nil {
+		return fallback
+	}
+	return parsed
 }
 
 func ParseLogLevel(levelStr string) slog.Level {

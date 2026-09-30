@@ -1,17 +1,17 @@
-[tools]
-go = "1.24"
-
 [vars]
 PORT = "8080"
 CORS = "*"
 DATA_FOLDER = "./test/test_resources/valid-data"
-LOG_LEVEL = "DEBUG"
+LOG_LEVEL = "INFO"
 
 [tasks]
 install = { run = "./scripts/install.sh", run_windows = "./scripts/install.bat", sources = ["go.mod", "package.json"] }
 clean = { run = "./scripts/clean.sh", run_windows = "./scripts/clean.bat" }
 build = { run = "./scripts/build.sh", run_windows = "./scripts/build.bat", sources = ["**/*.go"], outputs = ["build/bin"], hide = true }
 test = { run = "./scripts/test.sh", run_windows = "./scripts/test.bat"}
+
+"wiki:build" = {run = "npx vitepress build wiki", }
+"wiki:dev" = {run = "npx vitepress dev wiki"}
 
 [tasks.dev]
 depends = ["install", "build -f"]

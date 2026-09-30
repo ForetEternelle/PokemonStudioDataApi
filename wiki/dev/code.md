@@ -22,7 +22,7 @@ Handlers are generated from the OpenAPI specification in `docs/api/`. After modi
 mise run generate
 ```
 
-Generated handlers are located in the `internal/` or `pkg/` directory (check `.mise.toml` for output location).
+Generated models and handler interfaces are located in `pkg/pkmn/pkmnapispec/` (see `openapitools-go-server.json` for the output location). Handlers are wired together with services in `pkg/pkmn/pkmnapi/handler.go`.
 
 ### Services
 
@@ -81,37 +81,17 @@ mise run generate
 
 ### 4. Implement the Handler
 
-Edit the generated handler file to add business logic.
+Implement business logic in the service layer under `pkg/pkmn/pkmnapi/` and wire it in `handler.go`. Do not edit generated files in `pkg/pkmn/pkmnapispec/`; they are overwritten by `mise run generate`.
 
 ## Code Patterns
 
 ### Entity Construction
 
-Domain entities (`Pokemon`, `PokemonForm`, `Move`, `Ability`, `PokemonType`) have exported fields and are immutable by convention only: fields must not be mutated once an entity has been registered in a store. The fields used to index/order entities in the store (`Pokemon.ID`, `Pokemon.DbSymbol`, `PokemonForm.Form`, `Move.DbSymbol`, `Ability.DbSymbol`, `PokemonType.DbSymbol`) are documented as immutable. Entities are built by the store `Add*` methods, which take a DTO and return the constructed entity:
+Domain entities (`Pokemon`, `PokemonForm`, `Move`, `Ability`, `PokemonType`) have exported fields and are immutable by convention only: fields must not be mutated once an entity has been registered in a store. The fields used to index/order entities in the store (`Pokemon.ID`, `Pokemon.DbSymbol`, `Move.DbSymbol`, `Ability.DbSymbol`, `PokemonType.DbSymbol`) are documented as immutable. Entities are built by the store `Add*` methods, which take a DTO and return the constructed entity:
 
-```go
-store.AddPokemon(AddPokemonDto{
-    ID:       25,
-    DbSymbol: "pikachu",
-    Forms: []AddPokemonFormDto{
-        {Form: 0, Type1: "electric", Name: Translation{"en": "Pikachu"}},
-    },
-})
-```
 
 The `Add*` methods resolve symbol references (types, abilities), default `CustomProperties`/`Tags`, sort forms, and register the entity in the store indexes.
 
-### Service Layer
-
-Services contain business logic and coordinate between handlers and the data store:
-
-```go
-type PokemonService struct {
-    store               *studio.Store
-    pokemonMapper       *PokemonMapper
-    accessPolicyFactory func(context.Context) *AccessPolicy
-}
-```
 
 Services are injected with dependencies (store, mappers, factories) for testability.
 
@@ -120,26 +100,12 @@ Services are injected with dependencies (store, mappers, factories) for testabil
 Mappers transform domain entities to API response models. Located in `pkg/pkmn/pkmnapi/`:
 
 ```go
-func (m PokemonMapper) PokemonToThumbnail(p studio.Pokemon, lang string, policy *AccessPolicy) *PokemonThumbnail
+func (m PokemonMapper) PokemonToThumbnail(p pkmn.Pokemon, formId int32, lang string, policy PokemonFilterPolicy) *PokemonThumbnail
 ```
 
 ### Store Pattern
 
 The `Store` is the central data repository that loads and indexes all data:
-
-```go
-type Store struct {
-    pokemonList     []Pokemon
-    types           []PokemonType
-    abilities       []Ability
-    moves           []Move
-
-    pokemonBySymbol      map[string]*Pokemon
-    pokemonTypesBySymbol map[string]*PokemonType
-    abilitiesBySymbol    map[string]*Ability
-    movesBySymbol        map[string]*Move
-}
-```
 
 Data is loaded via `Load(folder)` which imports from JSON files and creates in-memory indexes for fast lookups.
 
@@ -148,12 +114,12 @@ Data is loaded via `Load(folder)` which imports from JSON files and creates in-m
 Go 1.23+ iterators are used throughout for lazy evaluation of collections:
 
 ```go
-// In studio/store.go
-func (s *Store) FindAllPokemon(filters ...PokemonFilter) iter.Seq[Pokemon]
+// In pkg/pkmn/store.go
+func (s *Store) FindAllPokemon(filters ...iter2.FilterFunc[*Pokemon]) iter.Seq[*Pokemon]
 
 // Usage with pagination
-pkmnIter := s.store.FindAllPokemon(policy.PokemonFilters...)
-pkmnPage := pagination.Collect(pkmnIter, pr)
+pkmnIter := s.store.FindAllPokemon(filters...)
+pkmnPage := scroll.Of(pkmnIter, size)
 ```
 
 ### Access Policy Pattern
@@ -161,19 +127,10 @@ pkmnPage := pagination.Collect(pkmnIter, pr)
 Access policies determine what data a request can access. Factories create policies from request context:
 
 ```go
-accessPolicyFactory func(context.Context) *AccessPolicy
+accessPolicyFactory func(context.Context) *PokemonFilterPolicy
 
 // In handler
 policy := s.accessPolicyFactory(requestCtx)
-```
-
-### Middleware Pattern
-
-Middleware provides cross-cutting concerns. See `pkg/middleware/` for examples like caching:
-
-```go
-// Cache middleware example
-func Cache(next http.Handler) http.Handler
 ```
 
 ## Code Style

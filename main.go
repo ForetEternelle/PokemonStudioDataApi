@@ -20,13 +20,13 @@ const (
 	AppConfigDefaultName = "psapi"
 
 	KeyAppLogLevel     = "log-level"
-	DefaultAppLogLevel = "DEBUG"
+	DefaultAppLogLevel = "INFO"
 
 	KeyApiCors     = "cors"
 	DefaultApiCors = "*"
 
 	KeyApiPort     = "port"
-	DefaultApiPort = 8000
+	DefaultApiPort = 8080
 
 	KeyImportDataFolderPath     = "data"
 	DefaultImportDataFolderPath = "data"

@@ -1,41 +1,28 @@
-# Pokémon Studio Data API
+---
+# https://vitepress.dev/reference/default-theme-home-page
+layout: home
 
-A Go-based REST API for accessing Pokémon Studio project data. Provides efficient querying of Pokemon, types, abilities, and moves datasets.
+hero:
+  name: "PokemonStudioDataApi"
+  text: "The official documentation of the Pokemon Studio data api"
+  tagline: A Go-based REST API for accessing Pokémon Studio project data
+  actions:
+    - theme: brand
+      text: Installation
+      link: /installation
+    - theme: alt
+      text: Development Setup
+      link: /dev/setup
 
-## Key Features
-
-- Fast and lightweight data querying
-- Flexible configuration (CORS, data directories, logging)
-- Containerized with Docker
-- OpenAPI 3.0 documentation
-- Multi-language support
-
-## Quick Start
-
-```bash
-# Run with Docker
-docker run -p 8000:8000 -v /path/to/data:/data foreternelle/pokemon-studio-data-api
-```
-
-## Documentation
-
-For detailed documentation, see the [Wiki](wiki):
-
-- [Installation](wiki/installation) - Docker and source installation
-- [Development Setup](wiki/dev/setup) - Local development environment
-- [Project Structure](wiki/dev/structure) - Code organization
-- [API Reference](docs/api/openapi.yml) - OpenAPI specification
-
-## Available Data
-
-- **Pokemon**: List and detailed information
-- **Types**: Type relationships and details
-- **Abilities**: Ability information
-- **Moves**: Move data (coming soon)
-
-## Tech Stack
-
-- Go 1.24
-- OpenAPI 3.0
-- Docker
-- Mise (development tools)
+features:
+  - title: Standalone API
+    details: Run it as a self-hosted REST API with Docker or a single Go binary.
+  - title: Embeddable Library
+    details: Use the router, store and services directly from your own Go application.
+  - title: Pokémon & Data
+    details: Access Pokémon, forms, types, abilities and moves with translations.
+  - title: OpenAPI Spec
+    details: Fully documented with an OpenAPI 3.0 specification and generated server code.
+  - title: Multi-language
+    details: Localized responses from the project's translation files.
+---

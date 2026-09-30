@@ -1,8 +1,8 @@
 services:
   foreteternelledataapi:
-    image: foreteternelledataapi:latest
+    image: ghcr.io/foreteternelle/pokemonstudiodataapi:latest
     volumes:
-      - .local/psapi-data/Data:/app/data/
+      - .local/psapi-data/Data:/app/data
     ports:
-      - "8000:8000"
+      - "8080:8080"
       

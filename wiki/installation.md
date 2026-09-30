@@ -9,66 +9,61 @@
 ### Pull the Image
 
 ```bash
-docker pull foreternelle/pokemon-studio-data-api
+docker pull ghcr.io/foreteternelle/pokemonstudiodataapi:latest
 ```
 
 ### Run the Container
 
 ```bash
-docker run -p 8000:8000 -v /path/to/data:/data foreternelle/pokemon-studio-data-api
+docker run -p 8080:8080 -v /path/to/data:/app/data ghcr.io/foreteternelle/pokemonstudiodataapi:latest
 ```
 
 ### Configuration
 
 | Environment Variable | Default | Description |
 |---------------------|---------|-------------|
-| `PORT` | `8000` | Server port |
+| `DATA` | `/app/data` | Data directory path |
 | `CORS` | `*` | CORS headers |
-| `DATA_FOLDER` | `/data` | Data directory path |
 | `LOG_LEVEL` | `INFO` | Logging level (DEBUG, INFO, WARN, ERROR) |
+
+The server port is fixed to `8080` inside the container, so map it to a host port of your choice with `-p`.
 
 ### Example with Custom Configuration
 
 ```bash
 docker run -p 8080:8080 \
-  -e PORT=8080 \
   -e LOG_LEVEL=DEBUG \
   -e CORS="https://example.com" \
-  -v /my/pokemon/data:/data \
-  foreternelle/pokemon-studio-data-api
+  -v /my/pokemon/data:/app/data \
+  ghcr.io/foreteternelle/pokemonstudiodataapi:latest
 ```
 
 ### Docker Compose
 
 ```yaml
-version: '3.8'
 services:
   api:
-    image: foreternelle/pokemon-studio-data-api
+    image: ghcr.io/foreteternelle/pokemonstudiodataapi:latest
     ports:
-      - "8000:8000"
+      - "8080:8080"
     volumes:
-      - ./data:/data
+      - ./data:/app/data
     environment:
-      - PORT=8000
       - LOG_LEVEL=DEBUG
       - CORS=*
 ```
 
 Run with:
 ```bash
-docker-compose up
+docker compose up
 ```
 
 ## From Source
 
-See [Development Setup](dev/setup) for building from source.
+See [Development Setup](/dev/setup) for building from source.
 
 ## Data Setup
 
-Retrieve data files:
+The API requires a data folder containing the Pokémon Studio project files.
 
-1. **Texts**: From [foret-eternelle-texts](https://gitlab.com/Aerun/foret-eternelle-texts)
-2. **Pokemon/Types**: From [foret-eternelle](https://gitlab.com/Aerun/foret-eternelle) repository
-
-Place the data in the container's `/data` folder or your local data directory.
+Place the data in the container's `/app/data` folder or your local data directory.

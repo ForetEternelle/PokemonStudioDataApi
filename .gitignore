@@ -3,3 +3,6 @@ tmp/
 .openapi-generator/
 data/
 __debug_*
+node_modules
+wiki/.vitepress/cache/deps
+wiki/.vitepress/dist

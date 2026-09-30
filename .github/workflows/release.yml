@@ -28,11 +28,8 @@ jobs:
       - name: Build
         run: mise run build
 
-      - name: Generate OpenAPI specs
-        run: mise run generate
-
       - name: Upload OpenAPI specs to release
-        run: gh release upload ${{ github.ref_name }} build/psapi-openapi.json build/psapi-openapi.yml --clobber
+        run: gh release upload ${{ github.ref_name }} wiki/public/api/openapi.json --clobber
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

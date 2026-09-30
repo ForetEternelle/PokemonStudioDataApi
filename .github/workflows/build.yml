@@ -18,5 +18,14 @@ jobs:
       - name: Build
         run: mise run build
 
+      - name: Generate OpenAPI specs
+        run: mise run generate
+
+      - name: Validate OpenAPI specs
+        run: |
+          test -f build/psapi-openapi.json
+          test -f build/psapi-openapi.yml
+          python3 -c "import json; json.load(open('build/psapi-openapi.json'))"
+
       - name: Build image
         run: docker build .

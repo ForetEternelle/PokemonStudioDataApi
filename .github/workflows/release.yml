@@ -5,7 +5,7 @@ on:
     types: [released]
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 env:
@@ -28,6 +28,14 @@ jobs:
       - name: Build
         run: mise run build
 
+      - name: Generate OpenAPI specs
+        run: mise run generate
+
+      - name: Upload OpenAPI specs to release
+        run: gh release upload ${{ github.ref_name }} build/psapi-openapi.json build/psapi-openapi.yml --clobber
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
@@ -43,6 +51,8 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ env.IMAGE }}:latest
+          tags: |
+            ${{ env.IMAGE }}:latest
+            ${{ env.IMAGE }}:${{ github.ref_name }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

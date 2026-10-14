@@ -30,8 +30,6 @@ type Store struct {
 	pokemonTypesBySymbol map[string]*PokemonType
 	abilitiesBySymbol    map[string]*Ability
 	movesBySymbol        map[string]*Move
-
-	pokemonNameTranslations []Translation
 }
 
 func NewStore() *Store {
@@ -41,15 +39,14 @@ func NewStore() *Store {
 	movesBySymbol := make(map[string]*Move)
 
 	return &Store{
-		pokemonList:             []*Pokemon{},
-		types:                   []*PokemonType{},
-		abilities:               []*Ability{},
-		moves:                   []*Move{},
-		pokemonBySymbol:         pokemonBySymbol,
-		pokemonTypesBySymbol:    pokemonTypesBySymbol,
-		abilitiesBySymbol:       abilitiesBySymbol,
-		movesBySymbol:           movesBySymbol,
-		pokemonNameTranslations: []Translation{},
+		pokemonList:          []*Pokemon{},
+		types:                []*PokemonType{},
+		abilities:            []*Ability{},
+		moves:                []*Move{},
+		pokemonBySymbol:      pokemonBySymbol,
+		pokemonTypesBySymbol: pokemonTypesBySymbol,
+		abilitiesBySymbol:    abilitiesBySymbol,
+		movesBySymbol:        movesBySymbol,
 	}
 }
 
@@ -293,11 +290,6 @@ func (s *Store) AddPokemon(dto AddPokemonDto) *Pokemon {
 	s.pokemonList = slices.Insert(s.pokemonList, insertIndex, pokemon)
 	s.pokemonBySymbol[pokemon.DbSymbol] = pokemon
 
-	translationIt := iter2.Map(slices.Values(forms), func(form *PokemonForm) Translation {
-		return form.Name
-	})
-	s.pokemonNameTranslations = append(s.pokemonNameTranslations, slices.Collect(translationIt)...)
-
 	slog.Info("Adding pokemon", "symbol", pokemon.DbSymbol)
 	return pokemon
 }
@@ -327,41 +319,48 @@ func (s *Store) FindPokemonBySymbol(symbol string, filters ...iter2.FilterFunc[*
 	return pokemon
 }
 
-func (s *Store) FindPokemonByName(name string, filters ...iter2.FilterFunc[*Pokemon]) *Pokemon {
+// FindPokemonByName finds a pokemon by its symbol or by one of its form names (case-insensitive).
+// Matches are tried by priority: symbol, main form name in lang, any form name in lang,
+// then any form name in any language. Within a priority level, the lowest pokemon ID wins.
+func (s *Store) FindPokemonByName(name string, lang string, filters ...iter2.FilterFunc[*Pokemon]) *Pokemon {
 	normalizedName := strings.ToLower(strings.TrimSpace(name))
+	if normalizedName == "" {
+		return nil
+	}
 
-	pokemonIter := s.FindAllPokemon(filters...)
-	found, foundOk := iter2.First(iter2.Filter(pokemonIter, func(p *Pokemon) bool {
-		// Check symbol
-		if strings.ToLower(p.DbSymbol) == normalizedName {
-			return true
-		}
+	matches := func(val string) bool {
+		return strings.ToLower(strings.TrimSpace(val)) == normalizedName
+	}
 
-		// Check all names in forms
-		for _, form := range p.Forms {
-			for _, val := range form.Name {
-				if strings.ToLower(strings.TrimSpace(val)) == normalizedName {
-					return true
+	matchers := []iter2.FilterFunc[*Pokemon]{
+		func(p *Pokemon) bool {
+			return strings.ToLower(p.DbSymbol) == normalizedName
+		},
+		func(p *Pokemon) bool {
+			mainForm, ok := p.Form(0)
+			return ok && matches(mainForm.Name[lang])
+		},
+		func(p *Pokemon) bool {
+			return slices.ContainsFunc(p.Forms, func(form *PokemonForm) bool {
+				return matches(form.Name[lang])
+			})
+		},
+		func(p *Pokemon) bool {
+			return slices.ContainsFunc(p.Forms, func(form *PokemonForm) bool {
+				for _, val := range form.Name {
+					if matches(val) {
+						return true
+					}
 				}
-			}
+				return false
+			})
+		},
+	}
+
+	for _, matcher := range matchers {
+		if found, ok := iter2.First(iter2.Filter(s.FindAllPokemon(filters...), matcher)); ok {
+			return found
 		}
-
-		// Check the name translations as a fallback
-		id := int(p.ID)
-		if id >= 0 && id < len(s.pokemonNameTranslations) {
-			translation := s.pokemonNameTranslations[id]
-			for _, val := range translation {
-				if strings.ToLower(strings.TrimSpace(val)) == normalizedName {
-					return true
-				}
-			}
-		}
-
-		return false
-	}))
-
-	if foundOk {
-		return s.pokemonBySymbol[found.DbSymbol]
 	}
 
 	return nil

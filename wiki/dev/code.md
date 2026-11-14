@@ -2,6 +2,35 @@
 
 This page explains how the codebase is organized and how to add new features.
 
+## Contributing
+
+### Choose and coordinate work
+
+Find useful work in the [public GitHub Project associated with this repository](https://github.com/ForetEternelle/PokemonStudioDataApi/projects). Use the existing `area:*` labels to explore a domain, `good first issue` for a first contribution, and `help wanted` for work seeking help.
+
+Before starting, read the issue's outcome, acceptance criteria, dependencies, assignees, recent comments and linked pull requests. An unassigned issue may already have a contributor's claim in its comments. A `needs refinement` label means essential decisions are still open; help resolve those in the issue before implementing the unsettled contract.
+
+1. **Take the initiative.** Choose available, ready work, assign yourself where GitHub permissions allow, and comment that you are taking it on. If self-assignment is unavailable, your comment signals the claim; you do not need to wait for a maintainer to assign you.
+2. **Make progress visible at meaningful changes.** Link your PR to the issue. An early draft PR can share an approach or ask a focused question. Update the Project status when you have permission; otherwise the issue and PR provide the visible coordination trail.
+3. **Pause or hand over openly.** If you stop working on an issue, leave a short note and any useful branch or PR link, then unassign yourself if possible. If someone has already claimed a topic, coordinate in that issue before starting overlapping work.
+
+Contributions are voluntary. Choose work that fits your interests and availability; there are no required estimates, individual delivery deadlines or recurring progress reports.
+
+### Keep one source for each kind of information
+
+| Information | Source |
+|---|---|
+| Available work and progress | Public GitHub Project, using issue labels and assignees |
+| Scope, contract decisions and delivery dependencies | The issue and its linked PR |
+| API contract | OpenAPI source in `docs/api/`, rendered in the [API reference](../api.md) |
+| Contribution rules and development patterns | This guide and the [development setup](./setup.md) |
+
+Record contract decisions in the issue and carry the agreed result into OpenAPI and documentation in the same PR. Describe unresolved questions explicitly rather than assuming a fixed official dataset or a consumer-specific behavior.
+
+For an API change, include the relevant importer/domain/service wiring, source OpenAPI and regenerated artifacts, representative validation, and any affected documentation. The endpoint workflow below explains the implementation steps.
+
+Use `Closes #<number>` in a PR only when it completes the issue; use `Refs #<number>` for a partial contribution. Current availability and progress belong in GitHub, so this guide does not maintain a ticket list or coverage-status table.
+
 ## Architecture Overview
 
 The API follows a standard Go web application pattern:

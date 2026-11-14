@@ -49,3 +49,8 @@ See [Development Setup](https://foreteternelle.github.io/PokemonStudioDataApi/de
 - Mise-based development environment
 - Available commands
 - Code generation workflow
+
+## Contributing
+
+Choose available work in the [associated public GitHub Project](https://github.com/ForetEternelle/PokemonStudioDataApi/projects).
+The [contribution entry point](CONTRIBUTING.md) links to the existing development guide, including how to take on work and coordinate with other contributors.

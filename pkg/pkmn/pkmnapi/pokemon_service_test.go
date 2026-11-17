@@ -126,6 +126,55 @@ func TestPokemonService_GetPokemon(t *testing.T) {
 	}
 }
 
+func TestPokemonService_GetFormsByPokemon_FiltersHiddenForms(t *testing.T) {
+	store, _ := setupPokemonService(t)
+	policyFactory := func(context.Context) *PokemonFilterPolicy {
+		return NewPokemonFilterPolicy(WithFormFilter(func(form *pkmn.PokemonForm) bool {
+			return form.Form != 0
+		}))
+	}
+	service := NewPokemonService(store, NewPokemonMapper(NewTypeMapper(), NewAbilityMapper(), store), policyFactory)
+
+	resp, err := service.GetFormsByPokemon(context.Background(), "pikachu", "en")
+	if err != nil {
+		t.Fatal("Expected no error, got", err)
+	}
+	if resp.Code != 200 {
+		t.Fatalf("Expected status 200, got %d", resp.Code)
+	}
+
+	forms := resp.Body.([]*FormPartial)
+	if len(forms) != 1 || forms[0].Number != 1 {
+		t.Fatalf("forms = %+v, want only form 1", forms)
+	}
+}
+
+func TestPokemonService_GetFormsByPokemon_ReturnsEmptyListWhenAllFormsHidden(t *testing.T) {
+	store, _ := setupPokemonService(t)
+	policyFactory := func(context.Context) *PokemonFilterPolicy {
+		return NewPokemonFilterPolicy(WithFormFilter(func(*pkmn.PokemonForm) bool {
+			return false
+		}))
+	}
+	service := NewPokemonService(store, NewPokemonMapper(NewTypeMapper(), NewAbilityMapper(), store), policyFactory)
+
+	resp, err := service.GetFormsByPokemon(context.Background(), "pikachu", "en")
+	if err != nil {
+		t.Fatal("Expected no error, got", err)
+	}
+	if resp.Code != 200 {
+		t.Fatalf("Expected status 200, got %d", resp.Code)
+	}
+
+	forms, ok := resp.Body.([]*FormPartial)
+	if !ok {
+		t.Fatalf("Body = %T, want []*FormPartial", resp.Body)
+	}
+	if len(forms) != 0 {
+		t.Fatalf("forms = %+v, want no forms", forms)
+	}
+}
+
 // func TestPokemonService_GetPokemonDetailsByName(t *testing.T) {
 // 	_, service := setupPokemonService(t)
 

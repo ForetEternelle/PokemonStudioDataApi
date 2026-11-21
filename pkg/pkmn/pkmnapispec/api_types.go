@@ -19,7 +19,7 @@ import (
 
 // TypesAPIController binds http requests to an api service and writes the service results to the http response
 type TypesAPIController struct {
-	service TypesAPIServicer
+	service      TypesAPIServicer
 	errorHandler ErrorHandler
 }
 

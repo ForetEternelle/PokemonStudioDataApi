@@ -10,9 +10,6 @@
 
 package pkmnapispec
 
-
-
-
 // AbilityPartial - An object containing partial data of a pokemon ability
 type AbilityPartial struct {
 
@@ -29,8 +26,8 @@ type AbilityPartial struct {
 // AssertAbilityPartialRequired checks if the required fields are not zero-ed
 func AssertAbilityPartialRequired(obj AbilityPartial) error {
 	elements := map[string]interface{}{
-		"symbol": obj.Symbol,
-		"name": obj.Name,
+		"symbol":      obj.Symbol,
+		"name":        obj.Name,
 		"description": obj.Description,
 	}
 	for name, el := range elements {

@@ -23,6 +23,7 @@ const (
 	abilityDescriptionTranslationFile     = "100005.csv"
 	moveNameTranslationFile               = "100006.csv"
 	moveDescriptionTranslationFile        = "100007.csv"
+	itemNameTranslationFile               = "100012.csv"
 )
 
 func Load(folder string) (*pkmn.Store, error) {
@@ -87,6 +88,22 @@ func Load(folder string) (*pkmn.Store, error) {
 		})
 	}
 
+	// Technical machines are optional for previously supported projects.
+	techItemIterator, err := ImportTechItems(studioFolder, translationFolder)
+	if err != nil {
+		slog.Warn("Failed to load technical machine items", "error", err)
+	} else {
+		for descriptor := range techItemIterator {
+			store.AddMachine(pkmn.AddMachineDto{
+				ID:         descriptor.ID,
+				DbSymbol:   descriptor.DbSymbol,
+				Name:       descriptor.Name,
+				IsHm:       descriptor.IsHm,
+				MoveSymbol: descriptor.Move,
+			})
+		}
+	}
+
 	pokemonIterator, err := ImportPokemon(studioFolder, translationFolder)
 	if err != nil {
 		slog.Error("Failed to load pokemon")
@@ -129,6 +146,7 @@ func Load(folder string) (*pkmn.Store, error) {
 				Name:           f.Name,
 				Description:    f.Description,
 				Resources:      mapPokemonResources(f.Resources),
+				Learnset:       mapLearnableMoves(f.MoveSet),
 			}
 		}
 
@@ -198,6 +216,38 @@ func mapItemHelds(itemHelds []ItemHeldDescriptor) []*pkmn.ItemHeld {
 			Chance:   ihDesc.Chance,
 		}
 	}
+	return mapped
+}
+
+var learnMethodMap = map[string]pkmn.LearnMethod{
+	"LevelLearnableMove":     pkmn.LearnMethodLevelUp,
+	"TutorLearnableMove":     pkmn.LearnMethodTutor,
+	"TechLearnableMove":      pkmn.LearnMethodMachine,
+	"BreedLearnableMove":     pkmn.LearnMethodBreed,
+	"EvolutionLearnableMove": pkmn.LearnMethodEvolution,
+}
+
+// mapLearnableMoves maps Studio learnable moves to domain pokemon form moves, preserving source order.
+func mapLearnableMoves(learnableMoves []LearnableMoveDescriptor) []pkmn.PokemonFormMove {
+	if len(learnableMoves) == 0 {
+		return nil
+	}
+
+	mapped := make([]pkmn.PokemonFormMove, 0, len(learnableMoves))
+	for _, desc := range learnableMoves {
+		method, ok := learnMethodMap[desc.Klass]
+		if !ok {
+			slog.Warn("Unsupported learnable move class", "class", desc.Klass, "move", desc.Move)
+			continue
+		}
+
+		mapped = append(mapped, pkmn.PokemonFormMove{
+			MoveSymbol: desc.Move,
+			Method:     method,
+			Level:      desc.Level,
+		})
+	}
+
 	return mapped
 }
 
@@ -531,6 +581,52 @@ func ImportMoves(studioFolder, translationFolder string) (iter.Seq[*MoveDescript
 			}
 		}
 	}, nil
+}
+
+// ImportTechItems imports the technical machine items from a Studio items folder.
+// studioFolder pokemon studio folder
+// translationFolder the translation folder
+func ImportTechItems(studioFolder, translationFolder string) (iter.Seq[*TechItemDescriptor], error) {
+	itemFolderPath := path.Join(studioFolder, "items/")
+	slog.Info("Importing item folder", "path", itemFolderPath)
+	itemFileIterator, err := file.ImportFolder(itemFolderPath)
+	if err != nil {
+		return nil, err
+	}
+
+	itemNameTranslationsPath := path.Join(translationFolder, itemNameTranslationFile)
+	itemNameTranslations := ImportTranslationsOrEmpty(itemNameTranslationsPath)
+
+	return func(yield func(*TechItemDescriptor) bool) {
+		for itemFile := range itemFileIterator {
+			itemDesc, err := UnmarshalTechItemDescriptor(itemFile.Content)
+			if err != nil {
+				slog.Warn("Failed to unmarshal item descriptor content", "file", itemFile.Path, "error", err)
+				continue
+			}
+
+			if itemDesc.Klass != techItemClass {
+				continue
+			}
+
+			itemDesc.Name = MapTranslation(itemDesc.ID, itemNameTranslations)
+
+			if !yield(itemDesc) {
+				break
+			}
+		}
+	}, nil
+}
+
+// UnmarshalTechItemDescriptor unmarshal a json encoded item to a descriptor
+// itemContent the encoded item
+func UnmarshalTechItemDescriptor(itemContent []byte) (*TechItemDescriptor, error) {
+	itemDescriptor := &TechItemDescriptor{}
+	if err := json.Unmarshal(itemContent, itemDescriptor); err != nil {
+		return nil, err
+	}
+
+	return itemDescriptor, nil
 }
 
 // UnmarshalAbilityDescriptor unmarshal a json encoded ability to a descriptor

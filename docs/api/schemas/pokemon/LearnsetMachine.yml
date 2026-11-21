@@ -1,0 +1,30 @@
+type: object
+description: The technical machine item teaching a move
+nullable: true
+required:
+  - id
+  - symbol
+  - name
+  - isHm
+properties:
+  id:
+    type: integer
+    description: The native identifier of the item in the project
+    example: 123
+  symbol:
+    type: string
+    description: The symbol of the technical machine item
+    example: "tm01"
+  name:
+    type: string
+    description: The translated name of the technical machine item
+    example: "TM01"
+  isHm:
+    type: boolean
+    description: Whether the technical machine is an HM instead of a TM
+    example: false
+  number:
+    type: integer
+    nullable: true
+    description: The machine number derived from the stable item symbol
+    example: 1

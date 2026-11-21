@@ -105,6 +105,7 @@ type PokemonForm struct {
 	CustomProperties map[string]any
 	Tags             []string
 	Resources        PokemonResources
+	Learnset         []PokemonFormMove
 }
 
 // Evolution represents an evolution from one Pokemon to another.

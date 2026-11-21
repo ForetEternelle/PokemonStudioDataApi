@@ -930,6 +930,11 @@
             "example" : "Thunderbolt",
             "type" : "string"
           },
+          "description" : {
+            "description" : "The translated description of the pokemon move",
+            "example" : "A strong electric blast crashes down on the target.",
+            "type" : "string"
+          },
           "type" : {
             "$ref" : "#/components/schemas/TypePartial"
           },
@@ -954,7 +959,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "accuracy", "category", "name", "power", "pp", "symbol", "type" ],
+        "required" : [ "accuracy", "category", "description", "name", "power", "pp", "symbol", "type" ],
         "type" : "object"
       },
       "MoveDetails" : {
@@ -1269,6 +1274,13 @@
             },
             "type" : "array"
           },
+          "learnset" : {
+            "description" : "The learnset of the form, the moves it learns and how",
+            "items" : {
+              "$ref" : "#/components/schemas/LearnsetEntry"
+            },
+            "type" : "array"
+          },
           "tags" : {
             "$ref" : "#/components/schemas/Tags"
           },
@@ -1276,7 +1288,7 @@
             "$ref" : "#/components/schemas/CustomProperties"
           }
         },
-        "required" : [ "abilities", "baseAtk", "baseAts", "baseDfe", "baseDfs", "baseExperience", "baseHp", "baseLoyalty", "baseSpd", "breedGroups", "catchRate", "customProperties", "description", "evAtk", "evAts", "evDfe", "evDfs", "evHp", "evSpd", "experienceType", "femaleRate", "hatchSteps", "height", "image", "itemHeld", "name", "number", "tags", "type1", "weight" ],
+        "required" : [ "abilities", "baseAtk", "baseAts", "baseDfe", "baseDfs", "baseExperience", "baseHp", "baseLoyalty", "baseSpd", "breedGroups", "catchRate", "customProperties", "description", "evAtk", "evAts", "evDfe", "evDfs", "evHp", "evSpd", "experienceType", "femaleRate", "hatchSteps", "height", "image", "itemHeld", "learnset", "name", "number", "tags", "type1", "weight" ],
         "type" : "object"
       },
       "MoveTargeting" : {
@@ -1292,6 +1304,65 @@
         "type" : "object"
       },
       "MoveSecondaryEffects" : {
+        "type" : "object"
+      },
+      "LearnsetEntry" : {
+        "description" : "A move learned by a pokemon form and the way it is learned",
+        "properties" : {
+          "move" : {
+            "$ref" : "#/components/schemas/MovePartial"
+          },
+          "method" : {
+            "description" : "The way the pokemon learns the move",
+            "enum" : [ "level_up", "tutor", "machine", "breed", "evolution" ],
+            "example" : "level_up",
+            "type" : "string"
+          },
+          "level" : {
+            "description" : "The level at which a level-up move is learned",
+            "example" : 26,
+            "nullable" : true,
+            "type" : "integer"
+          },
+          "machine" : {
+            "$ref" : "#/components/schemas/LearnsetMachine"
+          }
+        },
+        "required" : [ "method", "move" ],
+        "type" : "object"
+      },
+      "LearnsetMachine" : {
+        "description" : "The technical machine item teaching a move",
+        "nullable" : true,
+        "properties" : {
+          "id" : {
+            "description" : "The native identifier of the item in the project",
+            "example" : 123,
+            "type" : "integer"
+          },
+          "symbol" : {
+            "description" : "The symbol of the technical machine item",
+            "example" : "tm01",
+            "type" : "string"
+          },
+          "name" : {
+            "description" : "The translated name of the technical machine item",
+            "example" : "TM01",
+            "type" : "string"
+          },
+          "isHm" : {
+            "description" : "Whether the technical machine is an HM instead of a TM",
+            "example" : false,
+            "type" : "boolean"
+          },
+          "number" : {
+            "description" : "The machine number derived from the stable item symbol",
+            "example" : 1,
+            "nullable" : true,
+            "type" : "integer"
+          }
+        },
+        "required" : [ "id", "isHm", "name", "symbol" ],
         "type" : "object"
       },
       "PokemonScroll" : {

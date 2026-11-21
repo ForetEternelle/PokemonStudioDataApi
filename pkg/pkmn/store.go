@@ -25,11 +25,14 @@ type Store struct {
 	types       []*PokemonType
 	abilities   []*Ability
 	moves       []*Move
+	machines    []*Machine
 
 	pokemonBySymbol      map[string]*Pokemon
 	pokemonTypesBySymbol map[string]*PokemonType
 	abilitiesBySymbol    map[string]*Ability
 	movesBySymbol        map[string]*Move
+	machinesBySymbol     map[string]*Machine
+	machinesByMoveSymbol map[string]*Machine
 }
 
 func NewStore() *Store {
@@ -37,16 +40,21 @@ func NewStore() *Store {
 	pokemonTypesBySymbol := make(map[string]*PokemonType)
 	abilitiesBySymbol := make(map[string]*Ability)
 	movesBySymbol := make(map[string]*Move)
+	machinesBySymbol := make(map[string]*Machine)
+	machinesByMoveSymbol := make(map[string]*Machine)
 
 	return &Store{
 		pokemonList:          []*Pokemon{},
 		types:                []*PokemonType{},
 		abilities:            []*Ability{},
 		moves:                []*Move{},
+		machines:             []*Machine{},
 		pokemonBySymbol:      pokemonBySymbol,
 		pokemonTypesBySymbol: pokemonTypesBySymbol,
 		abilitiesBySymbol:    abilitiesBySymbol,
 		movesBySymbol:        movesBySymbol,
+		machinesBySymbol:     machinesBySymbol,
+		machinesByMoveSymbol: machinesByMoveSymbol,
 	}
 }
 
@@ -149,6 +157,33 @@ func (s *Store) AddMove(dto AddMoveDto) *Move {
 	return move
 }
 
+// AddMachineDto describes a Machine to add to the store.
+type AddMachineDto struct {
+	ID         int
+	DbSymbol   string
+	Name       Translation
+	IsHm       bool
+	MoveSymbol string
+}
+
+// AddMachine adds a technical machine to the store.
+func (s *Store) AddMachine(dto AddMachineDto) *Machine {
+	machine := &Machine{
+		ID:         dto.ID,
+		DbSymbol:   dto.DbSymbol,
+		Name:       dto.Name,
+		IsHm:       dto.IsHm,
+		MoveSymbol: dto.MoveSymbol,
+	}
+
+	s.machines = append(s.machines, machine)
+	s.machinesBySymbol[machine.DbSymbol] = machine
+	s.machinesByMoveSymbol[machine.MoveSymbol] = machine
+
+	slog.Info("Adding machine", "symbol", machine.DbSymbol)
+	return machine
+}
+
 // AddPokemonDto describes a Pokemon to add to the store.
 type AddPokemonDto struct {
 	ID               int32
@@ -195,6 +230,7 @@ type AddPokemonFormDto struct {
 	CustomProperties map[string]any
 	Tags             []string
 	Resources        PokemonResources
+	Learnset         []PokemonFormMove
 }
 
 // AddPokemon adds a Pokemon to the store, keeping the list sorted by ID.
@@ -221,6 +257,15 @@ func (s *Store) AddPokemon(dto AddPokemonDto) *Pokemon {
 		tags := f.Tags
 		if tags == nil {
 			tags = make([]string, 0)
+		}
+
+		learnset := make([]PokemonFormMove, len(f.Learnset))
+		for j, learnable := range f.Learnset {
+			learnable.Move = s.FindMoveBySymbol(learnable.MoveSymbol)
+			if learnable.Method == LearnMethodMachine {
+				learnable.Machine = s.FindMachineByMoveSymbol(learnable.MoveSymbol)
+			}
+			learnset[j] = learnable
 		}
 
 		forms[i] = &PokemonForm{
@@ -260,6 +305,7 @@ func (s *Store) AddPokemon(dto AddPokemonDto) *Pokemon {
 			CustomProperties: customProperties,
 			Tags:             tags,
 			Resources:        f.Resources,
+			Learnset:         learnset,
 		}
 	}
 
@@ -430,4 +476,36 @@ func (s *Store) FindMoveBySymbol(symbol string, filters ...iter2.FilterFunc[*Mov
 	}
 
 	return move
+}
+
+func (s *Store) FindAllMachines(filters ...iter2.FilterFunc[*Machine]) iter.Seq[*Machine] {
+	machineIt := slices.Values(s.machines)
+	return iter2.Filter(machineIt, iter2.And(filters...))
+}
+
+func (s *Store) FindMachineBySymbol(symbol string, filters ...iter2.FilterFunc[*Machine]) *Machine {
+	machine, ok := s.machinesBySymbol[symbol]
+	if !ok {
+		return nil
+	}
+
+	if !iter2.And(filters...)(machine) {
+		return nil
+	}
+
+	return machine
+}
+
+// FindMachineByMoveSymbol finds the technical machine teaching the given move.
+func (s *Store) FindMachineByMoveSymbol(symbol string, filters ...iter2.FilterFunc[*Machine]) *Machine {
+	machine, ok := s.machinesByMoveSymbol[symbol]
+	if !ok {
+		return nil
+	}
+
+	if !iter2.And(filters...)(machine) {
+		return nil
+	}
+
+	return machine
 }

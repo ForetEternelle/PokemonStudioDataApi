@@ -107,8 +107,16 @@ type FormDescriptor struct {
 	FrontOffsetY   int32                      `json:"frontOffsetY"`
 	FormTextId     FormTextIdDescriptor       `json:"formTextId"`
 	Resources      PokemonResourcesDescriptor `json:"resources"`
+	MoveSet        []LearnableMoveDescriptor  `json:"moveSet"`
 	Name           pkmn.Translation
 	Description    pkmn.Translation
+}
+
+// LearnableMoveDescriptor is the JSON descriptor for a learnable move.
+type LearnableMoveDescriptor struct {
+	Klass string `json:"klass"`
+	Move  string `json:"move"`
+	Level int32  `json:"level"`
 }
 
 // EvolutionDescriptor is the JSON descriptor for an evolution.

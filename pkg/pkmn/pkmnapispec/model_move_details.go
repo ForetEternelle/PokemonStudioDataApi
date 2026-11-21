@@ -10,9 +10,6 @@
 
 package pkmnapispec
 
-
-
-
 // MoveDetails - Full definition of a battle move
 type MoveDetails struct {
 
@@ -59,20 +56,20 @@ type MoveDetails struct {
 // AssertMoveDetailsRequired checks if the required fields are not zero-ed
 func AssertMoveDetailsRequired(obj MoveDetails) error {
 	elements := map[string]interface{}{
-		"name": obj.Name,
-		"description": obj.Description,
-		"symbol": obj.Symbol,
-		"type": obj.Type,
-		"category": obj.Category,
-		"power": obj.Power,
-		"accuracy": obj.Accuracy,
-		"pp": obj.Pp,
-		"criticalRate": obj.CriticalRate,
-		"priority": obj.Priority,
-		"targeting": obj.Targeting,
-		"execution": obj.Execution,
-		"mechanicalTags": obj.MechanicalTags,
-		"interactions": obj.Interactions,
+		"name":             obj.Name,
+		"description":      obj.Description,
+		"symbol":           obj.Symbol,
+		"type":             obj.Type,
+		"category":         obj.Category,
+		"power":            obj.Power,
+		"accuracy":         obj.Accuracy,
+		"pp":               obj.Pp,
+		"criticalRate":     obj.CriticalRate,
+		"priority":         obj.Priority,
+		"targeting":        obj.Targeting,
+		"execution":        obj.Execution,
+		"mechanicalTags":   obj.MechanicalTags,
+		"interactions":     obj.Interactions,
 		"secondaryEffects": obj.SecondaryEffects,
 	}
 	for name, el := range elements {
@@ -91,10 +88,10 @@ func AssertMoveDetailsRequired(obj MoveDetails) error {
 
 // AssertMoveDetailsConstraints checks if the values respects the defined constraints
 func AssertMoveDetailsConstraints(obj MoveDetails) error {
-    if obj.Type != nil {
-     	if err := AssertTypePartialConstraints(*obj.Type); err != nil {
-     		return err
-     	}
-    }
+	if obj.Type != nil {
+		if err := AssertTypePartialConstraints(*obj.Type); err != nil {
+			return err
+		}
+	}
 	return nil
 }

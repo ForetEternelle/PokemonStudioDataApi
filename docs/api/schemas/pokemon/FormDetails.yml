@@ -28,6 +28,7 @@ required:
   - hatchSteps
   - itemHeld
   - abilities
+  - learnset
   - image
   - tags
   - customProperties
@@ -185,6 +186,11 @@ properties:
         description: The list of abilities
         items:
             $ref: "../abilities/AbilityPartial.yml"
+    learnset:
+        type: array
+        description: The learnset of the form, the moves it learns and how
+        items:
+            $ref: "./LearnsetEntry.yml"
     tags:
         $ref: "../Tags.yml"
         description: Tags setted by the developer

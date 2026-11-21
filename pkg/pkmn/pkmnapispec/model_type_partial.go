@@ -10,9 +10,6 @@
 
 package pkmnapispec
 
-
-
-
 // TypePartial - An object containing partial data of a pokemon type
 type TypePartial struct {
 
@@ -29,9 +26,9 @@ type TypePartial struct {
 // AssertTypePartialRequired checks if the required fields are not zero-ed
 func AssertTypePartialRequired(obj TypePartial) error {
 	elements := map[string]interface{}{
-		"name": obj.Name,
+		"name":   obj.Name,
 		"symbol": obj.Symbol,
-		"color": obj.Color,
+		"color":  obj.Color,
 	}
 	for name, el := range elements {
 		if isZero := IsZeroValue(el); isZero {

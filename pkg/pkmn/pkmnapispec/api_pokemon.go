@@ -19,7 +19,7 @@ import (
 
 // PokemonAPIController binds http requests to an api service and writes the service results to the http response
 type PokemonAPIController struct {
-	service PokemonAPIServicer
+	service      PokemonAPIServicer
 	errorHandler ErrorHandler
 }
 

@@ -19,7 +19,7 @@ import (
 
 // AbilitiesAPIController binds http requests to an api service and writes the service results to the http response
 type AbilitiesAPIController struct {
-	service AbilitiesAPIServicer
+	service      AbilitiesAPIServicer
 	errorHandler ErrorHandler
 }
 

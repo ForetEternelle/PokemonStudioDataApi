@@ -45,6 +45,32 @@ func TestLoad(t *testing.T) {
 	if typesCount != 18 {
 		t.Error("Import should have 18 types, has", typesCount)
 	}
+
+	machinesCount := len(slices.Collect(store.FindAllMachines()))
+	if machinesCount != 3 {
+		t.Error("Import should have 3 technical machines, has", machinesCount)
+	}
+
+	abra := store.FindPokemonBySymbol("abra")
+	if abra == nil {
+		t.Fatal("Import should have imported abra")
+	}
+
+	methods := make(map[pkmn.LearnMethod]bool)
+	for _, learnable := range abra.Forms[0].Learnset {
+		methods[learnable.Method] = true
+	}
+	for _, method := range []pkmn.LearnMethod{
+		pkmn.LearnMethodLevelUp,
+		pkmn.LearnMethodTutor,
+		pkmn.LearnMethodMachine,
+		pkmn.LearnMethodBreed,
+		pkmn.LearnMethodEvolution,
+	} {
+		if !methods[method] {
+			t.Errorf("Import should preserve %s learnable moves", method)
+		}
+	}
 }
 
 func TestUnmarshalTypeDescriptor_Error(t *testing.T) {

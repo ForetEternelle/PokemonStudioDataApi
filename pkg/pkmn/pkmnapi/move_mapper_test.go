@@ -84,4 +84,8 @@ func TestMoveToPartial(t *testing.T) {
 	if movePartial.Symbol != move.DbSymbol {
 		t.Error("Mapper should map db symbol, expected", move.DbSymbol, ", has", movePartial.Symbol)
 	}
+
+	if movePartial.Description != move.Description[lang] {
+		t.Error("Mapper should map description, expected", move.Description[lang], ", has", movePartial.Description)
+	}
 }

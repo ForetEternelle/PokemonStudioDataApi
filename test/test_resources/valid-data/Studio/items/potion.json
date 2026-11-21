@@ -1,0 +1,7 @@
+{
+  "id": 3,
+  "dbSymbol": "potion",
+  "klass": "ConstantHealItem",
+  "isHm": false,
+  "move": "heal_bell"
+}

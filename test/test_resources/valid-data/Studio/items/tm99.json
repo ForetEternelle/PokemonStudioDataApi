@@ -1,0 +1,7 @@
+{
+  "id": 2,
+  "dbSymbol": "tm99",
+  "klass": "TechItem",
+  "isHm": false,
+  "move": "ice_beam"
+}

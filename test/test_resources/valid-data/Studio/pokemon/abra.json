@@ -373,6 +373,10 @@
         {
           "move": "flash",
           "klass": "TechLearnableMove"
+        },
+        {
+          "move": "psychic",
+          "klass": "EvolutionLearnableMove"
         }
       ],
       "formTextId": {

@@ -1,0 +1,23 @@
+type: object
+description: A move learned by a pokemon form and the way it is learned
+required:
+  - move
+  - method
+properties:
+  move:
+    $ref: "../move/MovePartial.yml"
+    description: The learned move with the fields needed to display and filter it
+  method:
+    type: string
+    description: The way the pokemon learns the move
+    enum: [level_up, tutor, machine, breed, evolution]
+    example: "level_up"
+  level:
+    type: integer
+    nullable: true
+    description: The level at which a level-up move is learned
+    example: 26
+  machine:
+    $ref: "./LearnsetMachine.yml"
+    nullable: true
+    description: The technical machine item for machine-learned moves

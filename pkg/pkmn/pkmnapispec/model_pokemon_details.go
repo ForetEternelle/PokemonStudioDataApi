@@ -10,9 +10,6 @@
 
 package pkmnapispec
 
-
-
-
 // PokemonDetails - An object containing detailed data of a pokemon with its main form
 type PokemonDetails struct {
 
@@ -34,10 +31,10 @@ type PokemonDetails struct {
 // AssertPokemonDetailsRequired checks if the required fields are not zero-ed
 func AssertPokemonDetailsRequired(obj PokemonDetails) error {
 	elements := map[string]interface{}{
-		"symbol": obj.Symbol,
-		"number": obj.Number,
-		"form": obj.Form,
-		"tags": obj.Tags,
+		"symbol":           obj.Symbol,
+		"number":           obj.Number,
+		"form":             obj.Form,
+		"tags":             obj.Tags,
 		"customProperties": obj.CustomProperties,
 	}
 	for name, el := range elements {

@@ -10,9 +10,6 @@
 
 package pkmnapispec
 
-
-
-
 // FormDetails - An object containing the data of a pokemon form (ev, iv, ...)
 type FormDetails struct {
 
@@ -104,6 +101,9 @@ type FormDetails struct {
 	// The list of abilities
 	Abilities []AbilityPartial `json:"abilities"`
 
+	// The learnset of the form, the moves it learns and how
+	Learnset []LearnsetEntry `json:"learnset"`
+
 	// Tags setted by the developer
 	Tags []string `json:"tags"`
 
@@ -114,34 +114,35 @@ type FormDetails struct {
 // AssertFormDetailsRequired checks if the required fields are not zero-ed
 func AssertFormDetailsRequired(obj FormDetails) error {
 	elements := map[string]interface{}{
-		"number": obj.Number,
-		"name": obj.Name,
-		"description": obj.Description,
-		"height": obj.Height,
-		"weight": obj.Weight,
-		"type1": obj.Type1,
-		"baseHp": obj.BaseHp,
-		"baseAtk": obj.BaseAtk,
-		"baseDfe": obj.BaseDfe,
-		"baseSpd": obj.BaseSpd,
-		"baseAts": obj.BaseAts,
-		"baseDfs": obj.BaseDfs,
-		"evHp": obj.EvHp,
-		"evAtk": obj.EvAtk,
-		"evDfe": obj.EvDfe,
-		"evSpd": obj.EvSpd,
-		"evAts": obj.EvAts,
-		"evDfs": obj.EvDfs,
-		"experienceType": obj.ExperienceType,
-		"baseExperience": obj.BaseExperience,
-		"baseLoyalty": obj.BaseLoyalty,
-		"catchRate": obj.CatchRate,
-		"femaleRate": obj.FemaleRate,
-		"breedGroups": obj.BreedGroups,
-		"hatchSteps": obj.HatchSteps,
-		"itemHeld": obj.ItemHeld,
-		"abilities": obj.Abilities,
-		"tags": obj.Tags,
+		"number":           obj.Number,
+		"name":             obj.Name,
+		"description":      obj.Description,
+		"height":           obj.Height,
+		"weight":           obj.Weight,
+		"type1":            obj.Type1,
+		"baseHp":           obj.BaseHp,
+		"baseAtk":          obj.BaseAtk,
+		"baseDfe":          obj.BaseDfe,
+		"baseSpd":          obj.BaseSpd,
+		"baseAts":          obj.BaseAts,
+		"baseDfs":          obj.BaseDfs,
+		"evHp":             obj.EvHp,
+		"evAtk":            obj.EvAtk,
+		"evDfe":            obj.EvDfe,
+		"evSpd":            obj.EvSpd,
+		"evAts":            obj.EvAts,
+		"evDfs":            obj.EvDfs,
+		"experienceType":   obj.ExperienceType,
+		"baseExperience":   obj.BaseExperience,
+		"baseLoyalty":      obj.BaseLoyalty,
+		"catchRate":        obj.CatchRate,
+		"femaleRate":       obj.FemaleRate,
+		"breedGroups":      obj.BreedGroups,
+		"hatchSteps":       obj.HatchSteps,
+		"itemHeld":         obj.ItemHeld,
+		"abilities":        obj.Abilities,
+		"learnset":         obj.Learnset,
+		"tags":             obj.Tags,
 		"customProperties": obj.CustomProperties,
 	}
 	for name, el := range elements {
@@ -165,23 +166,33 @@ func AssertFormDetailsRequired(obj FormDetails) error {
 			return err
 		}
 	}
+	for _, el := range obj.Learnset {
+		if err := AssertLearnsetEntryRequired(el); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 // AssertFormDetailsConstraints checks if the values respects the defined constraints
 func AssertFormDetailsConstraints(obj FormDetails) error {
-    if obj.Type1 != nil {
-     	if err := AssertTypePartialConstraints(*obj.Type1); err != nil {
-     		return err
-     	}
-    }
-    if obj.Type2 != nil {
-     	if err := AssertTypePartialConstraints(*obj.Type2); err != nil {
-     		return err
-     	}
-    }
+	if obj.Type1 != nil {
+		if err := AssertTypePartialConstraints(*obj.Type1); err != nil {
+			return err
+		}
+	}
+	if obj.Type2 != nil {
+		if err := AssertTypePartialConstraints(*obj.Type2); err != nil {
+			return err
+		}
+	}
 	for _, el := range obj.Abilities {
 		if err := AssertAbilityPartialConstraints(el); err != nil {
+			return err
+		}
+	}
+	for _, el := range obj.Learnset {
+		if err := AssertLearnsetEntryConstraints(el); err != nil {
 			return err
 		}
 	}

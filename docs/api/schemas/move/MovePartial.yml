@@ -3,6 +3,7 @@ description: An object containing partial data of a pokemon move
 required:
   - symbol
   - name
+  - description
   - type
   - category
   - pp
@@ -19,6 +20,11 @@ properties:
     type: string
     description: The translated name of the pokemon move
     example: "Thunderbolt"
+
+  description:
+    type: string
+    description: The translated description of the pokemon move
+    example: "A strong electric blast crashes down on the target."
 
   type:
     $ref: "../types/TypePartial.yml"

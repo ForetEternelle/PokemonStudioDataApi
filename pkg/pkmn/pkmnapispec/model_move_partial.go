@@ -10,9 +10,6 @@
 
 package pkmnapispec
 
-
-
-
 // MovePartial - An object containing partial data of a pokemon move
 type MovePartial struct {
 
@@ -21,6 +18,9 @@ type MovePartial struct {
 
 	// The translated name of the pokemon move
 	Name string `json:"name"`
+
+	// The translated description of the pokemon move
+	Description string `json:"description"`
 
 	Type *TypePartial `json:"type"`
 
@@ -40,13 +40,14 @@ type MovePartial struct {
 // AssertMovePartialRequired checks if the required fields are not zero-ed
 func AssertMovePartialRequired(obj MovePartial) error {
 	elements := map[string]interface{}{
-		"symbol": obj.Symbol,
-		"name": obj.Name,
-		"type": obj.Type,
-		"category": obj.Category,
-		"pp": obj.Pp,
-		"power": obj.Power,
-		"accuracy": obj.Accuracy,
+		"symbol":      obj.Symbol,
+		"name":        obj.Name,
+		"description": obj.Description,
+		"type":        obj.Type,
+		"category":    obj.Category,
+		"pp":          obj.Pp,
+		"power":       obj.Power,
+		"accuracy":    obj.Accuracy,
 	}
 	for name, el := range elements {
 		if isZero := IsZeroValue(el); isZero {
@@ -64,10 +65,10 @@ func AssertMovePartialRequired(obj MovePartial) error {
 
 // AssertMovePartialConstraints checks if the values respects the defined constraints
 func AssertMovePartialConstraints(obj MovePartial) error {
-    if obj.Type != nil {
-     	if err := AssertTypePartialConstraints(*obj.Type); err != nil {
-     		return err
-     	}
-    }
+	if obj.Type != nil {
+		if err := AssertTypePartialConstraints(*obj.Type); err != nil {
+			return err
+		}
+	}
 	return nil
 }

@@ -10,11 +10,7 @@
 
 package pkmnapispec
 
-
-
-
 type PokemonPage struct {
-
 	Content []PokemonThumbnail `json:"content,omitempty"`
 
 	// The number of the page

@@ -10,9 +10,6 @@
 
 package pkmnapispec
 
-
-
-
 // AbilityDetails - An object containing detailed data of a pokemon ability
 type AbilityDetails struct {
 
@@ -29,8 +26,8 @@ type AbilityDetails struct {
 // AssertAbilityDetailsRequired checks if the required fields are not zero-ed
 func AssertAbilityDetailsRequired(obj AbilityDetails) error {
 	elements := map[string]interface{}{
-		"symbol": obj.Symbol,
-		"name": obj.Name,
+		"symbol":      obj.Symbol,
+		"name":        obj.Name,
 		"description": obj.Description,
 	}
 	for name, el := range elements {

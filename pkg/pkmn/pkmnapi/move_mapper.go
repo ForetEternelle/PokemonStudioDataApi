@@ -114,9 +114,10 @@ func (m MoveMapper) ToMoveDetail(move pkmn.Move, lang string, policy PokemonFilt
 func (m MoveMapper) ToMovePartial(move pkmn.Move, lang string, policy PokemonFilterPolicy) MovePartial {
 	slog.Debug("Mapping move to partial", "move", move.DbSymbol, "lang", lang)
 	partial := MovePartial{
-		Symbol:   move.DbSymbol,
-		Name:     move.Name[lang],
-		Category: string(move.Category),
+		Symbol:      move.DbSymbol,
+		Name:        move.Name[lang],
+		Description: move.Description[lang],
+		Category:    string(move.Category),
 		Pp:       int32(move.PP),
 		Power:    int32(move.Power),
 		Accuracy: int32(move.Accuracy),

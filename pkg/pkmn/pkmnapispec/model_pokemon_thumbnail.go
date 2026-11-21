@@ -10,9 +10,6 @@
 
 package pkmnapispec
 
-
-
-
 // PokemonThumbnail - An object containing base information to display a pokemon
 type PokemonThumbnail struct {
 
@@ -45,14 +42,14 @@ type PokemonThumbnail struct {
 // AssertPokemonThumbnailRequired checks if the required fields are not zero-ed
 func AssertPokemonThumbnailRequired(obj PokemonThumbnail) error {
 	elements := map[string]interface{}{
-		"symbol": obj.Symbol,
-		"name": obj.Name,
-		"number": obj.Number,
-		"form": obj.Form,
-		"image": obj.Image,
-		"type1": obj.Type1,
+		"symbol":           obj.Symbol,
+		"name":             obj.Name,
+		"number":           obj.Number,
+		"form":             obj.Form,
+		"image":            obj.Image,
+		"type1":            obj.Type1,
 		"customProperties": obj.CustomProperties,
-		"tags": obj.Tags,
+		"tags":             obj.Tags,
 	}
 	for name, el := range elements {
 		if isZero := IsZeroValue(el); isZero {
@@ -75,15 +72,15 @@ func AssertPokemonThumbnailRequired(obj PokemonThumbnail) error {
 
 // AssertPokemonThumbnailConstraints checks if the values respects the defined constraints
 func AssertPokemonThumbnailConstraints(obj PokemonThumbnail) error {
-    if obj.Type1 != nil {
-     	if err := AssertTypePartialConstraints(*obj.Type1); err != nil {
-     		return err
-     	}
-    }
-    if obj.Type2 != nil {
-     	if err := AssertTypePartialConstraints(*obj.Type2); err != nil {
-     		return err
-     	}
-    }
+	if obj.Type1 != nil {
+		if err := AssertTypePartialConstraints(*obj.Type1); err != nil {
+			return err
+		}
+	}
+	if obj.Type2 != nil {
+		if err := AssertTypePartialConstraints(*obj.Type2); err != nil {
+			return err
+		}
+	}
 	return nil
 }

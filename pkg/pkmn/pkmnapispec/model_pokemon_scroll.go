@@ -10,11 +10,7 @@
 
 package pkmnapispec
 
-
-
-
 type PokemonScroll struct {
-
 	Content []PokemonThumbnail `json:"content"`
 
 	// True if there are elements left to fetch

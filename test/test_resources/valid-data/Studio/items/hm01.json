@@ -1,0 +1,7 @@
+{
+  "id": 0,
+  "dbSymbol": "hm01",
+  "klass": "TechItem",
+  "isHm": true,
+  "move": "cut"
+}

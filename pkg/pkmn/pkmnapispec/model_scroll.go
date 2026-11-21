@@ -10,9 +10,6 @@
 
 package pkmnapispec
 
-
-
-
 // Scroll - A list of content
 type Scroll struct {
 

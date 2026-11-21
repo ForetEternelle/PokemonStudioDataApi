@@ -10,9 +10,6 @@
 
 package pkmnapispec
 
-
-
-
 // FormPartial - An object containing the data of a pokemon form (ev, iv, ...)
 type FormPartial struct {
 
@@ -54,16 +51,16 @@ type FormPartial struct {
 // AssertFormPartialRequired checks if the required fields are not zero-ed
 func AssertFormPartialRequired(obj FormPartial) error {
 	elements := map[string]interface{}{
-		"number": obj.Number,
-		"name": obj.Name,
-		"type1": obj.Type1,
-		"baseHp": obj.BaseHp,
-		"baseAtk": obj.BaseAtk,
-		"baseDfe": obj.BaseDfe,
-		"baseSpd": obj.BaseSpd,
-		"baseAts": obj.BaseAts,
-		"baseDfs": obj.BaseDfs,
-		"tags": obj.Tags,
+		"number":           obj.Number,
+		"name":             obj.Name,
+		"type1":            obj.Type1,
+		"baseHp":           obj.BaseHp,
+		"baseAtk":          obj.BaseAtk,
+		"baseDfe":          obj.BaseDfe,
+		"baseSpd":          obj.BaseSpd,
+		"baseAts":          obj.BaseAts,
+		"baseDfs":          obj.BaseDfs,
+		"tags":             obj.Tags,
 		"customProperties": obj.CustomProperties,
 	}
 	for name, el := range elements {
@@ -87,15 +84,15 @@ func AssertFormPartialRequired(obj FormPartial) error {
 
 // AssertFormPartialConstraints checks if the values respects the defined constraints
 func AssertFormPartialConstraints(obj FormPartial) error {
-    if obj.Type1 != nil {
-     	if err := AssertTypePartialConstraints(*obj.Type1); err != nil {
-     		return err
-     	}
-    }
-    if obj.Type2 != nil {
-     	if err := AssertTypePartialConstraints(*obj.Type2); err != nil {
-     		return err
-     	}
-    }
+	if obj.Type1 != nil {
+		if err := AssertTypePartialConstraints(*obj.Type1); err != nil {
+			return err
+		}
+	}
+	if obj.Type2 != nil {
+		if err := AssertTypePartialConstraints(*obj.Type2); err != nil {
+			return err
+		}
+	}
 	return nil
 }

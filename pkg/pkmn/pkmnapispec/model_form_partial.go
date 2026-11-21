@@ -44,7 +44,7 @@ type FormPartial struct {
 	// The base special defense stat
 	BaseDfs int32 `json:"baseDfs"`
 
-	// Tags setted by the developer
+	// Tags set by the developer
 	Tags []string `json:"tags"`
 
 	// Custom properties setted by the developer

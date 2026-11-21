@@ -38,7 +38,7 @@ type PokemonThumbnail struct {
 	// Custom properties setted by the developer
 	CustomProperties map[string]interface{} `json:"customProperties"`
 
-	// Tags setted by the developer
+	// Tags set by the developer
 	Tags []string `json:"tags"`
 }
 

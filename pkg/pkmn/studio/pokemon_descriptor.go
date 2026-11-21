@@ -71,6 +71,7 @@ type PokemonDescriptor struct {
 	Forms       []FormDescriptor `json:"forms"`
 	Name        pkmn.Translation
 	Description pkmn.Translation
+	Category		pkmn.Translation
 }
 
 // FormDescriptor is the JSON descriptor for a Pokemon form.
@@ -109,6 +110,7 @@ type FormDescriptor struct {
 	Resources      PokemonResourcesDescriptor `json:"resources"`
 	Name           pkmn.Translation
 	Description    pkmn.Translation
+	Category       pkmn.Translation
 }
 
 // EvolutionDescriptor is the JSON descriptor for an evolution.

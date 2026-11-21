@@ -4,6 +4,7 @@ required:
   - number
   - name
   - description
+  - category
   - height
   - weight
   - type1
@@ -44,6 +45,10 @@ properties:
         type: string
         description: The translated description of the form
         example: "Pika Pika"
+    category:
+        type: string
+        description: The translated category of the form
+        example: "Mouse Pokemon"
     height:
         type: number
         description: The height

@@ -25,6 +25,9 @@ type FormDetails struct {
 	// The translated description of the form
 	Description string `json:"description"`
 
+	// The translated category of the form
+	Category string `json:"category"`
+
 	// The height
 	Height float32 `json:"height"`
 
@@ -104,7 +107,7 @@ type FormDetails struct {
 	// The list of abilities
 	Abilities []AbilityPartial `json:"abilities"`
 
-	// Tags setted by the developer
+	// Tags set by the developer
 	Tags []string `json:"tags"`
 
 	// Custom properties setted by the developer
@@ -117,6 +120,7 @@ func AssertFormDetailsRequired(obj FormDetails) error {
 		"number": obj.Number,
 		"name": obj.Name,
 		"description": obj.Description,
+		"category": obj.Category,
 		"height": obj.Height,
 		"weight": obj.Weight,
 		"type1": obj.Type1,

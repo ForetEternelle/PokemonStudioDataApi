@@ -2,10 +2,12 @@ package pkmnapi
 
 import (
 	"context"
+	"encoding/json"
 	"testing"
 
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/pkmn"
 	. "github.com/ForetEternelle/PokemonStudioDataApi/pkg/pkmn/pkmnapispec"
+	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/pkmn/studio"
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/scroll"
 )
 
@@ -73,6 +75,50 @@ func TestPokemonService_GetPokemonDetails(t *testing.T) {
 	}
 	if details.Form.Name != "Pikachu" {
 		t.Error("Expected name Pikachu, got", details.Form.Name)
+	}
+}
+
+func TestPokemonService_GetPokemonDetails_CategoryFromCSV(t *testing.T) {
+	store, err := studio.Load("../../../test/test_resources/valid-data")
+	if err != nil {
+		t.Fatal(err)
+	}
+	mapper := NewPokemonMapper(NewTypeMapper(), NewAbilityMapper(), store)
+	service := NewPokemonService(store, mapper, func(ctx context.Context) *PokemonFilterPolicy {
+		return NewPokemonFilterPolicy()
+	})
+
+	for _, test := range []struct {
+		lang     string
+		expected string
+	}{
+		{"en", "Psi Pokémon"},
+		{"fr", "Pokémon Psy"},
+	} {
+		t.Run(test.lang, func(t *testing.T) {
+			response, err := service.GetPokemonDetails(context.Background(), "abra", 0, test.lang)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if response.Code != 200 {
+				t.Fatalf("Expected status 200, got %d", response.Code)
+			}
+			body, err := json.Marshal(response.Body)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var details struct {
+				Form struct {
+					Category string `json:"category"`
+				} `json:"form"`
+			}
+			if err := json.Unmarshal(body, &details); err != nil {
+				t.Fatal(err)
+			}
+			if details.Form.Category != test.expected {
+				t.Errorf("Expected JSON category %q, got %q", test.expected, details.Form.Category)
+			}
+		})
 	}
 }
 

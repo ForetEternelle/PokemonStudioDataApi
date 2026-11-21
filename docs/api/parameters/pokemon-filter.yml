@@ -17,7 +17,7 @@ lastId:
     nullable: true
     minimum: 1
     format: int32
-  description: Start de search after this id. Used for scrolling.
+  description: Start the search after this id. Used for scrolling.
 
 lastForm:
   in: query
@@ -28,7 +28,7 @@ lastForm:
     minimum: 0
     nullable: true
     format: int32
-  description: Start de search after this form. Used for scrolling.
+  description: Start the search after this form. Used for scrolling.
 
 mainFormsOnly:
   in: query

@@ -19,7 +19,7 @@ properties:
     $ref: "./FormDetails.yml"
   tags:
     $ref: "../Tags.yml"
-    description: Tags setted by the developer
+    description: Tags set by the developer
   customProperties:
     $ref: "../CustomProperties.yml"
-    description: Custom properties setted by the developer
+    description: Custom properties set by the developer

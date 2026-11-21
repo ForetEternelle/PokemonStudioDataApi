@@ -192,6 +192,7 @@ type AddPokemonFormDto struct {
 	FrontOffsetY     int32
 	Name             Translation
 	Description      Translation
+	Category         Translation
 	CustomProperties map[string]any
 	Tags             []string
 	Resources        PokemonResources
@@ -257,6 +258,7 @@ func (s *Store) AddPokemon(dto AddPokemonDto) *Pokemon {
 			FrontOffsetY:     f.FrontOffsetY,
 			Name:             f.Name,
 			Description:      f.Description,
+			Category:         f.Category,
 			CustomProperties: customProperties,
 			Tags:             tags,
 			Resources:        f.Resources,

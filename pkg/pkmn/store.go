@@ -419,6 +419,59 @@ func (s *Store) FindAllMoves(filters ...iter2.FilterFunc[*Move]) iter.Seq[*Move]
 	return iter2.Filter(moveIt, iter2.And(filters...))
 }
 
+// moveNameApostrophes maps typographic apostrophes, used in move names, to the one users type.
+var moveNameApostrophes = strings.NewReplacer("’", "'", "‘", "'", "ʼ", "'")
+
+// FindMoveByName finds a move by its symbol or by its name (case-insensitive).
+// Matches are tried by priority: symbol (spaces read as underscores), name in lang,
+// then name in any language. Typographic apostrophes match straight ones.
+// Within a priority level, the lowest move ID wins.
+func (s *Store) FindMoveByName(name string, lang string, filters ...iter2.FilterFunc[*Move]) *Move {
+	normalize := func(val string) string {
+		return moveNameApostrophes.Replace(strings.ToLower(strings.TrimSpace(val)))
+	}
+	normalizedName := normalize(name)
+	if normalizedName == "" {
+		return nil
+	}
+	symbol := strings.ReplaceAll(normalizedName, " ", "_")
+
+	matches := func(val string) bool {
+		return normalize(val) == normalizedName
+	}
+
+	matchers := []iter2.FilterFunc[*Move]{
+		func(m *Move) bool {
+			return strings.ToLower(m.DbSymbol) == symbol
+		},
+		func(m *Move) bool {
+			return matches(m.Name[lang])
+		},
+		func(m *Move) bool {
+			for _, val := range m.Name {
+				if matches(val) {
+					return true
+				}
+			}
+			return false
+		},
+	}
+
+	for _, matcher := range matchers {
+		var found *Move
+		for m := range iter2.Filter(s.FindAllMoves(filters...), matcher) {
+			if found == nil || m.ID < found.ID {
+				found = m
+			}
+		}
+		if found != nil {
+			return found
+		}
+	}
+
+	return nil
+}
+
 func (s *Store) FindMoveBySymbol(symbol string, filters ...iter2.FilterFunc[*Move]) *Move {
 	move, ok := s.movesBySymbol[symbol]
 	if !ok {

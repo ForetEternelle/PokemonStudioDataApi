@@ -42,3 +42,12 @@ func (s MoveService) GetMove(requestCtx context.Context, symbol string, lang str
 	}
 	return ImplResponse{Code: 200, Body: s.moveMapper.ToMovePartial(*m, lang, *policy)}, nil
 }
+
+func (s MoveService) GetMoveDetailsByName(requestCtx context.Context, name string, lang string) (ImplResponse, error) {
+	policy := s.accessPolicyFactory(requestCtx)
+	m := s.store.FindMoveByName(name, lang, policy.MoveFilter)
+	if m == nil {
+		return ImplResponse{Code: 404, Body: nil}, nil
+	}
+	return ImplResponse{Code: 200, Body: s.moveMapper.ToMoveDetail(*m, lang, *policy)}, nil
+}

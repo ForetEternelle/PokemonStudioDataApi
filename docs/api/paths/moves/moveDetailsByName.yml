@@ -1,0 +1,25 @@
+get:
+  tags:
+    - Moves
+  summary: Get a move details by name
+  description: This endpoint returns a move details based on the name. The name is the symbol of the move or its translated name in any language (case-insensitive).
+  operationId: getMoveDetailsByName
+  parameters:
+    - $ref: "../../parameters/lang.yml"
+    - name: name
+      in: path
+      description: The symbol of the move or its name in any language
+      required: true
+      schema:
+        type: string
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/move/MoveDetails.yml"
+    "400":
+      $ref: "../../responses/InvalidParameterError.yml"
+    "404":
+      $ref: "../../responses/NotFoundError.yml"

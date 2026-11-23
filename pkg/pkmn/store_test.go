@@ -176,3 +176,69 @@ func TestFindPokemonByName_PrefersMainForm(t *testing.T) {
 		t.Errorf("expected target, got %v", found)
 	}
 }
+
+func TestFindMoveByName(t *testing.T) {
+	store := NewStore()
+	store.AddMove(AddMoveDto{ID: 53, DbSymbol: "flamethrower", Name: Translation{"en": "Flamethrower", "fr": "Lance-Flammes"}})
+	store.AddMove(AddMoveDto{ID: 7, DbSymbol: "fire_punch", Name: Translation{"en": "Fire Punch", "fr": "Poing de Feu"}})
+
+	for name, expected := range map[string]string{
+		"flamethrower":     "flamethrower",
+		"Lance-Flammes":    "flamethrower",
+		"  lance-flammes ": "flamethrower",
+		"Poing de Feu":     "fire_punch",
+		"fire punch":       "fire_punch",
+		"Fire_Punch":       "fire_punch",
+	} {
+		found := store.FindMoveByName(name, "fr")
+		if found == nil || found.DbSymbol != expected {
+			t.Errorf("FindMoveByName(%q, fr): expected %s, got %v", name, expected, found)
+		}
+	}
+
+	if found := store.FindMoveByName("unknown", "fr"); found != nil {
+		t.Errorf("expected nil, got %v", found.DbSymbol)
+	}
+	if found := store.FindMoveByName("   ", "fr"); found != nil {
+		t.Errorf("expected nil for blank name, got %v", found.DbSymbol)
+	}
+}
+
+// A name matching in the requested language wins over a name matching in another language.
+func TestFindMoveByName_PrefersRequestedLang(t *testing.T) {
+	store := NewStore()
+	store.AddMove(AddMoveDto{ID: 1, DbSymbol: "first", Name: Translation{"en": "Same", "fr": "Premier"}})
+	store.AddMove(AddMoveDto{ID: 2, DbSymbol: "second", Name: Translation{"en": "Second", "fr": "Same"}})
+
+	if found := store.FindMoveByName("same", "fr"); found == nil || found.DbSymbol != "second" {
+		t.Errorf("lang fr: expected second, got %v", found)
+	}
+	if found := store.FindMoveByName("same", "en"); found == nil || found.DbSymbol != "first" {
+		t.Errorf("lang en: expected first, got %v", found)
+	}
+	if found := store.FindMoveByName("premier", "en"); found == nil || found.DbSymbol != "first" {
+		t.Errorf("fallback: expected first, got %v", found)
+	}
+}
+
+func TestFindMoveByName_AppliesFilters(t *testing.T) {
+	store := NewStore()
+	store.AddMove(AddMoveDto{ID: 1, DbSymbol: "hidden", Name: Translation{"fr": "Cachée"}})
+
+	deny := func(*Move) bool { return false }
+	if found := store.FindMoveByName("Cachée", "fr", deny); found != nil {
+		t.Errorf("expected nil when filtered out, got %v", found.DbSymbol)
+	}
+}
+
+// Names use typographic apostrophes while users type straight ones.
+func TestFindMoveByName_NormalizesApostrophes(t *testing.T) {
+	store := NewStore()
+	store.AddMove(AddMoveDto{ID: 247, DbSymbol: "shadow_ball", Name: Translation{"fr": "Ball’Ombre"}})
+
+	for _, name := range []string{"Ball'Ombre", "ball’ombre"} {
+		if found := store.FindMoveByName(name, "fr"); found == nil || found.DbSymbol != "shadow_ball" {
+			t.Errorf("FindMoveByName(%q, fr): expected shadow_ball, got %v", name, found)
+		}
+	}
+}

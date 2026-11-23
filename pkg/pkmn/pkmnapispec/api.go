@@ -30,6 +30,7 @@ type AbilitiesAPIRouter interface {
 type MovesAPIRouter interface { 
 	GetMove(http.ResponseWriter, *http.Request)
 	GetMoveDetails(http.ResponseWriter, *http.Request)
+	GetMoveDetailsByName(http.ResponseWriter, *http.Request)
 }
 // PokemonAPIRouter defines the required methods for binding the api requests to a responses for the PokemonAPI
 // The PokemonAPIRouter implementation should parse necessary information from the http request,
@@ -66,6 +67,7 @@ type AbilitiesAPIServicer interface {
 type MovesAPIServicer interface { 
 	GetMove(context.Context, string, string) (ImplResponse, error)
 	GetMoveDetails(context.Context, string, string) (ImplResponse, error)
+	GetMoveDetailsByName(context.Context, string, string) (ImplResponse, error)
 }
 
 

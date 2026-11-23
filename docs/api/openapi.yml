@@ -27,6 +27,8 @@ paths:
     $ref: "paths/moves/move.yml"
   /moves/detail/{symbol}:
     $ref: "paths/moves/moveDetails.yml"
+  /moves/name/{name}:
+    $ref: "paths/moves/moveDetailsByName.yml"
 
   /abilities:
     $ref: "paths/abilities/ability.yml"

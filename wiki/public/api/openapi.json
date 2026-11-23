@@ -508,6 +508,65 @@
         "tags" : [ "Moves" ]
       }
     },
+    "/moves/name/{name}" : {
+      "get" : {
+        "description" : "This endpoint returns a move details based on the name. The name is the symbol of the move or its translated name in any language (case-insensitive).",
+        "operationId" : "getMoveDetailsByName",
+        "parameters" : [ {
+          "description" : "The language of the response",
+          "in" : "query",
+          "name" : "lang",
+          "required" : false,
+          "schema" : {
+            "default" : "en",
+            "maxLength" : 5,
+            "type" : "string"
+          }
+        }, {
+          "description" : "The symbol of the move or its name in any language",
+          "in" : "path",
+          "name" : "name",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/MoveDetails"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "description" : "invalid parameter error"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "description" : "not found"
+          }
+        },
+        "summary" : "Get a move details by name",
+        "tags" : [ "Moves" ]
+      }
+    },
     "/abilities" : {
       "get" : {
         "description" : "This endpoint returns a list of all abilities",

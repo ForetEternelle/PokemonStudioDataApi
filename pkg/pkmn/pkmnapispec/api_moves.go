@@ -60,6 +60,11 @@ func (c *MovesAPIController) Routes() Routes {
 			"/moves/detail/{symbol}",
 			c.GetMoveDetails,
 		},
+		"GetMoveDetailsByName": Route{
+			strings.ToUpper("Get"),
+			"/moves/name/{name}",
+			c.GetMoveDetailsByName,
+		},
 	}
 }
 
@@ -116,6 +121,37 @@ func (c *MovesAPIController) GetMoveDetails(w http.ResponseWriter, r *http.Reque
 		langParam = param
 	}
 	result, err := c.service.GetMoveDetails(r.Context(), symbolParam, langParam)
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	_ = EncodeJSONResponse(result.Body, &result.Code, w)
+}
+
+// GetMoveDetailsByName - Get a move details by name
+func (c *MovesAPIController) GetMoveDetailsByName(w http.ResponseWriter, r *http.Request) {
+	query, err := parseQuery(r.URL.RawQuery)
+	if err != nil {
+		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
+		return
+	}
+	nameParam := chi.URLParam(r, "name")
+	if nameParam == "" {
+		c.errorHandler(w, r, &RequiredError{"name"}, nil)
+		return
+	}
+	var langParam string
+	if query.Has("lang") {
+		param := query.Get("lang")
+
+		langParam = param
+	} else {
+		param := "en"
+		langParam = param
+	}
+	result, err := c.service.GetMoveDetailsByName(r.Context(), nameParam, langParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

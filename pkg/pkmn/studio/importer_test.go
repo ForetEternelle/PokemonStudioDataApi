@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	DataFolder = "../../../test/test_resources/valid-data"
+	DataFolder  = "../../../test/test_resources/valid-data"
 	TypeInvalid = "../../../test/test_resources/bug-invalid.json"
 	TypeValid   = "../../../test/test_resources/valid-data/Studio/types/bug.json"
 
@@ -44,6 +44,30 @@ func TestLoad(t *testing.T) {
 	typesCount := len(slices.Collect(typesIter))
 	if typesCount != 18 {
 		t.Error("Import should have 18 types, has", typesCount)
+	}
+
+	for _, test := range []struct {
+		symbol string
+		en     string
+		fr     string
+	}{
+		{"abra", "Psi Pokémon", "Pokémon Psy"},
+		{"aegislash", "Royal Sword Pokémon", "Pokémon Noble Lame"},
+	} {
+		t.Run(test.symbol+" category", func(t *testing.T) {
+			pokemon := store.FindPokemonBySymbol(test.symbol)
+			if pokemon == nil {
+				t.Fatalf("Expected %s in the loaded store", test.symbol)
+			}
+			for _, form := range pokemon.Forms {
+				if form.Category["en"] != test.en {
+					t.Errorf("Form %d: expected English category %q, got %q", form.Form, test.en, form.Category["en"])
+				}
+				if form.Category["fr"] != test.fr {
+					t.Errorf("Form %d: expected French category %q, got %q", form.Form, test.fr, form.Category["fr"])
+				}
+			}
+		})
 	}
 }
 

@@ -4,6 +4,7 @@ required:
   - number
   - name
   - description
+  - category
   - height
   - weight
   - type1
@@ -44,6 +45,10 @@ properties:
         type: string
         description: The translated description of the form
         example: "Pika Pika"
+    category:
+        type: string
+        description: The translated category of the form
+        example: "Mouse Pokemon"
     height:
         type: number
         description: The height
@@ -187,7 +192,7 @@ properties:
             $ref: "../abilities/AbilityPartial.yml"
     tags:
         $ref: "../Tags.yml"
-        description: Tags setted by the developer
+        description: Tags set by the developer
     customProperties:
         $ref: "../CustomProperties.yml"
-        description: Custom properties setted by the developer
+        description: Custom properties set by the developer

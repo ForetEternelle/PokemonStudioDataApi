@@ -38,7 +38,7 @@
             "type" : "integer"
           }
         }, {
-          "description" : "Start de search after this id. Used for scrolling.",
+          "description" : "Start the search after this id. Used for scrolling.",
           "in" : "query",
           "name" : "lastId",
           "required" : false,
@@ -49,7 +49,7 @@
             "type" : "integer"
           }
         }, {
-          "description" : "Start de search after this form. Used for scrolling.",
+          "description" : "Start the search after this form. Used for scrolling.",
           "in" : "query",
           "name" : "lastForm",
           "required" : false,
@@ -628,7 +628,7 @@
         }
       },
       "lastId" : {
-        "description" : "Start de search after this id. Used for scrolling.",
+        "description" : "Start the search after this id. Used for scrolling.",
         "in" : "query",
         "name" : "lastId",
         "required" : false,
@@ -640,7 +640,7 @@
         }
       },
       "lastForm" : {
-        "description" : "Start de search after this form. Used for scrolling.",
+        "description" : "Start the search after this form. Used for scrolling.",
         "in" : "query",
         "name" : "lastForm",
         "required" : false,
@@ -1103,7 +1103,7 @@
         "type" : "object"
       },
       "Tags" : {
-        "description" : "Tags setted by the developer",
+        "description" : "Tags set by the developer",
         "items" : {
           "type" : "string"
         },
@@ -1125,6 +1125,11 @@
           "description" : {
             "description" : "The translated description of the form",
             "example" : "Pika Pika",
+            "type" : "string"
+          },
+          "category" : {
+            "description" : "The translated category of the form",
+            "example" : "Mouse Pokemon",
             "type" : "string"
           },
           "height" : {
@@ -1276,7 +1281,7 @@
             "$ref" : "#/components/schemas/CustomProperties"
           }
         },
-        "required" : [ "abilities", "baseAtk", "baseAts", "baseDfe", "baseDfs", "baseExperience", "baseHp", "baseLoyalty", "baseSpd", "breedGroups", "catchRate", "customProperties", "description", "evAtk", "evAts", "evDfe", "evDfs", "evHp", "evSpd", "experienceType", "femaleRate", "hatchSteps", "height", "image", "itemHeld", "name", "number", "tags", "type1", "weight" ],
+        "required" : [ "abilities", "baseAtk", "baseAts", "baseDfe", "baseDfs", "baseExperience", "baseHp", "baseLoyalty", "baseSpd", "breedGroups", "catchRate", "category", "customProperties", "description", "evAtk", "evAts", "evDfe", "evDfs", "evHp", "evSpd", "experienceType", "femaleRate", "hatchSteps", "height", "image", "itemHeld", "name", "number", "tags", "type1", "weight" ],
         "type" : "object"
       },
       "MoveTargeting" : {

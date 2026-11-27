@@ -24,7 +24,7 @@ type PokemonDetails struct {
 
 	Form FormDetails `json:"form"`
 
-	// Tags setted by the developer
+	// Tags set by the developer
 	Tags []string `json:"tags"`
 
 	// Custom properties setted by the developer

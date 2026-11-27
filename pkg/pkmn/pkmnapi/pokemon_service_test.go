@@ -25,7 +25,7 @@ func setupPokemonService(t *testing.T) (*pkmn.Store, PokemonAPIServicer) {
 	store.AddPokemon(pkmn.AddPokemonDto{
 		ID: 25, DbSymbol: "pikachu",
 		Forms: []pkmn.AddPokemonFormDto{
-			{Form: 0, Type1: "electric", Name: pkmn.Translation{"en": "Pikachu", "fr": "PikachuFR"}, Description: pkmn.Translation{"en": "Electric mouse"}},
+			{Form: 0, Type1: "electric", Name: pkmn.Translation{"en": "Pikachu", "fr": "PikachuFR"}, Description: pkmn.Translation{"en": "Electric mouse"}, Category: pkmn.Translation{"en": "Mouse Pokémon"}},
 			{Form: 1, Type1: "electric", Name: pkmn.Translation{"en": "Pikachu"}, Description: pkmn.Translation{"en": "Electric mouse"}},
 		},
 	})
@@ -73,6 +73,9 @@ func TestPokemonService_GetPokemonDetails(t *testing.T) {
 	}
 	if details.Form.Name != "Pikachu" {
 		t.Error("Expected name Pikachu, got", details.Form.Name)
+	}
+	if details.Form.Category != "Mouse Pokémon" {
+		t.Error("Expected category Mouse Pokémon, got", details.Form.Category)
 	}
 }
 

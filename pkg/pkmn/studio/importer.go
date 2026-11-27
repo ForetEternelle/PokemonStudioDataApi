@@ -15,6 +15,7 @@ import (
 
 const (
 	pokemonNameTranslationFile            = "100000.csv"
+	pokemonCategoryTranslationFile        = "100001.csv"
 	pokemonDescriptionTranslationFile     = "100002.csv"
 	pokemonFormNameTranslationFile        = "100067.csv"
 	pokemonFormDescriptionTranslationFile = "100068.csv"
@@ -128,6 +129,7 @@ func Load(folder string) (*pkmn.Store, error) {
 				FrontOffsetY:   f.FrontOffsetY,
 				Name:           f.Name,
 				Description:    f.Description,
+				Category:       f.Category,
 				Resources:      mapPokemonResources(f.Resources),
 			}
 		}
@@ -405,6 +407,9 @@ func ImportPokemon(studioFolder, translationFolder string) (iter.Seq[*PokemonDes
 	pokemonNameTranslationPath := path.Join(translationFolder, pokemonNameTranslationFile)
 	pokemonNameTranslations := ImportTranslationsOrEmpty(pokemonNameTranslationPath)
 
+	pokemonCategoryTranslationPath := path.Join(translationFolder, pokemonCategoryTranslationFile)
+	pokemonCategoryTranslations := ImportTranslationsOrEmpty(pokemonCategoryTranslationPath)
+
 	pokemonDescriptionTranslationPath := path.Join(translationFolder, pokemonDescriptionTranslationFile)
 	pokemonDescriptionTranslations := ImportTranslationsOrEmpty(pokemonDescriptionTranslationPath)
 
@@ -437,6 +442,8 @@ func ImportPokemon(studioFolder, translationFolder string) (iter.Seq[*PokemonDes
 				} else {
 					form.Description = MapTranslation(formTextId.Description, pokemonFormDescriptionTranslations)
 				}
+
+				form.Category = MapTranslation(int(pokemonDesc.ID), pokemonCategoryTranslations)
 			}
 
 			if pokemonDesc != nil {

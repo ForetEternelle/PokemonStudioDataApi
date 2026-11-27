@@ -95,6 +95,7 @@ func (m PokemonMapper) FormToPokemonFormDetails(f pkmn.PokemonForm, lang string,
 		Number:      f.Form,
 		Name:        f.Name[lang],
 		Description: f.Description[lang],
+		Category:    f.Category[lang],
 		Height:      f.Height,
 		Weight:      f.Weight,
 

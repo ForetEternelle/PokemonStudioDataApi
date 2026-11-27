@@ -102,6 +102,7 @@ type PokemonForm struct {
 	FrontOffsetY     int32
 	Name             Translation
 	Description      Translation
+	Category         Translation
 	CustomProperties map[string]any
 	Tags             []string
 	Resources        PokemonResources

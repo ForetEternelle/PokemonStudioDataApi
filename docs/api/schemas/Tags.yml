@@ -1,4 +1,4 @@
 type: array
-description: Tags setted by the developer
+description: Tags set by the developer
 items:
   type: string

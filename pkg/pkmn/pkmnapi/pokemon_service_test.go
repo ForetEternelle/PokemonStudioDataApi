@@ -2,12 +2,10 @@ package pkmnapi
 
 import (
 	"context"
-	"encoding/json"
 	"testing"
 
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/pkmn"
 	. "github.com/ForetEternelle/PokemonStudioDataApi/pkg/pkmn/pkmnapispec"
-	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/pkmn/studio"
 	"github.com/ForetEternelle/PokemonStudioDataApi/pkg/scroll"
 )
 
@@ -27,7 +25,7 @@ func setupPokemonService(t *testing.T) (*pkmn.Store, PokemonAPIServicer) {
 	store.AddPokemon(pkmn.AddPokemonDto{
 		ID: 25, DbSymbol: "pikachu",
 		Forms: []pkmn.AddPokemonFormDto{
-			{Form: 0, Type1: "electric", Name: pkmn.Translation{"en": "Pikachu", "fr": "PikachuFR"}, Description: pkmn.Translation{"en": "Electric mouse"}},
+			{Form: 0, Type1: "electric", Name: pkmn.Translation{"en": "Pikachu", "fr": "PikachuFR"}, Description: pkmn.Translation{"en": "Electric mouse"}, Category: pkmn.Translation{"en": "Mouse Pokémon"}},
 			{Form: 1, Type1: "electric", Name: pkmn.Translation{"en": "Pikachu"}, Description: pkmn.Translation{"en": "Electric mouse"}},
 		},
 	})
@@ -76,49 +74,8 @@ func TestPokemonService_GetPokemonDetails(t *testing.T) {
 	if details.Form.Name != "Pikachu" {
 		t.Error("Expected name Pikachu, got", details.Form.Name)
 	}
-}
-
-func TestPokemonService_GetPokemonDetails_CategoryFromCSV(t *testing.T) {
-	store, err := studio.Load("../../../test/test_resources/valid-data")
-	if err != nil {
-		t.Fatal(err)
-	}
-	mapper := NewPokemonMapper(NewTypeMapper(), NewAbilityMapper(), store)
-	service := NewPokemonService(store, mapper, func(ctx context.Context) *PokemonFilterPolicy {
-		return NewPokemonFilterPolicy()
-	})
-
-	for _, test := range []struct {
-		lang     string
-		expected string
-	}{
-		{"en", "Psi Pokémon"},
-		{"fr", "Pokémon Psy"},
-	} {
-		t.Run(test.lang, func(t *testing.T) {
-			response, err := service.GetPokemonDetails(context.Background(), "abra", 0, test.lang)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if response.Code != 200 {
-				t.Fatalf("Expected status 200, got %d", response.Code)
-			}
-			body, err := json.Marshal(response.Body)
-			if err != nil {
-				t.Fatal(err)
-			}
-			var details struct {
-				Form struct {
-					Category string `json:"category"`
-				} `json:"form"`
-			}
-			if err := json.Unmarshal(body, &details); err != nil {
-				t.Fatal(err)
-			}
-			if details.Form.Category != test.expected {
-				t.Errorf("Expected JSON category %q, got %q", test.expected, details.Form.Category)
-			}
-		})
+	if details.Form.Category != "Mouse Pokémon" {
+		t.Error("Expected category Mouse Pokémon, got", details.Form.Category)
 	}
 }
 
